@@ -20,12 +20,12 @@
   <input type="text" id="message" placeholder="Type a message..." style="width: 55%;">
   <button onclick="sendMessage()">Send</button>
 
- 
   <script>
-const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
+    const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdm1uaXRod2ZtZGNmd3J6cWR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTkyODksImV4cCI6MjEwODI3NTI4OX0.OvdamS8cb7F3AS9w1RUtLedZiQBdv9_FgO_YTdK1DX0";
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     const chatDiv = document.getElementById('chat');
 
     function appendMessage(user, text) {
@@ -53,7 +53,6 @@ const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
       if (error) {
         alert("Error sending message: " + error.message);
       } else {
-        // Fallback: manually render message immediately if realtime is slow
         appendMessage(user, text);
       }
     }
@@ -61,7 +60,6 @@ const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        // Only append if not already in list
         appendMessage(payload.new.username || 'Anon', payload.new.content);
       })
       .subscribe();
