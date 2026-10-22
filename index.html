@@ -38,7 +38,10 @@
 
     async function loadMessages() {
       const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
-      if (data) data.forEach(msg => appendMessage(msg.username || 'Anon', msg.content));
+      if (data) {
+        chatDiv.innerHTML = '';
+        data.forEach(msg => appendMessage(msg.username || 'Anon', msg.content));
+      }
     }
 
     async function sendMessage() {
@@ -52,8 +55,6 @@
       const { error } = await supabaseClient.from('messages').insert([{ username: user, content: text }]);
       if (error) {
         alert("Error sending message: " + error.message);
-      } else {
-        appendMessage(user, text);
       }
     }
 
