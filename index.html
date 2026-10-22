@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends Chat</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+    #chat { border: 1px solid #ccc; height: 300px; overflow-y: scroll; padding: 10px; margin-bottom: 10px; border-radius: 8px; }
+    .msg { margin-bottom: 8px; }
+    .username { font-weight: bold; color: #0070f3; }
+    input, button { padding: 8px; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <h2>Friends Chatroom</h2>
+  <div id="chat"></div>
+  <input type="text" id="username" placeholder="Your Name" style="width: 25%;">
+  <input type="text" id="message" placeholder="Type a message..." style="width: 55%;">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const chatDiv = document.getElementById('chat');
+
+    function appendMessage(user, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'msg';
+      msgDiv.innerHTML = `<span class="username">${user}:</span> ${text}`;
+      chatDiv.appendChild(msgDiv);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    async function loadMessages() {
+      const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
+      if (data) data.forEach(msg => appendMessage(msg.username || 'Anon', msg.content));
+    }
+
+    async function sendMessage() {
+      const user = document.getElementById('username').value || 'Anon';
+      const textInput = document.getElementById('message');
+      const text = textInput.value;
+      if (!text) return;
+
+      textInput.value = '';
+      
+      const { error } = await supabaseClient.from('messages').insert([{ username: user, content: text }]);
+      if (error) {
+        alert("Error sending message: " + error.message);
+      } else {
+        // Fallback: manually render message immediately if realtime is slow
+        appendMessage(user, text);
+      }
+    }
+
+    supabaseClient
+      .channel('public:messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        // Only append if not already in list
+        appendMessage(payload.new.username || 'Anon', payload.new.content);
+      })
+      .subscribe();
+
+    loadMessages();
+  </script>
+</body>
+</html>
