@@ -97,6 +97,7 @@
       animation: fadeIn 0.15s ease-in-out;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     /* Own Messages (Right-aligned) */
@@ -133,9 +134,40 @@
       font-size: 0.825rem;
     }
 
+    .timestamp-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     .timestamp {
       font-size: 0.7rem;
       color: #94a3b8;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
+    }
+
+    .delete-btn:hover {
+      opacity: 1;
+      color: #ef4444;
+    }
+
+    .msg.user-me .delete-btn {
+      color: #bae6fd;
+    }
+
+    .msg.user-me .delete-btn:hover {
+      color: #fca5a5;
     }
 
     .msg-content img {
@@ -295,12 +327,16 @@
       );
     }
 
-    function appendMessage(user, text, createdAt) {
+    function appendMessage(id, user, text, createdAt) {
+      // Prevent duplicate rendering if message element already exists
+      if (id && document.getElementById(`msg-${id}`)) return;
+
       const currentUser = usernameInput.value.trim() || 'Anon';
       const isMe = user.toLowerCase() === currentUser.toLowerCase();
 
       const msgDiv = document.createElement('div');
       msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
+      if (id) msgDiv.id = `msg-${id}`;
 
       const formattedTime = formatTime(createdAt);
 
@@ -311,15 +347,19 @@
         contentHtml = `<div class="msg-content">${escapeHtml(text)}</div>`;
       }
 
+      const deleteBtnHtml = isMe && id ? `<button class="delete-btn" onclick="deleteMessage(${id})" title="Delete message">✕</button>` : '';
+
       msgDiv.innerHTML = `
         <div class="msg-header">
           <span class="username">${escapeHtml(user)}</span>
-          <span class="timestamp">${formattedTime}</span>
+          <div class="timestamp-wrapper">
+            <span class="timestamp">${formattedTime}</span>
+            ${deleteBtnHtml}
+          </div>
         </div>
         ${contentHtml}
       `;
 
-      // Check scroll position prior to appending
       const isAtBottom = chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100;
 
       chatDiv.appendChild(msgDiv);
@@ -329,6 +369,18 @@
       } else {
         toast.style.display = 'block';
       }
+    }
+
+    async function deleteMessage(id) {
+      const { error } = await supabaseClient.from('messages').delete().eq('id', id);
+      if (error) {
+        alert("Error deleting message: " + error.message);
+      }
+    }
+
+    function removeMessageFromUI(id) {
+      const el = document.getElementById(`msg-${id}`);
+      if (el) el.remove();
     }
 
     function scrollToBottom() {
@@ -353,7 +405,7 @@
       const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
       if (data) {
         chatDiv.innerHTML = '';
-        data.forEach(msg => appendMessage(msg.username || 'Anon', msg.content, msg.created_at));
+        data.forEach(msg => appendMessage(msg.id, msg.username || 'Anon', msg.content, msg.created_at));
         scrollToBottom();
       }
     }
@@ -373,10 +425,14 @@
       }
     }
 
+    // Subscribe to both INSERT and DELETE events in real time
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        appendMessage(payload.new.username || 'Anon', payload.new.content, payload.new.created_at);
+        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.content, payload.new.created_at);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, payload => {
+        removeMessageFromUI(payload.old.id);
       })
       .subscribe();
 
