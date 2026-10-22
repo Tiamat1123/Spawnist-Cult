@@ -197,6 +197,18 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const chatDiv = document.getElementById('chat');
+    const usernameInput = document.getElementById('username');
+
+    // Restore saved username if it exists in local storage
+    const savedName = localStorage.getItem('chat_username');
+    if (savedName) {
+      usernameInput.value = savedName;
+    }
+
+    // Save username whenever the input value changes
+    usernameInput.addEventListener('input', () => {
+      localStorage.setItem('chat_username', usernameInput.value.trim());
+    });
 
     function appendMessage(user, text) {
       const msgDiv = document.createElement('div');
@@ -215,10 +227,13 @@
     }
 
     async function sendMessage() {
-      const user = document.getElementById('username').value.trim() || 'Anon';
+      const user = usernameInput.value.trim() || 'Anon';
       const textInput = document.getElementById('message');
       const text = textInput.value.trim();
       if (!text) return;
+
+      // Save name on send as well
+      localStorage.setItem('chat_username', user);
 
       textInput.value = '';
       
