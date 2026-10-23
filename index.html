@@ -1062,7 +1062,7 @@
     </div>
   </div>
 
-  <!-- Profile Setup Modal + 10x10 PFP MAKER -->
+  <!-- Profile Setup Modal + 10x10 PFP MAKER & ERASER -->
   <div class="modal-overlay" id="profile-modal">
     <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
@@ -1096,6 +1096,7 @@
               </div>
               <div style="display: flex; align-items: center; gap: 0.4rem;">
                 <input type="color" id="pfp-color-picker" value="#38bdf8" onchange="setPfpColor(this.value)">
+                <button class="btn-secondary" id="pfp-eraser-btn" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="toggleEraser()">✏️ Eraser</button>
                 <button class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="clearPfpGrid()">Clear</button>
               </div>
             </div>
@@ -1213,10 +1214,11 @@
     
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
-    const userAvatars = new Map(); // userHash -> pixelString
+    const userAvatars = new Map();
 
-    // 10x10 PFP Grid Logic
+    // 10x10 PFP Grid + Eraser Logic
     let currentPfpColor = '#38bdf8';
+    let isEraserActive = false;
     let pfpGridData = Array(100).fill('#1e293b');
     let isDrawingPfp = false;
 
@@ -1246,13 +1248,35 @@
     }
 
     function paintPixel(index, el) {
-      pfpGridData[index] = currentPfpColor;
-      el.style.backgroundColor = currentPfpColor;
+      const colorToApply = isEraserActive ? '#1e293b' : currentPfpColor;
+      pfpGridData[index] = colorToApply;
+      el.style.backgroundColor = colorToApply;
     }
 
     function setPfpColor(color) {
       currentPfpColor = color;
+      isEraserActive = false;
+
+      const eraserBtn = document.getElementById('pfp-eraser-btn');
+      if (eraserBtn) {
+        eraserBtn.style.backgroundColor = 'transparent';
+        eraserBtn.style.borderColor = 'var(--border-color)';
+      }
+
       document.getElementById('pfp-color-picker').value = color;
+    }
+
+    function toggleEraser() {
+      isEraserActive = !isEraserActive;
+      const eraserBtn = document.getElementById('pfp-eraser-btn');
+
+      if (isEraserActive) {
+        eraserBtn.style.backgroundColor = 'var(--accent-color)';
+        eraserBtn.style.borderColor = 'var(--accent-color)';
+      } else {
+        eraserBtn.style.backgroundColor = 'transparent';
+        eraserBtn.style.borderColor = 'var(--border-color)';
+      }
     }
 
     function clearPfpGrid() {
