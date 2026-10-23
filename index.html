@@ -714,6 +714,129 @@
       border-radius: 12px;
     }
 
+    /* GAMES TAB STYLING */
+    .games-lobby {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .game-card {
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-color);
+    }
+
+    .game-card h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .game-card p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    .game-arena {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+      overflow-y: auto;
+    }
+
+    .game-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--card-color);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* 5x5 Dots & Boxes SVG Board */
+    .dots-boxes-board {
+      width: 320px;
+      height: 320px;
+      background-color: var(--card-color);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .db-line {
+      stroke: var(--border-color);
+      stroke-width: 6;
+      stroke-linecap: round;
+      cursor: pointer;
+      transition: stroke 0.2s, stroke-width 0.2s;
+    }
+
+    .db-line:hover {
+      stroke: var(--accent-color);
+      stroke-width: 8;
+    }
+
+    .db-line.taken-p1 { stroke: #38bdf8 !important; stroke-width: 7; }
+    .db-line.taken-p2 { stroke: #f43f5e !important; stroke-width: 7; }
+
+    .db-dot {
+      fill: #f8fafc;
+      r: 6;
+    }
+
+    .db-box-text {
+      font-size: 14px;
+      font-weight: bold;
+      text-anchor: middle;
+      dominant-baseline: central;
+      user-select: none;
+    }
+
+    /* SIM Canvas Graph Board */
+    .sim-board-container {
+      width: 320px;
+      height: 320px;
+      background-color: var(--card-color);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      position: relative;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
     /* 10x10 PIXEL ART PFP MAKER STYLING */
     .pfp-maker-container {
       display: flex;
@@ -1003,6 +1126,7 @@
           📥 Inbox / DMs 
           <span class="badge-count" id="total-unread-badge" style="display: none;">0</span>
         </button>
+        <button class="sidebar-btn" id="nav-games-btn" onclick="switchView('games')">🎮 Games</button>
       </div>
 
       <div class="sidebar-section-title" style="margin-top: 0.5rem;">Preferences</div>
@@ -1123,6 +1247,81 @@
         </div>
       </div>
 
+      <!-- SCREEN 3: GAMES LOBBY & ARENA -->
+      <div class="view-screen" id="games-view" style="display: none;">
+        
+        <!-- Games Lobby Screen -->
+        <div id="games-lobby-screen" class="games-lobby">
+          <h3>🎮 Select a Game to Play</h3>
+          <div class="games-grid">
+            
+            <div class="game-card">
+              <h4>📦 5x5 Dots & Boxes</h4>
+              <p>Take turns connecting dots! Completing a 1x1 box earns a point and gives an extra turn. Most boxes wins!</p>
+              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('dots_and_boxes')">Challenge a Friend</button>
+            </div>
+
+            <div class="game-card">
+              <h4>🕸️ Game of SIM</h4>
+              <p>6 nodes, 15 lines. Take turns coloring lines. <strong>Misère Rule:</strong> The first player forced to form a triangle of their color LOSES!</p>
+              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('sim')">Challenge a Friend</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Active Game Arena Screen -->
+        <div id="games-arena-screen" class="game-arena" style="display: none;">
+          <div class="game-header-bar">
+            <div>
+              <strong id="active-game-title">Game</strong>
+              <div id="active-game-status" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.15rem;">Waiting for opponent...</div>
+            </div>
+            <button class="btn-secondary" onclick="leaveGameArena()">Quit Game</button>
+          </div>
+
+          <!-- Dots & Boxes Container -->
+          <div id="db-arena-container" style="display: none; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <div style="display: flex; gap: 1.5rem; font-size: 0.9rem; font-weight: 600;">
+              <span style="color: #38bdf8;" id="db-p1-score">P1: 0</span>
+              <span style="color: #f43f5e;" id="db-p2-score">P2: 0</span>
+            </div>
+            <svg class="dots-boxes-board" id="db-board-svg" viewBox="0 0 200 200"></svg>
+          </div>
+
+          <!-- SIM Container -->
+          <div id="sim-arena-container" style="display: none; flex-direction: column; align-items: center; gap: 0.75rem;">
+            <div class="sim-board-container">
+              <svg id="sim-board-svg" width="320" height="320" viewBox="0 0 320 320"></svg>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Game Challenge Select Modal -->
+  <div class="modal-overlay" id="game-challenge-modal">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 id="game-challenge-title">Challenge a Friend</h3>
+        <button class="close-btn" onclick="closeGameChallengeModal()">✕</button>
+      </div>
+
+      <div>
+        <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.4rem;">Select Opponent</label>
+        <select id="game-opponent-select" style="width: 100%;">
+          <option value="">-- Select Active Room User --</option>
+        </select>
+      </div>
+
+      <div class="modal-actions" style="justify-content: flex-end;">
+        <button class="btn-secondary" onclick="closeGameChallengeModal()">Cancel</button>
+        <button class="btn-primary" onclick="sendGameChallenge()">Send Invite 🎮</button>
+      </div>
     </div>
   </div>
 
@@ -1431,7 +1630,7 @@
     const userAvatars = new Map();
 
     // 10x10 PFP Grid + Eraser Logic + Picture PFP Logic
-    let currentPfpMode = 'pixel'; // 'pixel' or 'picture'
+    let currentPfpMode = 'pixel';
     let picturePfpData = '';
     let currentPfpColor = '#38bdf8';
     let isEraserActive = false;
@@ -1570,12 +1769,10 @@
     function renderPfpSvg(pfpData) {
       if (!pfpData) return '';
       
-      // Check if image URL or Base64 picture string
       if (pfpData.startsWith('data:image/') || pfpData.startsWith('http://') || pfpData.startsWith('https://')) {
         return `<img src="${pfpData}" class="pfp-avatar-img" style="object-fit: cover;" alt="PFP" />`;
       }
 
-      // 10x10 Pixel Grid SVG
       const colors = pfpData.split(',');
       if (colors.length !== 100) return '';
 
@@ -1616,17 +1813,25 @@
 
       document.getElementById('nav-public-btn').classList.toggle('active', view === 'public');
       document.getElementById('nav-inbox-btn').classList.toggle('active', view === 'inbox');
+      document.getElementById('nav-games-btn').classList.toggle('active', view === 'games');
 
       const pageTitle = document.getElementById('page-title');
       if (view === 'public') {
         document.getElementById('public-view').style.display = 'flex';
         document.getElementById('inbox-view').style.display = 'none';
+        document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
-      } else {
+      } else if (view === 'inbox') {
         document.getElementById('public-view').style.display = 'none';
         document.getElementById('inbox-view').style.display = 'flex';
+        document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `📥 Direct Messages`;
         loadInboxConversations();
+      } else if (view === 'games') {
+        document.getElementById('public-view').style.display = 'none';
+        document.getElementById('inbox-view').style.display = 'none';
+        document.getElementById('games-view').style.display = 'flex';
+        pageTitle.innerHTML = `🎮 Games Arcade`;
       }
     }
 
@@ -1663,6 +1868,7 @@
       closeProfileModal();
       loadMessages();
       subscribeToDMs();
+      subscribeToGameInvites();
     }
 
     function openProfileModal() {
@@ -1820,27 +2026,22 @@
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
 
-      // 1. Convert URL Links into Clickable <a> tags
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
       escaped = escaped.replace(urlRegex, function(url) {
         return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
       });
 
-      // 2. FIXED Color Tags Parser: Handles color names, hex, rgb/hsl, and cleans quotes
       escaped = escaped.replace(/\[color=(.*?)\](.*?)\[\/color\]/gi, function(match, colorVal, content) {
         let cleanColor = colorVal.replace(/&(quot|#039);|["']/g, '').trim();
         return `<span style="color: ${cleanColor};">${content}</span>`;
       });
 
-      // 3. Special Text Effects: [glow] and [rainbow]
       escaped = escaped.replace(/\[glow\](.*?)\[\/glow\]/gi, '<span class="msg-glow">$1</span>');
       escaped = escaped.replace(/\[rainbow\](.*?)\[\/rainbow\]/gi, '<span class="msg-rainbow">$1</span>');
 
-      // 4. Spoiler Tags: ||spoiler|| or [spoiler]text[/spoiler]
       escaped = escaped.replace(/\|\|(.*?)\|\|/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
       escaped = escaped.replace(/\[spoiler\](.*?)\[\/spoiler\]/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
 
-      // 5. Fonts: [pixel], [script], [serif], [mono], [gothic], [comic]
       escaped = escaped.replace(/\[pixel\](.*?)\[\/pixel\]/gi, '<span style="font-family: \'Press Start 2P\', monospace; font-size: 0.75em;">$1</span>');
       escaped = escaped.replace(/\[script\](.*?)\[\/script\]/gi, '<span style="font-family: \'Caveat\', cursive; font-size: 1.25em;">$1</span>');
       escaped = escaped.replace(/\[serif\](.*?)\[\/serif\]/gi, '<span style="font-family: \'Playfair Display\', serif;">$1</span>');
@@ -1848,7 +2049,6 @@
       escaped = escaped.replace(/\[gothic\](.*?)\[\/gothic\]/gi, '<span style="font-family: \'UnifrakturMaguntia\', serif; font-size: 1.25em;">$1</span>');
       escaped = escaped.replace(/\[comic\](.*?)\[\/comic\]/gi, '<span style="font-family: \'Comic Neue\', cursive; font-weight: 700;">$1</span>');
 
-      // 6. Standard Markdown Syntax
       escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
       escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
@@ -2292,6 +2492,407 @@
         .subscribe();
     }
 
+    // MULTIPLAYER GAMES ENGINE (DOTS & BOXES + SIM)
+    let selectedGameType = null;
+    let activeGameRoom = null;
+    let activeGameChannel = null;
+    let gameRole = null; // 'p1' or 'p2'
+    let currentTurnRole = 'p1';
+
+    // Dots & Boxes State
+    let dbHLines = Array(5).fill().map(() => Array(4).fill(null));
+    let dbVLines = Array(4).fill().map(() => Array(5).fill(null));
+    let dbBoxes = Array(4).fill().map(() => Array(4).fill(null));
+    let dbP1Score = 0;
+    let dbP2Score = 0;
+
+    // SIM State
+    let simEdges = {}; // e.g., "0-1": 'p1'
+    let simVerticesPos = [];
+
+    function openGameChallengeModal(gameType) {
+      selectedGameType = gameType;
+      const modal = document.getElementById('game-challenge-modal');
+      const title = document.getElementById('game-challenge-title');
+      title.textContent = gameType === 'dots_and_boxes' ? 'Challenge 5x5 Dots & Boxes' : 'Challenge Game of SIM';
+
+      const select = document.getElementById('game-opponent-select');
+      select.innerHTML = '<option value="">-- Select Active Room User --</option>';
+
+      knownUsers.forEach((name, hash) => {
+        if (hash !== currentUserHash) {
+          const opt = document.createElement('option');
+          opt.value = hash;
+          opt.textContent = `@${name}`;
+          select.appendChild(opt);
+        }
+      });
+
+      modal.style.display = 'flex';
+    }
+
+    function closeGameChallengeModal() {
+      document.getElementById('game-challenge-modal').style.display = 'none';
+    }
+
+    function sendGameChallenge() {
+      const recipientHash = document.getElementById('game-opponent-select').value;
+      if (!recipientHash) return alert("Please select an opponent!");
+
+      const roomCode = `game_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+      
+      const invitesChannel = supabaseClient.channel('game_invites_global');
+      invitesChannel.send({
+        type: 'broadcast',
+        event: 'invite',
+        payload: {
+          gameType: selectedGameType,
+          roomCode: roomCode,
+          hostName: currentUser,
+          hostHash: currentUserHash,
+          recipientHash: recipientHash
+        }
+      });
+
+      closeGameChallengeModal();
+      startActiveGame(selectedGameType, roomCode, 'p1', recipientHash);
+    }
+
+    function subscribeToGameInvites() {
+      const invitesChannel = supabaseClient.channel('game_invites_global');
+      invitesChannel.on('broadcast', { event: 'invite' }, payload => {
+        if (payload.recipientHash === currentUserHash) {
+          playNotificationSound();
+          const gameName = payload.gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
+          if (confirm(`🎮 @${payload.hostName} challenged you to a game of ${gameName}! Accept?`)) {
+            switchView('games');
+            startActiveGame(payload.gameType, payload.roomCode, 'p2', payload.hostHash);
+          }
+        }
+      }).subscribe();
+    }
+
+    function startActiveGame(gameType, roomCode, role, opponentHash) {
+      selectedGameType = gameType;
+      activeGameRoom = roomCode;
+      gameRole = role;
+      currentTurnRole = 'p1';
+
+      document.getElementById('games-lobby-screen').style.display = 'none';
+      document.getElementById('games-arena-screen').style.display = 'flex';
+
+      const titleEl = document.getElementById('active-game-title');
+      const statusEl = document.getElementById('active-game-status');
+      titleEl.textContent = gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
+
+      if (gameType === 'dots_and_boxes') {
+        document.getElementById('db-arena-container').style.display = 'flex';
+        document.getElementById('sim-arena-container').style.display = 'none';
+        initDotsAndBoxes();
+      } else {
+        document.getElementById('db-arena-container').style.display = 'none';
+        document.getElementById('sim-arena-container').style.display = 'flex';
+        initSIM();
+      }
+
+      if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
+      activeGameChannel = supabaseClient.channel(`game_room_${roomCode}`);
+
+      activeGameChannel.on('broadcast', { event: 'move' }, payload => {
+        if (selectedGameType === 'dots_and_boxes') {
+          handleDotsAndBoxesRemoteMove(payload);
+        } else {
+          handleSIMRemoteMove(payload);
+        }
+      }).subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          statusEl.textContent = role === 'p1' ? "Your Turn! (Player 1 - Blue)" : "Opponent's Turn (Player 1 - Blue)";
+        }
+      });
+    }
+
+    function updateGameTurnDisplay(turnRole) {
+      currentTurnRole = turnRole;
+      const statusEl = document.getElementById('active-game-status');
+      const isMyTurn = (turnRole === gameRole);
+      const roleColor = turnRole === 'p1' ? 'Blue' : 'Red';
+      statusEl.textContent = isMyTurn ? `Your Turn! (${roleColor})` : `Opponent's Turn (${roleColor})`;
+    }
+
+    function leaveGameArena() {
+      if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
+      document.getElementById('games-arena-screen').style.display = 'none';
+      document.getElementById('games-lobby-screen').style.display = 'flex';
+    }
+
+    /* --- 1. DOTS & BOXES ENGINE --- */
+    function initDotsAndBoxes() {
+      dbHLines = Array(5).fill().map(() => Array(4).fill(null));
+      dbVLines = Array(4).fill().map(() => Array(5).fill(null));
+      dbBoxes = Array(4).fill().map(() => Array(4).fill(null));
+      dbP1Score = 0;
+      dbP2Score = 0;
+      updateDBScoreDisplay();
+      renderDBBoard();
+    }
+
+    function updateDBScoreDisplay() {
+      document.getElementById('db-p1-score').textContent = `P1 (Blue): ${dbP1Score}`;
+      document.getElementById('db-p2-score').textContent = `P2 (Red): ${dbP2Score}`;
+    }
+
+    function renderDBBoard() {
+      const svg = document.getElementById('db-board-svg');
+      svg.innerHTML = '';
+      const step = 40;
+      const offset = 20;
+
+      // Render Boxes
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          if (dbBoxes[r][c]) {
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', offset + c * step + step / 2);
+            text.setAttribute('y', offset + r * step + step / 2);
+            text.setAttribute('class', 'db-box-text');
+            text.setAttribute('fill', dbBoxes[r][c] === 'p1' ? '#38bdf8' : '#f43f5e');
+            text.textContent = dbBoxes[r][c] === 'p1' ? 'P1' : 'P2';
+            svg.appendChild(text);
+          }
+        }
+      }
+
+      // Horizontal Lines
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 4; c++) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', offset + c * step);
+          line.setAttribute('y1', offset + r * step);
+          line.setAttribute('x2', offset + (c + 1) * step);
+          line.setAttribute('y2', offset + r * step);
+          let cls = 'db-line';
+          if (dbHLines[r][c] === 'p1') cls += ' taken-p1';
+          if (dbHLines[r][c] === 'p2') cls += ' taken-p2';
+          line.setAttribute('class', cls);
+          line.onclick = () => handleDBLineClick('h', r, c);
+          svg.appendChild(line);
+        }
+      }
+
+      // Vertical Lines
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 5; c++) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', offset + c * step);
+          line.setAttribute('y1', offset + r * step);
+          line.setAttribute('x2', offset + c * step);
+          line.setAttribute('y2', offset + (r + 1) * step);
+          let cls = 'db-line';
+          if (dbVLines[r][c] === 'p1') cls += ' taken-p1';
+          if (dbVLines[r][c] === 'p2') cls += ' taken-p2';
+          line.setAttribute('class', cls);
+          line.onclick = () => handleDBLineClick('v', r, c);
+          svg.appendChild(line);
+        }
+      }
+
+      // Dots
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', offset + c * step);
+          dot.setAttribute('cy', offset + r * step);
+          dot.setAttribute('class', 'db-dot');
+          svg.appendChild(dot);
+        }
+      }
+    }
+
+    function handleDBLineClick(dir, r, c) {
+      if (currentTurnRole !== gameRole) return;
+      if (dir === 'h' && dbHLines[r][c]) return;
+      if (dir === 'v' && dbVLines[r][c]) return;
+
+      applyDBMove(dir, r, c, gameRole);
+
+      activeGameChannel.send({
+        type: 'broadcast',
+        event: 'move',
+        payload: { dir, r, c, role: gameRole }
+      });
+    }
+
+    function handleDotsAndBoxesRemoteMove(payload) {
+      applyDBMove(payload.dir, payload.r, payload.c, payload.role);
+    }
+
+    function applyDBMove(dir, r, c, role) {
+      let madeBox = false;
+
+      if (dir === 'h') {
+        dbHLines[r][c] = role;
+        if (r > 0 && checkDBBox(r - 1, c, role)) madeBox = true;
+        if (r < 4 && checkDBBox(r, c, role)) madeBox = true;
+      } else {
+        dbVLines[r][c] = role;
+        if (c > 0 && checkDBBox(r, c - 1, role)) madeBox = true;
+        if (c < 4 && checkDBBox(r, c, role)) madeBox = true;
+      }
+
+      renderDBBoard();
+      updateDBScoreDisplay();
+
+      if (!madeBox) {
+        currentTurnRole = role === 'p1' ? 'p2' : 'p1';
+      }
+
+      updateGameTurnDisplay(currentTurnRole);
+      checkDBGameOver();
+    }
+
+    function checkDBBox(r, c, role) {
+      if (r < 0 || r >= 4 || c < 0 || c >= 4) return false;
+      if (dbBoxes[r][c]) return false;
+
+      if (dbHLines[r][c] && dbHLines[r + 1][c] && dbVLines[r][c] && dbVLines[r][c + 1]) {
+        dbBoxes[r][c] = role;
+        if (role === 'p1') dbP1Score++;
+        else dbP2Score++;
+        return true;
+      }
+      return false;
+    }
+
+    function checkDBGameOver() {
+      if (dbP1Score + dbP2Score === 16) {
+        let winnerMsg = "It's a Tie!";
+        if (dbP1Score > dbP2Score) winnerMsg = "Player 1 (Blue) Wins! 🎉";
+        if (dbP2Score > dbP1Score) winnerMsg = "Player 2 (Red) Wins! 🎉";
+        document.getElementById('active-game-status').textContent = `Game Over! ${winnerMsg}`;
+      }
+    }
+
+    /* --- 2. GAME OF SIM ENGINE --- */
+    function initSIM() {
+      simEdges = {};
+      const cx = 160, cy = 160, radius = 110;
+      simVerticesPos = [];
+
+      for (let i = 0; i < 6; i++) {
+        const angle = (i * 60 - 90) * (Math.PI / 180);
+        simVerticesPos.push({
+          x: cx + radius * Math.cos(angle),
+          y: cy + radius * Math.sin(angle)
+        });
+      }
+      renderSIMBoard();
+    }
+
+    function renderSIMBoard() {
+      const svg = document.getElementById('sim-board-svg');
+      svg.innerHTML = '';
+
+      // Draw Edges
+      for (let i = 0; i < 6; i++) {
+        for (let j = i + 1; j < 6; j++) {
+          const key = `${i}-${j}`;
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', simVerticesPos[i].x);
+          line.setAttribute('y1', simVerticesPos[i].y);
+          line.setAttribute('x2', simVerticesPos[j].x);
+          line.setAttribute('y2', simVerticesPos[j].y);
+
+          const owner = simEdges[key];
+          let stroke = '#334155';
+          let width = 3;
+
+          if (owner === 'p1') { stroke = '#38bdf8'; width = 5; }
+          if (owner === 'p2') { stroke = '#f43f5e'; width = 5; }
+
+          line.setAttribute('stroke', stroke);
+          line.setAttribute('stroke-width', width);
+          line.setAttribute('stroke-linecap', 'round');
+          line.style.cursor = owner ? 'default' : 'pointer';
+
+          line.onclick = () => handleSIMEdgeClick(i, j);
+          svg.appendChild(line);
+        }
+      }
+
+      // Draw Nodes
+      simVerticesPos.forEach((v, idx) => {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', v.x);
+        circle.setAttribute('cy', v.y);
+        circle.setAttribute('r', 12);
+        circle.setAttribute('fill', '#f8fafc');
+        circle.setAttribute('stroke', '#38bdf8');
+        circle.setAttribute('stroke-width', 3);
+        svg.appendChild(circle);
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', v.x);
+        text.setAttribute('y', v.y);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'central');
+        text.setAttribute('fill', '#0f172a');
+        text.setAttribute('font-weight', 'bold');
+        text.setAttribute('font-size', '12px');
+        text.textContent = idx + 1;
+        svg.appendChild(text);
+      });
+    }
+
+    function handleSIMEdgeClick(u, v) {
+      if (currentTurnRole !== gameRole) return;
+      const key = `${Math.min(u,v)}-${Math.max(u,v)}`;
+      if (simEdges[key]) return;
+
+      applySIMMove(u, v, gameRole);
+
+      activeGameChannel.send({
+        type: 'broadcast',
+        event: 'move',
+        payload: { u, v, role: gameRole }
+      });
+    }
+
+    function handleSIMRemoteMove(payload) {
+      applySIMMove(payload.u, payload.v, payload.role);
+    }
+
+    function applySIMMove(u, v, role) {
+      const key = `${Math.min(u,v)}-${Math.max(u,v)}`;
+      simEdges[key] = role;
+      renderSIMBoard();
+
+      if (checkSIMTriangle(role)) {
+        const loserName = role === 'p1' ? 'Player 1 (Blue)' : 'Player 2 (Red)';
+        const winnerName = role === 'p1' ? 'Player 2 (Red)' : 'Player 1 (Blue)';
+        document.getElementById('active-game-status').textContent = `Game Over! ${loserName} formed a triangle and lost! ${winnerName} Wins! 🎉`;
+        return;
+      }
+
+      currentTurnRole = role === 'p1' ? 'p2' : 'p1';
+      updateGameTurnDisplay(currentTurnRole);
+    }
+
+    function checkSIMTriangle(role) {
+      for (let i = 0; i < 6; i++) {
+        for (let j = i + 1; j < 6; j++) {
+          for (let k = j + 1; k < 6; k++) {
+            const e1 = simEdges[`${i}-${j}`];
+            const e2 = simEdges[`${j}-${k}`];
+            const e3 = simEdges[`${i}-${k}`];
+            if (e1 === role && e2 === role && e3 === role) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
     // Realtime Presence Setup
     const presenceChannel = supabaseClient.channel('chat_room_presence');
 
@@ -2370,6 +2971,7 @@
 
       await loadMessages();
       subscribeToDMs();
+      subscribeToGameInvites();
       checkFirstVisit();
     }
 
