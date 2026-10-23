@@ -38,7 +38,7 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Top Header */
+    /* Top Header Bar */
     .chat-header {
       padding: 0.75rem 1rem;
       background-color: var(--card-color);
@@ -740,7 +740,7 @@
     <div class="sidebar" id="sidebar">
       <div class="sidebar-section-title">Navigation</div>
       <div class="sidebar-nav">
-        <button class="sidebar-btn active" onclick="switchChannel('public')">💬 Public Chat</button>
+        <button class="sidebar-btn active" onclick="closeSidebar()">💬 Public Chat</button>
         <button class="sidebar-btn" onclick="openInboxModal(); closeSidebar();">📥 Direct Messages</button>
       </div>
 
@@ -824,7 +824,7 @@
           <span class="icon">📥</span>
           <div>
             <strong>Direct Messaging:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Click on any active online user in the sidebar to send a private Direct Message.</p>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Start private conversations with any room member directly from your Inbox or sidebar!</p>
           </div>
         </div>
       </div>
@@ -872,12 +872,22 @@
         <button class="close-btn" onclick="closeInboxModal()">✕</button>
       </div>
 
-      <!-- DM Conversations List -->
+      <!-- Inbox Main View -->
       <div id="inbox-view">
-        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem;">Select an active conversation or click an online user from the sidebar:</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+          <span style="font-size: 0.8rem; color: #94a3b8;">Recent Conversations</span>
+          <button class="btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="openNewDMMenu()">+ New DM</button>
+        </div>
         <div class="inbox-list" id="inbox-list">
           <p style="font-size: 0.85rem; color: #64748b;">No recent private conversations yet.</p>
         </div>
+      </div>
+
+      <!-- New DM Contacts Selection View -->
+      <div id="new-dm-view" style="display: none; flex-direction: column; gap: 0.6rem;">
+        <p style="font-size: 0.8rem; color: #94a3b8;">Pick a room member to start a chat:</p>
+        <div class="inbox-list" id="contacts-list"></div>
+        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start; margin-top: 0.4rem;">← Back</button>
       </div>
 
       <!-- Single DM Thread View -->
@@ -887,7 +897,7 @@
           <input type="text" id="dm-input" placeholder="Type a private message..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendDM()">
           <button class="btn-primary" onclick="sendDM()">Send</button>
         </div>
-        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start;">← Back to Conversations</button>
+        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start;">← Back to Inbox</button>
       </div>
     </div>
   </div>
@@ -992,7 +1002,10 @@
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
-    let activeDMTarget = null; // { name, hash }
+    let activeDMTarget = null;
+    
+    // Memory map storing known users: userHash -> displayName
+    const knownUsers = new Map();
 
     async function generateUserHash(name, pin) {
       const cleanName = (name || 'Anon').trim().toLowerCase();
@@ -1004,13 +1017,8 @@
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-
-    function closeSidebar() {
-      document.getElementById('sidebar').classList.remove('open');
-    }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
     async function saveProfileIdentity() {
       const name = modalUsernameInput.value.trim() || 'Anon';
@@ -1023,6 +1031,7 @@
       localStorage.setItem('chat_pin', currentPin);
 
       currentUserHash = await generateUserHash(currentUser, currentPin);
+      knownUsers.set(currentUserHash, currentUser);
       updatePresence(currentUser);
       closeProfileModal();
       loadMessages();
@@ -1035,14 +1044,8 @@
       profileModal.style.display = 'flex';
     }
 
-    function closeProfileModal() {
-      profileModal.style.display = 'none';
-    }
-
-    function openRulesModal() {
-      rulesModal.style.display = 'flex';
-    }
-
+    function closeProfileModal() { profileModal.style.display = 'none'; }
+    function openRulesModal() { rulesModal.style.display = 'flex'; }
     function closeRulesModal() {
       rulesModal.style.display = 'none';
       localStorage.setItem('chat_has_seen_rules', 'true');
@@ -1050,18 +1053,13 @@
 
     function proceedToIdentityModal() {
       closeRulesModal();
-      if (!localStorage.getItem('chat_username')) {
-        openProfileModal();
-      }
+      if (!localStorage.getItem('chat_username')) openProfileModal();
     }
 
     function checkFirstVisit() {
       const hasSeen = localStorage.getItem('chat_has_seen_rules');
-      if (!hasSeen) {
-        openRulesModal();
-      } else if (!localStorage.getItem('chat_username')) {
-        openProfileModal();
-      }
+      if (!hasSeen) openRulesModal();
+      else if (!localStorage.getItem('chat_username')) openProfileModal();
     }
 
     function playNotificationSound() {
@@ -1099,9 +1097,7 @@
     function getUserColor(hash) {
       if (!hash) return userColorPalette[0];
       let num = 0;
-      for (let i = 0; i < hash.length; i++) {
-        num += hash.charCodeAt(i);
-      }
+      for (let i = 0; i < hash.length; i++) num += hash.charCodeAt(i);
       return userColorPalette[num % userColorPalette.length];
     }
 
@@ -1134,11 +1130,9 @@
     function applyPreset(name) {
       const preset = vocaloidPresets[name];
       if (!preset) return;
-
       for (const [varName, colorVal] of Object.entries(preset)) {
         document.documentElement.style.setProperty(varName, colorVal);
       }
-
       localStorage.setItem('chat_theme_colors', JSON.stringify(preset));
       loadSavedTheme();
     }
@@ -1191,6 +1185,8 @@
     }
 
     function appendMessage(id, user, userHash, text, createdAt) {
+      if (userHash && user) knownUsers.set(userHash, user);
+
       if (id && document.getElementById(`msg-${id}`)) return;
 
       const isMe = userHash && userHash === currentUserHash;
@@ -1278,7 +1274,10 @@
       const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
       if (data) {
         chatDiv.innerHTML = '';
-        data.forEach(msg => appendMessage(msg.id, msg.username || 'Anon', msg.user_hash, msg.content, msg.created_at));
+        data.forEach(msg => {
+          if (msg.user_hash && msg.username) knownUsers.set(msg.user_hash, msg.username);
+          appendMessage(msg.id, msg.username || 'Anon', msg.user_hash, msg.content, msg.created_at);
+        });
         scrollToBottom();
       }
     }
@@ -1301,7 +1300,7 @@
       if (error) alert("Error sending message: " + error.message);
     }
 
-    // Direct Messages & Inbox Logic
+    // Direct Messages & Inbox System
     function openInboxModal() {
       inboxModal.style.display = 'flex';
       loadInboxConversations();
@@ -1314,9 +1313,38 @@
 
     function backToInboxList() {
       document.getElementById('inbox-view').style.display = 'block';
+      document.getElementById('new-dm-view').style.display = 'none';
       document.getElementById('dm-thread-view').style.display = 'none';
       document.getElementById('inbox-title').textContent = 'Direct Messages 📥';
       activeDMTarget = null;
+    }
+
+    function openNewDMMenu() {
+      document.getElementById('inbox-view').style.display = 'none';
+      document.getElementById('new-dm-view').style.display = 'flex';
+      document.getElementById('inbox-title').textContent = 'Start a New DM 💬';
+
+      const contactsList = document.getElementById('contacts-list');
+      contactsList.innerHTML = '';
+
+      let availableCount = 0;
+      knownUsers.forEach((name, hash) => {
+        if (hash !== currentUserHash) {
+          availableCount++;
+          const item = document.createElement('div');
+          item.className = 'inbox-item';
+          item.onclick = () => startDMWith(name, hash);
+          item.innerHTML = `
+            <strong style="color: ${getUserColor(hash)}">@${escapeHtml(name)}</strong>
+            <span style="font-size: 0.75rem; color: var(--accent-color);">Start Chat →</span>
+          `;
+          contactsList.appendChild(item);
+        }
+      });
+
+      if (availableCount === 0) {
+        contactsList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No room contacts found yet. Have your friends type a message in the public chat to find them here!</p>`;
+      }
     }
 
     async function startDMWith(userName, userHash) {
@@ -1324,6 +1352,7 @@
       activeDMTarget = { name: userName, hash: userHash };
       
       document.getElementById('inbox-view').style.display = 'none';
+      document.getElementById('new-dm-view').style.display = 'none';
       document.getElementById('dm-thread-view').style.display = 'flex';
       document.getElementById('inbox-title').textContent = `DM with @${userName}`;
       openInboxModal();
@@ -1341,7 +1370,7 @@
       inboxList.innerHTML = '';
 
       if (!data || data.length === 0) {
-        inboxList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No direct messages yet. Click an online user in the sidebar to start a chat!</p>`;
+        inboxList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No recent private conversations yet.</p>`;
         return;
       }
 
@@ -1350,6 +1379,10 @@
         const isMe = dm.sender_hash === currentUserHash;
         const partnerHash = isMe ? dm.recipient_hash : dm.sender_hash;
         const partnerName = isMe ? dm.recipient_name : dm.sender_name;
+
+        if (partnerHash && partnerName) {
+          knownUsers.set(partnerHash, partnerName);
+        }
 
         if (!partners.has(partnerHash)) {
           partners.set(partnerHash, { name: partnerName, lastMsg: dm.content, time: dm.created_at });
@@ -1462,10 +1495,11 @@
         listContainer.innerHTML = '';
 
         users.forEach(u => {
+          if (u.user_hash && u.user) knownUsers.set(u.user_hash, u.user);
           const uColor = getUserColor(u.user_hash || u.user);
           const item = document.createElement('div');
           item.className = 'presence-user-item';
-          item.onclick = () => startDMWith(u.user, u.user_hash);
+          item.onclick = () => { closeSidebar(); startDMWith(u.user, u.user_hash); };
           item.innerHTML = `<span class="status-dot" style="width: 7px; height: 7px; background-color: ${uColor}"></span> ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
           listContainer.appendChild(item);
         });
@@ -1492,6 +1526,7 @@
       currentUser = localStorage.getItem('chat_username') || 'Anon';
       currentPin = localStorage.getItem('chat_pin') || '0000';
       currentUserHash = await generateUserHash(currentUser, currentPin);
+      knownUsers.set(currentUserHash, currentUser);
       await loadMessages();
       subscribeToDMs();
       checkFirstVisit();
