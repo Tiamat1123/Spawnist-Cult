@@ -1173,9 +1173,9 @@
             <td><span style="font-family: 'Comic Neue', cursive; font-weight: 700;">Casual</span></td>
           </tr>
           <tr>
-            <td><strong>Custom Color</strong></td>
-            <td><span class="guide-code-badge">[color=red]text[/color]</span></td>
-            <td><span style="color: #ef4444; font-weight: 600;">Red Text</span></td>
+            <td><strong>Color Name or Hex</strong></td>
+            <td><span class="guide-code-badge">[color=cyan]text[/color]</span></td>
+            <td><span style="color: cyan; font-weight: 600;">Cyan Text</span></td>
           </tr>
           <tr>
             <td><strong>Neon Glow</strong></td>
@@ -1232,7 +1232,7 @@
           <span class="icon">✨</span>
           <div>
             <strong>Rich Formatting & Custom Fonts:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Click the ✨ Formatting button in the top bar to learn about rainbow, glow, colors, and font brackets!</p>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Click the ✨ Formatting button in the top bar to learn about rainbow, glow, color names, and font brackets!</p>
           </div>
         </div>
 
@@ -1741,8 +1741,8 @@
         return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
       });
 
-      // Custom Color Tags: [color=red]text[/color] or [color=#38bdf8]text[/color]
-      escaped = escaped.replace(/\[color=(.*?)\](.*?)\[\/color\]/gi, '<span style="color: $1;">$2</span>');
+      // Custom Color Tags: [color=red], [color=cyan], [color=#38bdf8], [color=rgb(255,0,0)]
+      escaped = escaped.replace(/\[color=([#a-zA-Z0-9(),\s]+)\](.*?)\[\/color\]/gi, '<span style="color: $1;">$2</span>');
 
       // Special Text Effects: [glow] and [rainbow]
       escaped = escaped.replace(/\[glow\](.*?)\[\/glow\]/gi, '<span class="msg-glow">$1</span>');
