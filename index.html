@@ -121,6 +121,7 @@
     .msg {
       background-color: var(--friend-msg-bg);
       border: 1px solid var(--border-color);
+      border-left: 4px solid var(--user-accent-color, var(--accent-color));
       padding: 0.75rem 1rem;
       border-radius: 12px;
       max-width: 75%;
@@ -140,6 +141,7 @@
       align-self: flex-end;
       background-color: var(--my-msg-bg);
       border-color: var(--my-msg-bg);
+      border-left: 1px solid var(--my-msg-bg);
     }
 
     .msg.user-me .username {
@@ -165,7 +167,7 @@
 
     .username {
       font-weight: 600;
-      color: var(--accent-color);
+      color: var(--user-accent-color, var(--accent-color));
       font-size: 0.825rem;
     }
 
@@ -590,7 +592,7 @@
           <button class="preset-btn preset-miku" onclick="applyPreset('miku')">🎵 Miku</button>
           <button class="preset-btn preset-rinlen" onclick="applyPreset('rinlen')">🍌 Rin & Len</button>
           <button class="preset-btn preset-luka" onclick="applyPreset('luka')">🌸 Luka</button>
-          <button class="preset-btn preset-meiko" onclick="applyPreset('meiko')">🍷 MEIKO</button>
+          <button class="preset-btn preset-teto" onclick="applyPreset('teto')">🥖 Teto</button>
           <button class="preset-btn preset-kaito" onclick="applyPreset('kaito')">🍨 KAITO</button>
           <button class="preset-btn preset-gumi" onclick="applyPreset('gumi')">🥕 GUMI</button>
         </div>
@@ -628,7 +630,7 @@
         </div>
 
         <div class="color-setting-row" style="margin-top: 0.5rem;">
-          <label for="picker-accent">Name Accent Color</label>
+          <label for="picker-accent">Fallback Accent Color</label>
           <div class="color-picker-wrapper">
             <input type="color" id="picker-accent" value="#38bdf8" onchange="updateColor('--accent-color', this.value)">
           </div>
@@ -676,6 +678,24 @@
 
     let pendingDeleteId = null;
 
+    // Palette of vibrant colors for distinct user names & left borders
+    const userColorPalette = [
+      '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
+      '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
+    ];
+
+    // Generate a consistent color based on user name string
+    function getUserColor(username) {
+      if (!username) return userColorPalette[0];
+      let hash = 0;
+      const cleanName = username.trim().toLowerCase();
+      for (let i = 0; i < cleanName.length; i++) {
+        hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const index = Math.abs(hash) % userColorPalette.length;
+      return userColorPalette[index];
+    }
+
     const defaultTheme = {
       '--bg-color': '#0f172a',
       '--card-color': '#1e293b',
@@ -714,7 +734,7 @@
         '--friend-msg-bg': '#2e1722',
         '--accent-color': '#ffbacc'
       },
-      meiko: {
+      teto: {
         '--bg-color': '#1a0808',
         '--card-color': '#2e0e0e',
         '--border-color': '#4d1717',
@@ -837,6 +857,10 @@
       msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
       if (id) msgDiv.id = `msg-${id}`;
 
+      // Set user unique accent color
+      const userColor = getUserColor(user);
+      msgDiv.style.setProperty('--user-accent-color', userColor);
+
       const formattedTime = formatTime(createdAt);
 
       let contentHtml = '';
@@ -846,7 +870,6 @@
         contentHtml = `<div class="msg-content">${escapeHtml(text)}</div>`;
       }
 
-      // Show delete button on all messages
       const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
 
       msgDiv.innerHTML = `
@@ -873,10 +896,8 @@
 
     function promptDelete(id, isMe) {
       if (isMe) {
-        // Direct delete for messages sent in current session
         executeDelete(id);
       } else {
-        // Show confirmation popup for other messages/devices
         pendingDeleteId = id;
         deleteModal.style.display = 'flex';
       }
