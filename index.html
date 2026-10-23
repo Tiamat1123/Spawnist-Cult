@@ -121,7 +121,7 @@
     .msg {
       background-color: var(--friend-msg-bg);
       border: 1px solid var(--border-color);
-      border-left: 4px solid var(--user-accent-color, var(--accent-color));
+      border-left: 5px solid var(--user-accent-color, var(--accent-color)) !important;
       padding: 0.75rem 1rem;
       border-radius: 12px;
       max-width: 75%;
@@ -141,11 +141,11 @@
       align-self: flex-end;
       background-color: var(--my-msg-bg);
       border-color: var(--my-msg-bg);
-      border-left: 1px solid var(--my-msg-bg);
+      border-left: 1px solid var(--my-msg-bg) !important;
     }
 
     .msg.user-me .username {
-      color: #ffffff;
+      color: #ffffff !important;
     }
 
     .msg.user-me .timestamp {
@@ -166,9 +166,9 @@
     }
 
     .username {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--user-accent-color, var(--accent-color));
-      font-size: 0.825rem;
+      font-size: 0.85rem;
     }
 
     .timestamp-wrapper {
@@ -426,7 +426,6 @@
       justify-content: center;
       gap: 0.35rem;
       transition: transform 0.1s, opacity 0.2s;
-      color: #ffffff;
     }
 
     .preset-btn:hover {
@@ -435,12 +434,12 @@
     }
 
     /* Vocaloid Presets Styling */
-    .preset-miku { background-color: #39C5BB; color: #000; border-color: #39C5BB; }
-    .preset-rinlen { background-color: #FFE600; color: #000; border-color: #FFE600; }
-    .preset-luka { background-color: #FFBACC; color: #000; border-color: #FFBACC; }
-    .preset-teto { background-color: #D80000; color: #fff; border-color: #D80000; }
-    .preset-kaito { background-color: #0040FF; color: #fff; border-color: #0040FF; }
-    .preset-gumi { background-color: #39D02B; color: #000; border-color: #39D02B; }
+    .preset-miku { background-color: #39C5BB !important; color: #000000 !important; border-color: #39C5BB !important; }
+    .preset-rinlen { background-color: #FFE600 !important; color: #000000 !important; border-color: #FFE600 !important; }
+    .preset-luka { background-color: #FFBACC !important; color: #000000 !important; border-color: #FFBACC !important; }
+    .preset-teto { background-color: #D80000 !important; color: #ffffff !important; border-color: #D80000 !important; }
+    .preset-kaito { background-color: #0040FF !important; color: #ffffff !important; border-color: #0040FF !important; }
+    .preset-gumi { background-color: #39D02B !important; color: #000000 !important; border-color: #39D02B !important; }
 
     .color-setting-row {
       display: flex;
@@ -678,7 +677,7 @@
 
     let pendingDeleteId = null;
 
-    // Palette of vibrant colors for distinct user names & left borders
+    // Palette of vibrant distinct user colors
     const userColorPalette = [
       '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
       '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
@@ -874,7 +873,7 @@
 
       msgDiv.innerHTML = `
         <div class="msg-header">
-          <span class="username">${escapeHtml(user)}</span>
+          <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
           <div class="timestamp-wrapper">
             <span class="timestamp">${formattedTime}</span>
             ${deleteBtnHtml}
