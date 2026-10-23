@@ -308,6 +308,12 @@
       margin-bottom: 0.2rem;
     }
 
+    .user-info-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
     .username {
       font-weight: 700;
       color: var(--user-accent-color, var(--accent-color));
@@ -636,6 +642,69 @@
       border: 1px solid var(--border-color);
       padding: 1.5rem;
       border-radius: 12px;
+    }
+
+    /* 10x10 PIXEL ART PFP MAKER STYLING */
+    .pfp-maker-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      background-color: var(--bg-color);
+      padding: 0.85rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .pfp-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 18px);
+      grid-template-rows: repeat(10, 18px);
+      gap: 1px;
+      background-color: var(--border-color);
+      padding: 1px;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pfp-pixel {
+      width: 18px;
+      height: 18px;
+      background-color: #1e293b;
+      transition: background-color 0.1s;
+    }
+
+    .pfp-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .pfp-swatches {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .pfp-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+    }
+
+    .pfp-avatar-img {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: middle;
+      image-rendering: pixelated;
+      background-color: #1e293b;
+      flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
@@ -979,10 +1048,10 @@
         </div>
 
         <div class="rules-list-item">
-          <span class="icon">📥</span>
+          <span class="icon">🎨</span>
           <div>
-            <strong>Full-Screen Direct Messaging:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Switch seamlessly between the Public Chatroom and your private Email-Style Inbox!</p>
+            <strong>Pixel Avatar Creator:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Design your custom 10x10 pixel art avatar in identity setup!</p>
           </div>
         </div>
       </div>
@@ -993,17 +1062,13 @@
     </div>
   </div>
 
-  <!-- Profile Modal -->
+  <!-- Profile Setup Modal + 10x10 PFP MAKER -->
   <div class="modal-overlay" id="profile-modal">
-    <div class="modal-card" style="max-width: 420px;">
+    <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
-        <h3>Setup Identity 👤</h3>
+        <h3>Setup Identity & Custom PFP 🎨</h3>
         <button class="close-btn" onclick="closeProfileModal()">✕</button>
       </div>
-
-      <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
-        Enter your display name and secret 4-digit PIN to sync across phones and computers!
-      </p>
 
       <div class="identity-form">
         <div>
@@ -1013,6 +1078,28 @@
         <div>
           <label for="modal-pin">4-Digit PIN</label>
           <input type="text" id="modal-pin" maxlength="4" placeholder="1234" style="width: 100%; margin-top: 0.3rem; letter-spacing: 0.15em; text-align: center;">
+        </div>
+
+        <!-- 10x10 Pixel Art PFP Maker -->
+        <div>
+          <label>Design Pixel Avatar (10x10)</label>
+          <div class="pfp-maker-container" style="margin-top: 0.3rem;">
+            <div class="pfp-grid" id="pfp-grid"></div>
+            <div class="pfp-controls">
+              <div class="pfp-swatches">
+                <div class="pfp-swatch" style="background-color: #38bdf8;" onclick="setPfpColor('#38bdf8')"></div>
+                <div class="pfp-swatch" style="background-color: #f43f5e;" onclick="setPfpColor('#f43f5e')"></div>
+                <div class="pfp-swatch" style="background-color: #34d399;" onclick="setPfpColor('#34d399')"></div>
+                <div class="pfp-swatch" style="background-color: #fbbf24;" onclick="setPfpColor('#fbbf24')"></div>
+                <div class="pfp-swatch" style="background-color: #ffffff;" onclick="setPfpColor('#ffffff')"></div>
+                <div class="pfp-swatch" style="background-color: #000000;" onclick="setPfpColor('#000000')"></div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <input type="color" id="pfp-color-picker" value="#38bdf8" onchange="setPfpColor(this.value)">
+                <button class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="clearPfpGrid()">Clear</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1124,9 +1211,83 @@
     let currentView = 'public';
     let activeDMTarget = null;
     
-    // Unread DM counters map: partnerHash -> count
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
+    const userAvatars = new Map(); // userHash -> pixelString
+
+    // 10x10 PFP Grid Logic
+    let currentPfpColor = '#38bdf8';
+    let pfpGridData = Array(100).fill('#1e293b');
+    let isDrawingPfp = false;
+
+    function initPfpGrid() {
+      const gridContainer = document.getElementById('pfp-grid');
+      gridContainer.innerHTML = '';
+
+      for (let i = 0; i < 100; i++) {
+        const pixel = document.createElement('div');
+        pixel.className = 'pfp-pixel';
+        pixel.dataset.index = i;
+        pixel.style.backgroundColor = pfpGridData[i] || '#1e293b';
+
+        pixel.addEventListener('mousedown', (e) => {
+          isDrawingPfp = true;
+          paintPixel(i, pixel);
+        });
+
+        pixel.addEventListener('mouseenter', () => {
+          if (isDrawingPfp) paintPixel(i, pixel);
+        });
+
+        gridContainer.appendChild(pixel);
+      }
+
+      window.addEventListener('mouseup', () => { isDrawingPfp = false; });
+    }
+
+    function paintPixel(index, el) {
+      pfpGridData[index] = currentPfpColor;
+      el.style.backgroundColor = currentPfpColor;
+    }
+
+    function setPfpColor(color) {
+      currentPfpColor = color;
+      document.getElementById('pfp-color-picker').value = color;
+    }
+
+    function clearPfpGrid() {
+      pfpGridData = Array(100).fill('#1e293b');
+      const pixels = document.querySelectorAll('.pfp-pixel');
+      pixels.forEach(p => p.style.backgroundColor = '#1e293b');
+    }
+
+    function getPfpString() {
+      return pfpGridData.join(',');
+    }
+
+    function loadPfpString(str) {
+      if (!str) return;
+      const parts = str.split(',');
+      if (parts.length === 100) {
+        pfpGridData = parts;
+        const pixels = document.querySelectorAll('.pfp-pixel');
+        pixels.forEach((p, idx) => p.style.backgroundColor = pfpGridData[idx]);
+      }
+    }
+
+    function renderPfpSvg(pixelStr) {
+      if (!pixelStr) return '';
+      const colors = pixelStr.split(',');
+      if (colors.length !== 100) return '';
+
+      let rects = '';
+      for (let i = 0; i < 100; i++) {
+        const x = i % 10;
+        const y = Math.floor(i / 10);
+        rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${colors[i]}"/>`;
+      }
+      return `<svg class="pfp-avatar-img" viewBox="0 0 10 10">${rects}</svg>`;
+    }
 
     // Typing Indicators state
     let publicTypingTimeout = null;
@@ -1183,15 +1344,19 @@
     async function saveProfileIdentity() {
       const name = modalUsernameInput.value.trim() || 'Anon';
       const pin = modalPinInput.value.trim() || '0000';
+      const pfpStr = getPfpString();
 
       currentUser = name;
       currentPin = pin;
 
       localStorage.setItem('chat_username', currentUser);
       localStorage.setItem('chat_pin', currentPin);
+      localStorage.setItem('chat_pfp_string', pfpStr);
 
       currentUserHash = await generateUserHash(currentUser, currentPin);
       knownUsers.set(currentUserHash, currentUser);
+      userAvatars.set(currentUserHash, pfpStr);
+
       updatePresence(currentUser);
       closeProfileModal();
       loadMessages();
@@ -1201,6 +1366,8 @@
     function openProfileModal() {
       modalUsernameInput.value = currentUser;
       modalPinInput.value = currentPin;
+      const savedPfp = localStorage.getItem('chat_pfp_string');
+      if (savedPfp) loadPfpString(savedPfp);
       profileModal.style.display = 'flex';
     }
 
@@ -1364,9 +1531,14 @@
 
       const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
 
+      const pfpSvg = renderPfpSvg(userAvatars.get(userHash));
+
       msgDiv.innerHTML = `
         <div class="msg-header">
-          <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
+          <div class="user-info-row">
+            ${pfpSvg}
+            <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
+          </div>
           <div class="timestamp-wrapper">
             <span class="timestamp">${formatTime(createdAt)}</span>
             ${deleteBtnHtml}
@@ -1461,9 +1633,7 @@
       if (error) alert("Error sending message: " + error.message);
     }
 
-    // ===================================================
-    // TYPING INDICATORS (REALTIME BROADCAST)
-    // ===================================================
+    // TYPING INDICATORS
     const publicTypingChannel = supabaseClient.channel('public_chat_typing');
     
     publicTypingChannel.on('broadcast', { event: 'typing' }, payload => {
@@ -1521,9 +1691,7 @@
       }
     }
 
-    // ===================================================
     // FULL-SCREEN INBOX & UNREAD DM COUNTERS
-    // ===================================================
     async function loadInboxConversations() {
       if (!currentUserHash) return;
 
@@ -1564,13 +1732,14 @@
 
       partners.forEach((info, hash) => {
         const unreadCount = unreadDMCounters.get(hash) || 0;
+        const pfpSvg = renderPfpSvg(userAvatars.get(hash));
         const item = document.createElement('div');
         item.className = `inbox-thread-item ${activeDMTarget && activeDMTarget.hash === hash ? 'active' : ''}`;
         item.onclick = () => selectDMThread(info.name, hash);
         item.innerHTML = `
           <div class="inbox-thread-top">
-            <span class="inbox-thread-name" style="color: ${getUserColor(hash)}">
-              @${escapeHtml(info.name)}
+            <span class="inbox-thread-name" style="color: ${getUserColor(hash)}; display: flex; align-items: center; gap: 0.35rem;">
+              ${pfpSvg} @${escapeHtml(info.name)}
               ${unreadCount > 0 ? `<span class="thread-unread-badge">${unreadCount}</span>` : ''}
             </span>
             <span class="inbox-thread-time">${formatTime(info.time)}</span>
@@ -1585,7 +1754,6 @@
       if (userHash === currentUserHash) return alert("You cannot DM yourself!");
       activeDMTarget = { name: userName, hash: userHash };
 
-      // Clear unread count for this thread
       unreadDMCounters.delete(userHash);
       updateTotalUnreadBadge();
 
@@ -1595,7 +1763,8 @@
       const threadView = document.getElementById('inbox-active-thread');
       threadView.style.display = 'flex';
 
-      document.getElementById('active-thread-title').innerHTML = `<span style="color: ${getUserColor(userHash)}">@${escapeHtml(userName)}</span>`;
+      const pfpSvg = renderPfpSvg(userAvatars.get(userHash));
+      document.getElementById('active-thread-title').innerHTML = `${pfpSvg} <span style="color: ${getUserColor(userHash)}">@${escapeHtml(userName)}</span>`;
       
       if (window.innerWidth <= 768) {
         document.getElementById('inbox-main-pane').classList.add('active-mobile');
@@ -1665,7 +1834,6 @@
       }
     }
 
-    // Compose View Handling
     function openComposeView() {
       activeDMTarget = null;
       document.getElementById('inbox-empty-state').style.display = 'none';
@@ -1760,6 +1928,7 @@
       presenceChannel.track({
         user: name || 'Anon',
         user_hash: currentUserHash,
+        pfp: getPfpString(),
         online_at: new Date().toISOString()
       });
     }
@@ -1782,14 +1951,17 @@
 
         users.forEach(u => {
           if (u.user_hash && u.user) knownUsers.set(u.user_hash, u.user);
+          if (u.pfp) userAvatars.set(u.user_hash, u.pfp);
+
           const uColor = getUserColor(u.user_hash || u.user);
+          const pfpSvg = renderPfpSvg(u.pfp);
           const item = document.createElement('div');
           item.className = 'presence-user-item';
           item.onclick = () => { 
             switchView('inbox');
             selectDMThread(u.user, u.user_hash);
           };
-          item.innerHTML = `<span class="status-dot" style="width: 7px; height: 7px; background-color: ${uColor}"></span> ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
+          item.innerHTML = `${pfpSvg} ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
           listContainer.appendChild(item);
         });
       })
@@ -1812,10 +1984,19 @@
 
     async function init() {
       loadSavedTheme();
+      initPfpGrid();
+      
       currentUser = localStorage.getItem('chat_username') || 'Anon';
       currentPin = localStorage.getItem('chat_pin') || '0000';
+      const savedPfp = localStorage.getItem('chat_pfp_string');
+
       currentUserHash = await generateUserHash(currentUser, currentPin);
       knownUsers.set(currentUserHash, currentUser);
+      if (savedPfp) {
+        userAvatars.set(currentUserHash, savedPfp);
+        loadPfpString(savedPfp);
+      }
+
       await loadMessages();
       subscribeToDMs();
       checkFirstVisit();
