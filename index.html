@@ -17,166 +17,279 @@
       --accent-color: #38bdf8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     html, body {
-      height: 100dvh; width: 100vw;
+      height: 100dvh;
+      width: 100vw;
       overflow: hidden;
       background-color: var(--bg-color);
       color: var(--text-color);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    body { display: flex; flex-direction: column; transition: background-color 0.2s, color 0.2s; }
+    body {
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
 
+    /* Top Header Bar */
     .chat-header {
       padding: 0.75rem 1rem;
       background-color: var(--card-color);
       border-bottom: 1px solid var(--border-color);
-      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      z-index: 20; flex-shrink: 0;
+      z-index: 20;
+      flex-shrink: 0;
     }
 
     .chat-header h2 {
-      font-size: 1.1rem; font-weight: 700; color: var(--text-color);
-      display: flex; align-items: center; gap: 0.5rem;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .status-dot {
-      width: 9px; height: 9px; background-color: #22c55e;
-      border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #22c55e; flex-shrink: 0;
+      width: 9px;
+      height: 9px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px #22c55e;
+      flex-shrink: 0;
     }
 
-    .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
     .icon-btn {
-      background: none; border: 1px solid var(--border-color); color: var(--text-color);
-      padding: 0.4rem 0.65rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
-      display: flex; align-items: center; gap: 0.35rem; transition: background-color 0.2s;
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 0.4rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background-color 0.2s;
     }
 
-    .icon-btn:hover { background-color: var(--border-color); }
+    .icon-btn:hover {
+      background-color: var(--border-color);
+    }
 
-    .app-layout { flex: 1; display: flex; position: relative; overflow: hidden; }
+    .app-layout {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
 
+    /* Sidebar Navigation */
     .sidebar-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); z-index: 30; display: none; backdrop-filter: blur(2px);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 30;
+      display: none;
+      backdrop-filter: blur(2px);
     }
 
     .sidebar {
-      width: 240px; background-color: var(--card-color);
+      width: 240px;
+      background-color: var(--card-color);
       border-right: 1px solid var(--border-color);
-      display: flex; flex-direction: column; gap: 1rem; padding: 1rem;
-      z-index: 35; transition: transform 0.25s ease; flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      z-index: 35;
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
-      .sidebar { position: absolute; top: 0; left: 0; height: 100%; transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar.open ~ .sidebar-overlay { display: block; }
+      .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar.open ~ .sidebar-overlay {
+        display: block;
+      }
     }
 
     .sidebar-section-title {
-      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
-      color: #94a3b8; font-weight: 700; margin-bottom: 0.4rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
     }
 
-    .sidebar-nav { display: flex; flex-direction: column; gap: 0.4rem; }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
 
     .sidebar-btn {
-      background: none; border: 1px solid transparent; color: var(--text-color);
-      padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 500;
-      cursor: pointer; display: flex; align-items: center; gap: 0.6rem; text-align: left;
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-color);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-align: left;
       transition: background-color 0.2s, border-color 0.2s;
     }
 
-    .sidebar-btn:hover { background-color: var(--border-color); }
-    .sidebar-btn.active { background-color: var(--border-color); border-color: var(--accent-color); }
-
-    .badge-count {
-      background: #ef4444; color: #ffffff; font-size: 0.7rem; font-weight: 700;
-      padding: 0.1rem 0.45rem; border-radius: 10px; margin-left: auto;
+    .sidebar-btn:hover {
+      background-color: var(--border-color);
     }
 
-    .presence-container { margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 0.75rem; }
+    .sidebar-btn.active {
+      background-color: var(--border-color);
+      border-color: var(--accent-color);
+    }
+
+    .badge-count {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    .presence-container {
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+    }
 
     .presence-list {
-      display: flex; flex-direction: column; gap: 0.4rem;
-      max-height: 160px; overflow-y: auto; margin-top: 0.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 160px;
+      overflow-y: auto;
+      margin-top: 0.4rem;
     }
 
     .presence-user-item {
-      font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;
-      font-weight: 500; padding: 0.3rem 0.4rem; border-radius: 6px; cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      padding: 0.3rem 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
-    .presence-user-item:hover { background-color: var(--border-color); }
-
-    .view-container { flex: 1; display: flex; position: relative; overflow: hidden; }
-
-    .inbox-container { flex: 1; display: flex; height: 100%; width: 100%; overflow: hidden; background-color: var(--bg-color); }
-
-    .inbox-sidebar {
-      width: 320px; background-color: var(--card-color);
-      border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0;
+    .presence-user-item:hover {
+      background-color: var(--border-color);
     }
 
-    .inbox-sidebar-header { padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.75rem; }
-
-    .inbox-thread-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-
-    .inbox-thread-item {
-      padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color);
-      cursor: pointer; display: flex; flex-direction: column; gap: 0.25rem;
-      transition: background-color 0.15s; position: relative;
+    /* Views */
+    .view-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
     }
 
-    .inbox-thread-item:hover, .inbox-thread-item.active { background-color: var(--border-color); }
-
-    .inbox-thread-top { display: flex; justify-content: space-between; align-items: center; }
-
-    .inbox-thread-name { font-weight: 600; font-size: 0.9rem; }
-
-    .inbox-thread-time { font-size: 0.7rem; color: #94a3b8; }
-
-    .inbox-thread-snippet { font-size: 0.8rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    .thread-unread-badge {
-      background: #ef4444; color: #ffffff; font-size: 0.65rem; font-weight: 700;
-      padding: 0.1rem 0.4rem; border-radius: 10px;
+    .view-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
     }
 
-    .inbox-main { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-color); position: relative; }
-
-    .inbox-main-header {
-      padding: 0.85rem 1.25rem; background-color: var(--card-color);
-      border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;
+    /* Public Chat Area */
+    .chat-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .inbox-main-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
-
-    .mod-badge {
-      font-size: 0.65rem; background-color: var(--accent-color); color: #000;
-      padding: 0.15rem 0.4rem; border-radius: 6px; font-weight: 700; text-transform: uppercase;
+    #chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
     }
 
-    .inbox-messages-canvas { flex: 1; padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; }
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 4px; }
 
     .msg {
-      background-color: var(--friend-msg-bg); border: 1px solid var(--border-color);
+      background-color: var(--friend-msg-bg);
+      border: 1px solid var(--border-color);
       border-left: 4px solid var(--user-accent-color, var(--accent-color)) !important;
-      padding: 0.65rem 0.85rem; border-radius: 12px; max-width: 85%; align-self: flex-start;
-      word-break: break-word; line-height: 1.4; font-size: 0.9rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); animation: fadeIn 0.15s ease-in-out;
-      display: flex; flex-direction: column; position: relative;
+      padding: 0.65rem 0.85rem;
+      border-radius: 12px;
+      max-width: 85%;
+      align-self: flex-start;
+      word-break: break-word;
+      line-height: 1.4;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 0.15s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
     .msg.user-me {
-      align-self: flex-end; background-color: var(--my-msg-bg);
-      border-color: var(--my-msg-bg); border-left: 1px solid var(--my-msg-bg) !important;
+      align-self: flex-end;
+      background-color: var(--my-msg-bg);
+      border-color: var(--my-msg-bg);
+      border-left: 1px solid var(--my-msg-bg) !important;
     }
 
     .msg.user-me .username { color: #ffffff !important; }
@@ -187,126 +300,446 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .msg-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.2rem; }
-    .username { font-weight: 700; color: var(--user-accent-color, var(--accent-color)); font-size: 0.8rem; }
-    .timestamp-wrapper { display: flex; align-items: center; gap: 0.4rem; }
+    .msg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .username {
+      font-weight: 700;
+      color: var(--user-accent-color, var(--accent-color));
+      font-size: 0.8rem;
+    }
+
+    .timestamp-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
     .timestamp { font-size: 0.65rem; color: #94a3b8; }
 
     .delete-btn {
-      background: none; border: none; color: #94a3b8; cursor: pointer;
-      font-size: 0.75rem; padding: 0 2px; line-height: 1; opacity: 0.7; transition: opacity 0.2s, color 0.2s;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
     }
 
     .delete-btn:hover { opacity: 1; color: #ef4444; }
     .msg.user-me .delete-btn { color: rgba(255, 255, 255, 0.75); }
+    .msg.user-me .delete-btn:hover { color: #fca5a5; }
 
     .msg-content img {
-      max-width: 100%; max-height: 240px; border-radius: 8px;
-      margin-top: 0.3rem; display: block; object-fit: contain;
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 8px;
+      margin-top: 0.3rem;
+      display: block;
+      object-fit: contain;
     }
 
-    .typing-indicator { font-size: 0.75rem; color: #94a3b8; font-style: italic; padding: 0 0.25rem 0.4rem 0.25rem; min-height: 1.2rem; }
-
-    .inbox-composer {
-      padding: 0.85rem 1.25rem; background-color: var(--card-color);
-      border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.3rem;
+    #unread-toast {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--my-msg-bg);
+      color: #ffffff;
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+      display: none;
+      z-index: 20;
+      white-space: nowrap;
     }
 
-    .inbox-composer-row { display: flex; gap: 0.5rem; align-items: center; }
+    .typing-indicator {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-style: italic;
+      padding: 0 0.25rem 0.4rem 0.25rem;
+      min-height: 1.2rem;
+    }
+
+    .chat-footer {
+      padding: 0.75rem 1rem;
+      background-color: var(--card-color);
+      border-top: 1px solid var(--border-color);
+      z-index: 20;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .input-container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
 
     input[type="text"], select {
-      background-color: var(--bg-color); border: 1px solid var(--border-color);
-      color: var(--text-color); padding: 0.65rem 0.85rem; border-radius: 8px;
-      font-size: 0.9rem; font-family: inherit; outline: none; transition: border-color 0.2s ease;
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease;
     }
 
-    input[type="text"]:focus, select:focus { border-color: var(--accent-color); }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent-color);
+    }
+
+    #message { flex: 1; min-width: 0; }
 
     .emoji-picker-btn {
-      background: none; border: 1px solid var(--border-color); color: var(--text-color);
-      font-size: 1.1rem; padding: 0.5rem 0.65rem; border-radius: 8px; cursor: pointer;
-      flex-shrink: 0; transition: background-color 0.2s;
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      font-size: 1.1rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
     }
 
     .emoji-picker-btn:hover { background-color: var(--border-color); }
 
     .emoji-popover {
-      position: absolute; bottom: 4rem; right: 1rem; background-color: var(--card-color);
-      border: 1px solid var(--border-color); border-radius: 12px; padding: 0.6rem;
-      display: none; grid-template-columns: repeat(6, 1fr); gap: 0.4rem;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); z-index: 30; max-width: 260px;
+      position: absolute;
+      bottom: 4rem;
+      right: 1rem;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.6rem;
+      display: none;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.4rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      z-index: 30;
+      max-width: 260px;
     }
 
     .emoji-popover span {
-      font-size: 1.25rem; text-align: center; cursor: pointer; padding: 0.2rem;
-      border-radius: 6px; transition: transform 0.1s, background-color 0.15s; user-select: none;
+      font-size: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      padding: 0.2rem;
+      border-radius: 6px;
+      transition: transform 0.1s, background-color 0.15s;
+      user-select: none;
     }
 
-    .emoji-popover span:hover { background-color: var(--border-color); transform: scale(1.2); }
+    .emoji-popover span:hover {
+      background-color: var(--border-color);
+      transform: scale(1.2);
+    }
 
     .btn-primary {
-      background-color: var(--my-msg-bg); color: #ffffff; border: none;
-      padding: 0.65rem 1.1rem; border-radius: 8px; font-weight: 600; font-size: 0.88rem;
-      font-family: inherit; cursor: pointer; flex-shrink: 0; transition: opacity 0.2s ease, transform 0.1s ease;
+      background-color: var(--my-msg-bg);
+      color: #ffffff;
+      border: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: opacity 0.2s ease, transform 0.1s ease;
     }
 
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:active { transform: scale(0.97); }
 
+    /* Full-Screen Email-Style Inbox */
+    .inbox-container {
+      flex: 1;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
+    }
+
+    .inbox-sidebar {
+      width: 320px;
+      background-color: var(--card-color);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .inbox-sidebar-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .inbox-thread-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inbox-thread-item {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transition: background-color 0.15s;
+      position: relative;
+    }
+
+    .inbox-thread-item:hover, .inbox-thread-item.active {
+      background-color: var(--border-color);
+    }
+
+    .inbox-thread-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inbox-thread-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .inbox-thread-time {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .inbox-thread-snippet {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .thread-unread-badge {
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+    }
+
+    .inbox-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color);
+      position: relative;
+    }
+
+    .inbox-main-header {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--card-color);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inbox-main-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inbox-messages-canvas {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .inbox-composer {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--card-color);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .inbox-composer-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .dm-bubble {
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      max-width: 75%;
+      font-size: 0.9rem;
+      color: #ffffff !important;
+      word-break: break-word;
+      line-height: 1.4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .dm-bubble.me {
+      align-self: flex-end;
+      background-color: var(--my-msg-bg);
+      color: #ffffff !important;
+    }
+
+    .dm-bubble.them {
+      align-self: flex-start;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      color: var(--text-color) !important;
+    }
+
     .compose-card {
-      display: flex; flex-direction: column; gap: 1rem; max-width: 500px;
-      margin: 2rem auto; width: 90%; background-color: var(--card-color);
-      border: 1px solid var(--border-color); padding: 1.5rem; border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 2rem auto;
+      width: 90%;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      border-radius: 12px;
     }
-
-    .checkbox-list {
-      display: flex; flex-direction: column; gap: 0.5rem; max-height: 140px;
-      overflow-y: auto; background-color: var(--bg-color); padding: 0.5rem;
-      border-radius: 8px; border: 1px solid var(--border-color);
-    }
-
-    .checkbox-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; cursor: pointer; }
 
     @media (max-width: 768px) {
       .inbox-sidebar { width: 100%; }
-      .inbox-main { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
+      .inbox-main {
+        display: none;
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 10;
+      }
       .inbox-main.active-mobile { display: flex; }
     }
 
     /* Modals */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-      background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center;
-      align-items: center; z-index: 100; backdrop-filter: blur(4px);
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100dvh;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
     }
 
     .modal-card {
-      background-color: var(--card-color); border: 1px solid var(--border-color);
-      padding: 1.25rem; border-radius: 16px; width: 90%; max-width: 480px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); display: flex;
-      flex-direction: column; gap: 1rem; max-height: 85dvh; overflow-y: auto;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      padding: 1.25rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-height: 85dvh;
+      overflow-y: auto;
     }
 
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem; }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+
     .modal-header h3 { font-size: 1rem; font-weight: 700; }
 
-    .close-btn { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; opacity: 0.7; }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
     .close-btn:hover { opacity: 1; }
 
-    .rules-list { display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; line-height: 1.45; }
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
+
     .rules-list-item { display: flex; gap: 0.5rem; align-items: flex-start; }
     .rules-list-item span.icon { font-size: 1rem; }
 
     .identity-form { display: flex; flex-direction: column; gap: 0.75rem; }
     .identity-form label { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
 
-    .preset-section h4 { font-size: 0.8rem; font-weight: 600; color: #94a3b8; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    .preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+    .preset-section h4 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
 
     .preset-btn {
-      border: 1px solid var(--border-color); padding: 0.5rem 0.4rem; border-radius: 8px;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex;
-      align-items: center; justify-content: center; gap: 0.25rem; transition: transform 0.1s, opacity 0.2s;
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.4rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      transition: transform 0.1s, opacity 0.2s;
     }
 
     .preset-btn:hover { transform: translateY(-2px); opacity: 0.9; }
@@ -318,28 +751,58 @@
     .preset-kaito { background-color: #0040FF !important; color: #ffffff !important; border-color: #0040FF !important; }
     .preset-gumi { background-color: #39D02B !important; color: #000000 !important; border-color: #39D02B !important; }
 
-    .color-setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .color-setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
     .color-setting-row label { font-weight: 500; }
     .color-picker-wrapper { display: flex; align-items: center; gap: 0.4rem; }
 
-    input[type="color"] { -webkit-appearance: none; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; background: none; }
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      background: none;
+    }
+
     input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
     input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border-color); border-radius: 50%; }
 
-    .modal-actions { display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.25rem; }
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
 
     .btn-secondary {
-      background-color: transparent; border: 1px solid var(--border-color);
-      color: var(--text-color); padding: 0.5rem 0.85rem; border-radius: 8px;
-      cursor: pointer; font-size: 0.8rem; font-family: inherit;
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
     }
 
     .btn-secondary:hover { background-color: var(--border-color); }
 
     .btn-danger {
-      background-color: #ef4444; color: #ffffff; border: none;
-      padding: 0.5rem 0.85rem; border-radius: 8px; cursor: pointer;
-      font-size: 0.8rem; font-weight: 600; font-family: inherit;
+      background-color: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
     }
 
     .btn-danger:hover { background-color: #dc2626; }
@@ -347,11 +810,11 @@
 </head>
 <body>
 
-  <!-- Header Bar -->
+  <!-- Top Header Bar -->
   <div class="chat-header">
     <div style="display: flex; align-items: center; gap: 0.6rem;">
       <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Sidebar">☰</button>
-      <h2 id="page-title"><span class="status-dot"></span> Rooms & DMs</h2>
+      <h2 id="page-title"><span class="status-dot"></span> Chatroom</h2>
     </div>
     <div class="header-actions">
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
@@ -359,12 +822,13 @@
   </div>
 
   <div class="app-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
       <div class="sidebar-section-title">Navigation</div>
       <div class="sidebar-nav">
-        <button class="sidebar-btn active" id="nav-inbox-btn" onclick="closeSidebar();">
-          💬 Rooms & DMs
+        <button class="sidebar-btn active" id="nav-public-btn" onclick="switchView('public')">💬 Public Chat</button>
+        <button class="sidebar-btn" id="nav-inbox-btn" onclick="switchView('inbox')">
+          📥 Inbox / DMs 
           <span class="badge-count" id="total-unread-badge" style="display: none;">0</span>
         </button>
       </div>
@@ -383,98 +847,103 @@
     </div>
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <!-- View Canvas Area -->
+    <!-- View Container -->
     <div class="view-container">
 
-      <!-- MAIN ROOMS & DM SYSTEM -->
-      <div class="view-screen" id="inbox-view">
+      <!-- SCREEN 1: PUBLIC CHAT -->
+      <div class="view-screen" id="public-view">
+        <div class="chat-wrapper">
+          <div id="chat"></div>
+          <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
+        </div>
+        <div class="chat-footer">
+          <div class="typing-indicator" id="public-typing-indicator"></div>
+
+          <div class="emoji-popover" id="emoji-popover">
+            <span onclick="insertEmoji('😀')">😀</span>
+            <span onclick="insertEmoji('😂')">😂</span>
+            <span onclick="insertEmoji('😍')">😍</span>
+            <span onclick="insertEmoji('🔥')">🔥</span>
+            <span onclick="insertEmoji('❤️')">❤️</span>
+            <span onclick="insertEmoji('🎉')">🎉</span>
+            <span onclick="insertEmoji('😎')">😎</span>
+            <span onclick="insertEmoji('✨')">✨</span>
+            <span onclick="insertEmoji('💀')">💀</span>
+            <span onclick="insertEmoji('👍')">👍</span>
+            <span onclick="insertEmoji('🙌')">🙌</span>
+            <span onclick="insertEmoji('🎵')">🎵</span>
+            <span onclick="insertEmoji('😭')">😭</span>
+            <span onclick="insertEmoji('🥺')">🥺</span>
+            <span onclick="insertEmoji('💯')">💯</span>
+            <span onclick="insertEmoji('💬')">💬</span>
+            <span onclick="insertEmoji('🚀')">🚀</span>
+            <span onclick="insertEmoji('⭐')">⭐</span>
+          </div>
+
+          <div class="input-container">
+            <input type="text" id="message" placeholder="Type a message or paste image link..." oninput="handlePublicTyping()" onkeydown="if(event.key === 'Enter') sendMessage()">
+            <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
+            <button class="btn-primary" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: FULL-SCREEN EMAIL-STYLE INBOX -->
+      <div class="view-screen" id="inbox-view" style="display: none;">
         <div class="inbox-container">
           
           <div class="inbox-sidebar">
             <div class="inbox-sidebar-header">
-              <button class="btn-primary" style="width: 100%;" onclick="openComposeView()">➕ Create New Room</button>
+              <button class="btn-primary" style="width: 100%;" onclick="openComposeView()">✏️ Compose New DM</button>
             </div>
             <div class="inbox-thread-list" id="inbox-thread-list">
-              <p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">Loading rooms...</p>
+              <p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">Loading conversations...</p>
             </div>
           </div>
 
           <div class="inbox-main" id="inbox-main-pane">
             
             <div id="inbox-empty-state" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; gap: 0.5rem; padding: 1rem; text-align: center;">
-              <span style="font-size: 2.5rem;">💬</span>
-              <p>Select a room or DM from the left panel, or hit Create New Room!</p>
+              <span style="font-size: 2.5rem;">📥</span>
+              <p>Select a conversation from the left pane or compose a new DM!</p>
             </div>
 
-            <!-- Active Thread View -->
             <div id="inbox-active-thread" style="display: none; flex: 1; flex-direction: column; height: 100%;">
               <div class="inbox-main-header">
-                <h3 id="active-thread-title"># Main Chat</h3>
-                <div style="display: flex; gap: 0.4rem; align-items: center;">
-                  <button class="btn-secondary" id="rename-room-btn" style="font-size: 0.75rem; display: none;" onclick="renameCurrentRoom()">✏️ Rename</button>
-                  <button class="btn-secondary" id="add-member-btn" style="font-size: 0.75rem; display: none;" onclick="promptInviteMember()">+ Add Person</button>
-                  <button class="btn-danger" id="delete-thread-btn" style="font-size: 0.75rem; display: none;" onclick="deleteCurrentThread()">Delete</button>
-                  <button class="btn-secondary" style="display: none;" id="mobile-back-btn" onclick="closeMobileThread()">← Back</button>
-                </div>
+                <h3 id="active-thread-title">@User</h3>
+                <button class="btn-secondary" style="display: none;" id="mobile-back-btn" onclick="closeMobileThread()">← Back</button>
               </div>
-              
               <div class="inbox-messages-canvas" id="dm-canvas"></div>
-              
               <div class="inbox-composer">
                 <div class="typing-indicator" id="dm-typing-indicator"></div>
                 <div class="inbox-composer-row">
-                  <input type="text" id="dm-canvas-input" placeholder="Type a message or paste image link..." style="flex: 1;" oninput="handleDMTyping()" onkeydown="if(event.key==='Enter') sendCanvasDM()">
-                  <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
+                  <input type="text" id="dm-canvas-input" placeholder="Type a private message..." style="flex: 1;" oninput="handleDMTyping()" onkeydown="if(event.key==='Enter') sendCanvasDM()">
                   <button class="btn-primary" onclick="sendCanvasDM()">Send</button>
                 </div>
               </div>
             </div>
 
-            <!-- Create New Room View -->
             <div id="inbox-compose-view" style="display: none; flex: 1; flex-direction: column; height: 100%; overflow-y: auto;">
               <div class="inbox-main-header">
-                <h3>➕ Create New Room</h3>
+                <h3>✏️ Compose Message</h3>
                 <button class="btn-secondary" id="mobile-compose-back-btn" onclick="closeMobileThread()">← Back</button>
               </div>
               <div class="compose-card">
                 <div>
-                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Room Name</label>
-                  <input type="text" id="compose-room-name" placeholder="e.g. Secret Squad, Game Room..." style="width: 100%;">
+                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Recipient (To:)</label>
+                  <select id="compose-recipient-select" style="width: 100%;">
+                    <option value="">-- Select a Contact --</option>
+                  </select>
                 </div>
                 <div>
-                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Invite Members (Tick boxes)</label>
-                  <div class="checkbox-list" id="compose-members-checkboxes"></div>
-                </div>
-                <div>
-                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Initial Message</label>
-                  <input type="text" id="compose-message-input" placeholder="Welcome everyone to the new room!" style="width: 100%;">
+                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Message</label>
+                  <input type="text" id="compose-message-input" placeholder="Write your private message here..." style="width: 100%;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                   <button class="btn-secondary" onclick="cancelCompose()">Cancel</button>
-                  <button class="btn-primary" onclick="submitComposeDM()">Create & Set as Moderator →</button>
+                  <button class="btn-primary" onclick="submitComposeDM()">Send DM →</button>
                 </div>
               </div>
-            </div>
-
-            <div class="emoji-popover" id="emoji-popover">
-              <span onclick="insertEmoji('😀')">😀</span>
-              <span onclick="insertEmoji('😂')">😂</span>
-              <span onclick="insertEmoji('😍')">😍</span>
-              <span onclick="insertEmoji('🔥')">🔥</span>
-              <span onclick="insertEmoji('❤️')">❤️</span>
-              <span onclick="insertEmoji('🎉')">🎉</span>
-              <span onclick="insertEmoji('😎')">😎</span>
-              <span onclick="insertEmoji('✨')">✨</span>
-              <span onclick="insertEmoji('💀')">💀</span>
-              <span onclick="insertEmoji('👍')">👍</span>
-              <span onclick="insertEmoji('🙌')">🙌</span>
-              <span onclick="insertEmoji('🎵')">🎵</span>
-              <span onclick="insertEmoji('😭')">😭</span>
-              <span onclick="insertEmoji('🥺')">🥺</span>
-              <span onclick="insertEmoji('💯')">💯</span>
-              <span onclick="insertEmoji('💬')">💬</span>
-              <span onclick="insertEmoji('🚀')">🚀</span>
-              <span onclick="insertEmoji('⭐')">⭐</span>
             </div>
 
           </div>
@@ -484,18 +953,40 @@
     </div>
   </div>
 
-  <!-- Welcome / Rules Modal -->
+  <!-- Welcome / Rules & Guide Modal -->
   <div class="modal-overlay" id="rules-modal">
     <div class="modal-card">
       <div class="modal-header">
         <h3>Welcome to Friends Chatroom! 👋</h3>
         <button class="close-btn" onclick="closeRulesModal()">✕</button>
       </div>
+
       <div class="rules-list">
-        <div class="rules-list-item"><span class="icon">⚠️</span><div><strong>Rules:</strong> Do not spam or send massive text blocks.</div></div>
-        <div class="rules-list-item"><span class="icon">🔑</span><div><strong>Identity Sync:</strong> Display Name + 4-Digit PIN sync your account.</div></div>
-        <div class="rules-list-item"><span class="icon">👑</span><div><strong>Moderator Controls:</strong> Create a room to become moderator and unlock Rename and Add Person buttons!</div></div>
+        <div class="rules-list-item">
+          <span class="icon">⚠️</span>
+          <div>
+            <strong>Chatroom Rules:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Please do not spam or send massive blocks of illegible text.</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
+          <span class="icon">🔑</span>
+          <div>
+            <strong>Device Syncing (Name & PIN):</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Your display name and secret 4-digit PIN sync your messages across devices!</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
+          <span class="icon">📥</span>
+          <div>
+            <strong>Full-Screen Direct Messaging:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Switch seamlessly between the Public Chatroom and your private Email-Style Inbox!</p>
+          </div>
+        </div>
       </div>
+
       <div class="modal-actions" style="justify-content: flex-end;">
         <button class="btn-primary" onclick="proceedToIdentityModal()">Next: Set Name & PIN →</button>
       </div>
@@ -509,10 +1000,22 @@
         <h3>Setup Identity 👤</h3>
         <button class="close-btn" onclick="closeProfileModal()">✕</button>
       </div>
+
+      <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
+        Enter your display name and secret 4-digit PIN to sync across phones and computers!
+      </p>
+
       <div class="identity-form">
-        <div><label for="modal-username">Display Name</label><input type="text" id="modal-username" placeholder="e.g. Miku" style="width: 100%; margin-top: 0.3rem;"></div>
-        <div><label for="modal-pin">4-Digit PIN</label><input type="text" id="modal-pin" maxlength="4" placeholder="1234" style="width: 100%; margin-top: 0.3rem; text-align: center;"></div>
+        <div>
+          <label for="modal-username">Display Name</label>
+          <input type="text" id="modal-username" placeholder="e.g. Miku" style="width: 100%; margin-top: 0.3rem;">
+        </div>
+        <div>
+          <label for="modal-pin">4-Digit PIN</label>
+          <input type="text" id="modal-pin" maxlength="4" placeholder="1234" style="width: 100%; margin-top: 0.3rem; letter-spacing: 0.15em; text-align: center;">
+        </div>
       </div>
+
       <div class="modal-actions" style="justify-content: flex-end;">
         <button class="btn-primary" onclick="saveProfileIdentity()">Save & Continue</button>
       </div>
@@ -526,6 +1029,7 @@
         <h3>Theme Settings</h3>
         <button class="close-btn" onclick="closeSettings()">✕</button>
       </div>
+
       <div class="preset-section">
         <h4>Vocaloid Themes</h4>
         <div class="preset-grid">
@@ -537,6 +1041,38 @@
           <button class="preset-btn preset-gumi" onclick="applyPreset('gumi')">🥕 GUMI</button>
         </div>
       </div>
+
+      <div class="preset-section">
+        <h4>Custom Colors</h4>
+        <div class="color-setting-row">
+          <label for="picker-bg">Background Color</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="picker-bg" value="#0f172a" onchange="updateColor('--bg-color', this.value)">
+          </div>
+        </div>
+
+        <div class="color-setting-row" style="margin-top: 0.5rem;">
+          <label for="picker-card">Header & Footer</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="picker-card" value="#1e293b" onchange="updateColor('--card-color', this.value)">
+          </div>
+        </div>
+
+        <div class="color-setting-row" style="margin-top: 0.5rem;">
+          <label for="picker-my-msg">Your Messages</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="picker-my-msg" value="#0284c7" onchange="updateColor('--my-msg-bg', this.value)">
+          </div>
+        </div>
+
+        <div class="color-setting-row" style="margin-top: 0.5rem;">
+          <label for="picker-friend-msg">Friends' Messages</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="picker-friend-msg" value="#1e293b" onchange="updateColor('--friend-msg-bg', this.value)">
+          </div>
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-secondary" onclick="resetTheme()">Reset Default</button>
         <button class="btn-primary" onclick="closeSettings()">Done</button>
@@ -544,11 +1080,16 @@
     </div>
   </div>
 
-  <!-- Delete Modal -->
+  <!-- Delete Confirmation Modal -->
   <div class="modal-overlay" id="delete-modal">
     <div class="modal-card" style="max-width: 400px;">
-      <div class="modal-header"><h3>Delete Message</h3><button class="close-btn" onclick="closeDeleteModal()">✕</button></div>
-      <p style="font-size: 0.95rem;">Are you sure you want to delete this message?</p>
+      <div class="modal-header">
+        <h3>Delete Message</h3>
+        <button class="close-btn" onclick="closeDeleteModal()">✕</button>
+      </div>
+      <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">
+        Are you sure you want to delete this message?
+      </p>
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
         <button class="btn-danger" id="confirm-delete-btn">Delete Message</button>
@@ -562,6 +1103,9 @@
     
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    const chatDiv = document.getElementById('chat');
+    const messageInput = document.getElementById('message');
+    const toast = document.getElementById('unread-toast');
     const modal = document.getElementById('settings-modal');
     const rulesModal = document.getElementById('rules-modal');
     const profileModal = document.getElementById('profile-modal');
@@ -577,12 +1121,17 @@
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
-    let activeDMTarget = null; // { name, hash, isMainChat, creatorHash }
+    let currentView = 'public';
+    let activeDMTarget = null;
     
+    // Unread DM counters map: partnerHash -> count
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
 
+    // Typing Indicators state
+    let publicTypingTimeout = null;
     let dmTypingTimeout = null;
+    let lastPublicTypingBroadcast = 0;
     let lastDMTypingBroadcast = 0;
 
     async function generateUserHash(name, pin) {
@@ -598,34 +1147,80 @@
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
+    function switchView(view) {
+      currentView = view;
+      closeSidebar();
+
+      document.getElementById('nav-public-btn').classList.toggle('active', view === 'public');
+      document.getElementById('nav-inbox-btn').classList.toggle('active', view === 'inbox');
+
+      const pageTitle = document.getElementById('page-title');
+      if (view === 'public') {
+        document.getElementById('public-view').style.display = 'flex';
+        document.getElementById('inbox-view').style.display = 'none';
+        pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
+      } else {
+        document.getElementById('public-view').style.display = 'none';
+        document.getElementById('inbox-view').style.display = 'flex';
+        pageTitle.innerHTML = `📥 Direct Messages`;
+        loadInboxConversations();
+      }
+    }
+
     function updateTotalUnreadBadge() {
       let total = 0;
       unreadDMCounters.forEach(count => total += count);
+
       const badge = document.getElementById('total-unread-badge');
       if (total > 0) {
-        badge.textContent = total; badge.style.display = 'inline-block';
-      } else { badge.style.display = 'none'; }
+        badge.textContent = total;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     async function saveProfileIdentity() {
-      currentUser = modalUsernameInput.value.trim() || 'Anon';
-      currentPin = modalPinInput.value.trim() || '0000';
+      const name = modalUsernameInput.value.trim() || 'Anon';
+      const pin = modalPinInput.value.trim() || '0000';
+
+      currentUser = name;
+      currentPin = pin;
+
       localStorage.setItem('chat_username', currentUser);
       localStorage.setItem('chat_pin', currentPin);
+
       currentUserHash = await generateUserHash(currentUser, currentPin);
       knownUsers.set(currentUserHash, currentUser);
       updatePresence(currentUser);
       closeProfileModal();
-      loadInboxConversations();
+      loadMessages();
       subscribeToDMs();
     }
 
-    function openProfileModal() { modalUsernameInput.value = currentUser; modalPinInput.value = currentPin; profileModal.style.display = 'flex'; }
+    function openProfileModal() {
+      modalUsernameInput.value = currentUser;
+      modalPinInput.value = currentPin;
+      profileModal.style.display = 'flex';
+    }
+
     function closeProfileModal() { profileModal.style.display = 'none'; }
     function openRulesModal() { rulesModal.style.display = 'flex'; }
-    function closeRulesModal() { rulesModal.style.display = 'none'; localStorage.setItem('chat_has_seen_rules', 'true'); }
-    function proceedToIdentityModal() { closeRulesModal(); if (!localStorage.getItem('chat_username')) openProfileModal(); }
-    function checkFirstVisit() { if (!localStorage.getItem('chat_has_seen_rules')) openRulesModal(); else if (!localStorage.getItem('chat_username')) openProfileModal(); }
+    function closeRulesModal() {
+      rulesModal.style.display = 'none';
+      localStorage.setItem('chat_has_seen_rules', 'true');
+    }
+
+    function proceedToIdentityModal() {
+      closeRulesModal();
+      if (!localStorage.getItem('chat_username')) openProfileModal();
+    }
+
+    function checkFirstVisit() {
+      const hasSeen = localStorage.getItem('chat_has_seen_rules');
+      if (!hasSeen) openRulesModal();
+      else if (!localStorage.getItem('chat_username')) openProfileModal();
+    }
 
     function playNotificationSound() {
       if (!soundEnabled) return;
@@ -633,84 +1228,279 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
+
         osc.type = 'sine';
         osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+
         gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
       } catch (e) {}
     }
 
-    function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇'; }
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
+    }
 
-    const userColorPalette = ['#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'];
+    const userColorPalette = [
+      '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
+      '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
+    ];
 
     function getUserColor(hash) {
       if (!hash) return userColorPalette[0];
-      let num = 0; for (let i = 0; i < hash.length; i++) num += hash.charCodeAt(i);
+      let num = 0;
+      for (let i = 0; i < hash.length; i++) num += hash.charCodeAt(i);
       return userColorPalette[num % userColorPalette.length];
     }
 
-    const defaultTheme = { '--bg-color': '#0f172a', '--card-color': '#1e293b', '--border-color': '#334155', '--text-color': '#f8fafc', '--my-msg-bg': '#0284c7', '--friend-msg-bg': '#1e293b', '--accent-color': '#38bdf8' };
+    const defaultTheme = {
+      '--bg-color': '#0f172a',
+      '--card-color': '#1e293b',
+      '--border-color': '#334155',
+      '--text-color': '#f8fafc',
+      '--my-msg-bg': '#0284c7',
+      '--friend-msg-bg': '#1e293b',
+      '--accent-color': '#38bdf8'
+    };
+
     const vocaloidPresets = {
       miku: { '--bg-color': '#0a1a1a', '--card-color': '#112e2e', '--border-color': '#1e4d4d', '--text-color': '#e6ffff', '--my-msg-bg': '#39c5bb', '--friend-msg-bg': '#112e2e', '--accent-color': '#39c5bb' },
-      rinlen: { '--bg-color': '#1a180a', '--card-color': '#2e2b11', '--border-color': '#4d471e', '--text-color': '#ffffe6', '--my-msg-bg': '#d4be00', '--friend-msg-bg': '#2e2b11', '--accent-color': '#ffe600' }
+      rinlen: { '--bg-color': '#1a180a', '--card-color': '#2e2b11', '--border-color': '#4d471e', '--text-color': '#ffffe6', '--my-msg-bg': '#d4be00', '--friend-msg-bg': '#2e2b11', '--accent-color': '#ffe600' },
+      luka: { '--bg-color': '#1a0d13', '--card-color': '#2e1722', '--border-color': '#4d2638', '--text-color': '#ffe6f0', '--my-msg-bg': '#e6739f', '--friend-msg-bg': '#2e1722', '--accent-color': '#ffbacc' },
+      teto: { '--bg-color': '#1a0808', '--card-color': '#2e0e0e', '--border-color': '#4d1717', '--text-color': '#ffe6e6', '--my-msg-bg': '#d80000', '--friend-msg-bg': '#2e0e0e', '--accent-color': '#ff6666' },
+      kaito: { '--bg-color': '#080d1a', '--card-color': '#0e172e', '--border-color': '#17264d', '--text-color': '#e6ecff', '--my-msg-bg': '#0040ff', '--friend-msg-bg': '#0e172e', '--accent-color': '#6690ff' },
+      gumi: { '--bg-color': '#0a1a0b', '--card-color': '#112e13', '--border-color': '#1d4d21', '--text-color': '#e6ffe8', '--my-msg-bg': '#2ea823', '--friend-msg-bg': '#112e13', '--accent-color': '#39d02b' }
     };
 
     function loadSavedTheme() {
       const savedTheme = JSON.parse(localStorage.getItem('chat_theme_colors')) || defaultTheme;
-      for (const [varName, colorVal] of Object.entries(savedTheme)) document.documentElement.style.setProperty(varName, colorVal);
+      for (const [varName, colorVal] of Object.entries(savedTheme)) {
+        document.documentElement.style.setProperty(varName, colorVal);
+      }
     }
 
     function applyPreset(name) {
-      const preset = vocaloidPresets[name]; if (!preset) return;
-      for (const [varName, colorVal] of Object.entries(preset)) document.documentElement.style.setProperty(varName, colorVal);
-      localStorage.setItem('chat_theme_colors', JSON.stringify(preset)); loadSavedTheme();
+      const preset = vocaloidPresets[name];
+      if (!preset) return;
+      for (const [varName, colorVal] of Object.entries(preset)) {
+        document.documentElement.style.setProperty(varName, colorVal);
+      }
+      localStorage.setItem('chat_theme_colors', JSON.stringify(preset));
+      loadSavedTheme();
     }
 
     function updateColor(cssVar, colorVal) {
       document.documentElement.style.setProperty(cssVar, colorVal);
       const savedTheme = JSON.parse(localStorage.getItem('chat_theme_colors')) || { ...defaultTheme };
-      savedTheme[cssVar] = colorVal; localStorage.setItem('chat_theme_colors', JSON.stringify(savedTheme));
+      savedTheme[cssVar] = colorVal;
+      localStorage.setItem('chat_theme_colors', JSON.stringify(savedTheme));
     }
 
-    function resetTheme() { localStorage.removeItem('chat_theme_colors'); loadSavedTheme(); }
+    function resetTheme() {
+      localStorage.removeItem('chat_theme_colors');
+      loadSavedTheme();
+    }
+
     function openSettings() { modal.style.display = 'flex'; }
     function closeSettings() { modal.style.display = 'none'; }
     function toggleEmojiPicker() { emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid'; }
 
     function insertEmoji(emoji) {
-      const input = document.getElementById('dm-canvas-input');
-      input.value += emoji; input.focus(); emojiPopover.style.display = 'none'; handleDMTyping();
+      messageInput.value += emoji;
+      messageInput.focus();
+      emojiPopover.style.display = 'none';
+      handlePublicTyping();
     }
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.emoji-popover') && !e.target.closest('.emoji-picker-btn')) emojiPopover.style.display = 'none';
+      if (!e.target.closest('.emoji-popover') && !e.target.closest('.emoji-picker-btn')) {
+        emojiPopover.style.display = 'none';
+      }
     });
 
-    function formatTime(isoString) { if (!isoString) return ''; return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    function formatTime(isoString) {
+      if (!isoString) return '';
+      return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
 
     function isImageUrl(url) {
       if (!url || typeof url !== 'string') return false;
       const cleanUrl = url.trim().toLowerCase();
       if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
-      return /\.(jpeg|jpg|gif|png|webp|svg)($|\?|#|&)/i.test(cleanUrl);
+
+      if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) return true;
+
+      const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#|&)/i;
+      if (imageExtensions.test(cleanUrl)) return true;
+
+      const imageHosts = ['media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net', 'images.unsplash.com', 'i.postimg.cc', 'i.redd.it'];
+      return imageHosts.some(host => cleanUrl.includes(host));
     }
+
+    function appendMessage(id, user, userHash, text, createdAt) {
+      if (userHash && user) knownUsers.set(userHash, user);
+
+      if (id && document.getElementById(`msg-${id}`)) return;
+
+      const isMe = userHash && userHash === currentUserHash;
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
+      if (id) msgDiv.id = `msg-${id}`;
+
+      const userColor = getUserColor(userHash || user);
+      msgDiv.style.setProperty('--user-accent-color', userColor);
+
+      let contentHtml = isImageUrl(text) 
+        ? `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>` 
+        : `<div class="msg-content">${escapeHtml(text)}</div>`;
+
+      const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
+
+      msgDiv.innerHTML = `
+        <div class="msg-header">
+          <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
+          <div class="timestamp-wrapper">
+            <span class="timestamp">${formatTime(createdAt)}</span>
+            ${deleteBtnHtml}
+          </div>
+        </div>
+        ${contentHtml}
+      `;
+
+      const isAtBottom = chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100;
+      chatDiv.appendChild(msgDiv);
+
+      if (isMe || isAtBottom) scrollToBottom();
+      else toast.style.display = 'block';
+
+      if (!isMe) playNotificationSound();
+    }
+
+    function promptDelete(id, isMe) {
+      if (isMe) executeDelete(id);
+      else {
+        pendingDeleteId = id;
+        deleteModal.style.display = 'flex';
+      }
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      deleteModal.style.display = 'none';
+    }
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (pendingDeleteId) {
+        executeDelete(pendingDeleteId);
+        closeDeleteModal();
+      }
+    });
+
+    async function executeDelete(id) {
+      const { error } = await supabaseClient.from('messages').delete().eq('id', id);
+      if (error) alert("Error deleting message: " + error.message);
+    }
+
+    function removeMessageFromUI(id) {
+      const el = document.getElementById(`msg-${id}`);
+      if (el) el.remove();
+    }
+
+    function scrollToBottom() {
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+      toast.style.display = 'none';
+    }
+
+    chatDiv.addEventListener('scroll', () => {
+      if (chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100) {
+        toast.style.display = 'none';
+      }
+    });
 
     function escapeHtml(string) {
-      return string.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+      return string.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
     }
 
-    // TYPING BROADCAST
+    async function loadMessages() {
+      const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
+      if (data) {
+        chatDiv.innerHTML = '';
+        data.forEach(msg => {
+          if (msg.user_hash && msg.username) knownUsers.set(msg.user_hash, msg.username);
+          appendMessage(msg.id, msg.username || 'Anon', msg.user_hash, msg.content, msg.created_at);
+        });
+        scrollToBottom();
+      }
+    }
+
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      if (!currentUserHash) {
+        currentUserHash = await generateUserHash(currentUser, currentPin);
+      }
+
+      messageInput.value = '';
+      const { error } = await supabaseClient.from('messages').insert([{ 
+        username: currentUser, 
+        user_hash: currentUserHash,
+        content: text 
+      }]);
+
+      if (error) alert("Error sending message: " + error.message);
+    }
+
+    // ===================================================
+    // TYPING INDICATORS (REALTIME BROADCAST)
+    // ===================================================
+    const publicTypingChannel = supabaseClient.channel('public_chat_typing');
+    
+    publicTypingChannel.on('broadcast', { event: 'typing' }, payload => {
+      if (payload.user_hash !== currentUserHash) {
+        const el = document.getElementById('public-typing-indicator');
+        el.textContent = `💬 @${payload.user} is typing...`;
+        
+        clearTimeout(publicTypingTimeout);
+        publicTypingTimeout = setTimeout(() => {
+          el.textContent = '';
+        }, 3000);
+      }
+    }).subscribe();
+
+    function handlePublicTyping() {
+      const now = Date.now();
+      if (now - lastPublicTypingBroadcast > 2000) {
+        lastPublicTypingBroadcast = now;
+        publicTypingChannel.send({
+          type: 'broadcast',
+          event: 'typing',
+          payload: { user: currentUser, user_hash: currentUserHash }
+        });
+      }
+    }
+
     const dmTypingChannel = supabaseClient.channel('dm_chat_typing');
+
     dmTypingChannel.on('broadcast', { event: 'dm_typing' }, payload => {
-      if (activeDMTarget && activeDMTarget.hash === payload.room_hash && payload.sender_hash !== currentUserHash) {
+      if (payload.recipient_hash === currentUserHash && activeDMTarget && activeDMTarget.hash === payload.sender_hash) {
         const el = document.getElementById('dm-typing-indicator');
         el.textContent = `💬 @${payload.sender_name} is typing...`;
+        
         clearTimeout(dmTypingTimeout);
-        dmTypingTimeout = setTimeout(() => { el.textContent = ''; }, 3000);
+        dmTypingTimeout = setTimeout(() => {
+          el.textContent = '';
+        }, 3000);
       }
     }).subscribe();
 
@@ -720,65 +1510,63 @@
       if (now - lastDMTypingBroadcast > 2000) {
         lastDMTypingBroadcast = now;
         dmTypingChannel.send({
-          type: 'broadcast', event: 'dm_typing',
-          payload: { sender_name: currentUser, sender_hash: currentUserHash, room_hash: activeDMTarget.hash }
+          type: 'broadcast',
+          event: 'dm_typing',
+          payload: { 
+            sender_name: currentUser, 
+            sender_hash: currentUserHash, 
+            recipient_hash: activeDMTarget.hash 
+          }
         });
       }
     }
 
-    // ROOMS AND INBOX LOGIC
+    // ===================================================
+    // FULL-SCREEN INBOX & UNREAD DM COUNTERS
+    // ===================================================
     async function loadInboxConversations() {
       if (!currentUserHash) return;
 
-      const listContainer = document.getElementById('inbox-thread-list');
-      listContainer.innerHTML = '';
-
-      // 1. Add Main Chatroom to list
-      const mainChatItem = document.createElement('div');
-      mainChatItem.className = `inbox-thread-item ${activeDMTarget && activeDMTarget.isMainChat ? 'active' : ''}`;
-      mainChatItem.onclick = () => selectMainChat();
-      mainChatItem.innerHTML = `
-        <div class="inbox-thread-top">
-          <span class="inbox-thread-name" style="color: var(--accent-color)"># Main Chatroom</span>
-          <span class="inbox-thread-time">Public</span>
-        </div>
-        <div class="inbox-thread-snippet">Global Chatroom for Everyone</div>
-      `;
-      listContainer.appendChild(mainChatItem);
-
-      // 2. Fetch User's Private Rooms and DMs
       const { data, error } = await supabaseClient
         .from('dms')
         .select('*')
         .or(`sender_hash.eq.${currentUserHash},recipient_hash.eq.${currentUserHash}`)
         .order('created_at', { ascending: false });
 
-      if (error) return;
+      const listContainer = document.getElementById('inbox-thread-list');
+      listContainer.innerHTML = '';
+
+      if (error) {
+        console.error("Error loading conversations:", error);
+        listContainer.innerHTML = `<p style="padding: 1rem; font-size: 0.85rem; color: #ef4444;">Unable to load conversations.</p>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        listContainer.innerHTML = `<p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">No direct messages yet.</p>`;
+        return;
+      }
 
       const partners = new Map();
-      if (data) {
-        data.forEach(dm => {
-          const isMe = dm.sender_hash === currentUserHash;
-          const partnerHash = isMe ? dm.recipient_hash : dm.sender_hash;
-          const partnerName = dm.group_name || (isMe ? (dm.recipient_name || knownUsers.get(partnerHash) || 'User') : (dm.sender_name || knownUsers.get(partnerHash) || 'User'));
-          
-          if (partnerHash && partnerName) knownUsers.set(partnerHash, partnerName);
-          if (!partners.has(partnerHash)) {
-            partners.set(partnerHash, { 
-              name: partnerName, 
-              lastMsg: dm.content, 
-              time: dm.created_at,
-              creatorHash: dm.sender_hash
-            });
-          }
-        });
-      }
+      data.forEach(dm => {
+        const isMe = dm.sender_hash === currentUserHash;
+        const partnerHash = isMe ? dm.recipient_hash : dm.sender_hash;
+        const partnerName = isMe ? (dm.recipient_name || knownUsers.get(partnerHash) || 'User') : (dm.sender_name || knownUsers.get(partnerHash) || 'User');
+
+        if (partnerHash && partnerName) {
+          knownUsers.set(partnerHash, partnerName);
+        }
+
+        if (!partners.has(partnerHash)) {
+          partners.set(partnerHash, { name: partnerName, lastMsg: dm.content, time: dm.created_at });
+        }
+      });
 
       partners.forEach((info, hash) => {
         const unreadCount = unreadDMCounters.get(hash) || 0;
         const item = document.createElement('div');
         item.className = `inbox-thread-item ${activeDMTarget && activeDMTarget.hash === hash ? 'active' : ''}`;
-        item.onclick = () => selectDMThread(info.name, hash, info.creatorHash);
+        item.onclick = () => selectDMThread(info.name, hash);
         item.innerHTML = `
           <div class="inbox-thread-top">
             <span class="inbox-thread-name" style="color: ${getUserColor(hash)}">
@@ -791,51 +1579,24 @@
         `;
         listContainer.appendChild(item);
       });
-
-      if (!activeDMTarget) selectMainChat();
     }
 
-    function selectMainChat() {
-      activeDMTarget = { name: 'Main Chat', hash: 'public_main', isMainChat: true, creatorHash: null };
-      
-      document.getElementById('inbox-empty-state').style.display = 'none';
-      document.getElementById('inbox-compose-view').style.display = 'none';
-      document.getElementById('inbox-active-thread').style.display = 'flex';
-
-      document.getElementById('active-thread-title').innerHTML = `<span style="color: var(--accent-color)"># Main Chatroom</span>`;
-      document.getElementById('rename-room-btn').style.display = 'none';
-      document.getElementById('add-member-btn').style.display = 'none';
-      document.getElementById('delete-thread-btn').style.display = 'none';
-
-      if (window.innerWidth <= 768) {
-        document.getElementById('inbox-main-pane').classList.add('active-mobile');
-        document.getElementById('mobile-back-btn').style.display = 'block';
-      }
-
-      loadMainChatMessages();
-      loadInboxConversations();
-    }
-
-    function selectDMThread(userName, userHash, creatorHash) {
+    function selectDMThread(userName, userHash) {
       if (userHash === currentUserHash) return alert("You cannot DM yourself!");
-      activeDMTarget = { name: userName, hash: userHash, isMainChat: false, creatorHash: creatorHash };
+      activeDMTarget = { name: userName, hash: userHash };
+
+      // Clear unread count for this thread
       unreadDMCounters.delete(userHash);
       updateTotalUnreadBadge();
 
       document.getElementById('inbox-empty-state').style.display = 'none';
       document.getElementById('inbox-compose-view').style.display = 'none';
-      document.getElementById('inbox-active-thread').style.display = 'flex';
-
-      const isMod = (creatorHash === currentUserHash);
-      const modBadge = isMod ? `<span class="mod-badge">MOD</span>` : '';
-
-      document.getElementById('active-thread-title').innerHTML = `<span style="color: ${getUserColor(userHash)}">@${escapeHtml(userName)}</span> ${modBadge}`;
       
-      // Moderator-only controls inside header
-      document.getElementById('rename-room-btn').style.display = isMod ? 'inline-block' : 'none';
-      document.getElementById('add-member-btn').style.display = isMod ? 'inline-block' : 'none';
-      document.getElementById('delete-thread-btn').style.display = 'inline-block';
+      const threadView = document.getElementById('inbox-active-thread');
+      threadView.style.display = 'flex';
 
+      document.getElementById('active-thread-title').innerHTML = `<span style="color: ${getUserColor(userHash)}">@${escapeHtml(userName)}</span>`;
+      
       if (window.innerWidth <= 768) {
         document.getElementById('inbox-main-pane').classList.add('active-mobile');
         document.getElementById('mobile-back-btn').style.display = 'block';
@@ -845,37 +1606,14 @@
       loadInboxConversations();
     }
 
-    function closeMobileThread() { document.getElementById('inbox-main-pane').classList.remove('active-mobile'); }
-
-    async function loadMainChatMessages() {
-      const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
-      const canvas = document.getElementById('dm-canvas');
-      canvas.innerHTML = '';
-      if (data) {
-        data.forEach(msg => {
-          const isMe = msg.user_hash === currentUserHash;
-          const userColor = getUserColor(msg.user_hash || msg.username);
-          const msgDiv = document.createElement('div');
-          msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
-          msgDiv.style.setProperty('--user-accent-color', userColor);
-
-          let contentHtml = isImageUrl(msg.content) ? `<div class="msg-content"><img src="${msg.content}" loading="lazy"></div>` : `<div class="msg-content">${escapeHtml(msg.content)}</div>`;
-
-          msgDiv.innerHTML = `
-            <div class="msg-header">
-              <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(msg.username || 'Anon')}</span>
-              <span class="timestamp">${formatTime(msg.created_at)}</span>
-            </div>${contentHtml}
-          `;
-          canvas.appendChild(msgDiv);
-        });
-        canvas.scrollTop = canvas.scrollHeight;
-      }
+    function closeMobileThread() {
+      document.getElementById('inbox-main-pane').classList.remove('active-mobile');
     }
 
     async function loadInboxThreadMessages() {
       if (!activeDMTarget || !currentUserHash) return;
-      const { data } = await supabaseClient
+
+      const { data, error } = await supabaseClient
         .from('dms')
         .select('*')
         .or(`and(sender_hash.eq.${currentUserHash},recipient_hash.eq.${activeDMTarget.hash}),and(sender_hash.eq.${activeDMTarget.hash},recipient_hash.eq.${currentUserHash})`)
@@ -883,7 +1621,13 @@
 
       const canvas = document.getElementById('dm-canvas');
       canvas.innerHTML = '';
-      if (data) {
+
+      if (error) {
+        console.error("Error loading DM messages:", error);
+        return;
+      }
+
+      if (data && data.length > 0) {
         data.forEach(dm => {
           const isMe = dm.sender_hash === currentUserHash;
           const msg = document.createElement('div');
@@ -905,123 +1649,81 @@
       if (!text || !activeDMTarget) return;
 
       input.value = '';
+      const { error } = await supabaseClient.from('dms').insert([{
+        sender_name: currentUser,
+        sender_hash: currentUserHash,
+        recipient_name: activeDMTarget.name,
+        recipient_hash: activeDMTarget.hash,
+        content: text
+      }]);
 
-      if (activeDMTarget.isMainChat) {
-        const { error } = await supabaseClient.from('messages').insert([{ 
-          username: currentUser, user_hash: currentUserHash, content: text 
-        }]);
-        if (error) alert("Error sending: " + error.message);
-        else loadMainChatMessages();
+      if (error) {
+        alert("Error sending DM: " + error.message);
       } else {
-        const { error } = await supabaseClient.from('dms').insert([{
-          sender_name: currentUser, sender_hash: currentUserHash,
-          recipient_name: activeDMTarget.name, recipient_hash: activeDMTarget.hash,
-          group_name: activeDMTarget.name, content: text
-        }]);
-        if (error) alert("Error sending: " + error.message);
-        else { loadInboxThreadMessages(); loadInboxConversations(); }
+        loadInboxThreadMessages();
+        loadInboxConversations();
       }
     }
 
-    async function renameCurrentRoom() {
-      if (!activeDMTarget || activeDMTarget.isMainChat) return;
-      const newName = prompt("Enter new room name:", activeDMTarget.name);
-      if (newName && newName.trim()) {
-        const cleanName = newName.trim();
-        await supabaseClient.from('dms')
-          .update({ group_name: cleanName })
-          .or(`recipient_hash.eq.${activeDMTarget.hash},sender_hash.eq.${activeDMTarget.hash}`);
-        
-        activeDMTarget.name = cleanName;
-        selectDMThread(cleanName, activeDMTarget.hash, activeDMTarget.creatorHash);
-      }
-    }
-
-    function promptInviteMember() {
-      if (!activeDMTarget || activeDMTarget.isMainChat) return;
-      const available = [];
-      knownUsers.forEach((name, hash) => {
-        if (hash !== currentUserHash && hash !== activeDMTarget.hash) available.push({ name, hash });
-      });
-
-      if (available.length === 0) return alert("No other users found online or in history yet!");
-
-      const listText = available.map((u, i) => `${i + 1}. @${u.name}`).join('\n');
-      const choice = prompt(`Select user number to add to ${activeDMTarget.name}:\n\n${listText}`);
-      
-      if (choice) {
-        const idx = parseInt(choice, 10) - 1;
-        if (available[idx]) {
-          const invited = available[idx];
-          supabaseClient.from('dms').insert([{
-            sender_name: currentUser, sender_hash: currentUserHash,
-            recipient_name: activeDMTarget.name, recipient_hash: invited.hash,
-            group_name: activeDMTarget.name, content: `👋 @${invited.name} was added to the room by @${currentUser}!`
-          }]).then(() => {
-            alert(`Added @${invited.name}!`);
-            loadInboxThreadMessages();
-          });
-        }
-      }
-    }
-
-    async function deleteCurrentThread() {
-      if (!activeDMTarget || activeDMTarget.isMainChat) return;
-      if (confirm(`Delete thread @${activeDMTarget.name}?`)) {
-        await supabaseClient
-          .from('dms')
-          .delete()
-          .or(`and(sender_hash.eq.${currentUserHash},recipient_hash.eq.${activeDMTarget.hash}),and(sender_hash.eq.${activeDMTarget.hash},recipient_hash.eq.${currentUserHash})`);
-        
-        selectMainChat();
-      }
-    }
-
+    // Compose View Handling
     function openComposeView() {
       activeDMTarget = null;
       document.getElementById('inbox-empty-state').style.display = 'none';
       document.getElementById('inbox-active-thread').style.display = 'none';
-      document.getElementById('inbox-compose-view').style.display = 'flex';
 
-      const container = document.getElementById('compose-members-checkboxes');
-      container.innerHTML = '';
+      const composeView = document.getElementById('inbox-compose-view');
+      composeView.style.display = 'flex';
+
+      if (window.innerWidth <= 768) {
+        document.getElementById('inbox-main-pane').classList.add('active-mobile');
+        document.getElementById('mobile-compose-back-btn').style.display = 'block';
+      }
+
+      const select = document.getElementById('compose-recipient-select');
+      select.innerHTML = '<option value="">-- Select a Room Contact --</option>';
 
       knownUsers.forEach((name, hash) => {
         if (hash !== currentUserHash) {
-          const label = document.createElement('label');
-          label.className = 'checkbox-item';
-          label.innerHTML = `<input type="checkbox" value="${hash}" data-name="${name}"> @${escapeHtml(name)}`;
-          container.appendChild(label);
+          const opt = document.createElement('option');
+          opt.value = hash;
+          opt.textContent = `@${name}`;
+          select.appendChild(opt);
         }
       });
     }
 
     function cancelCompose() {
       document.getElementById('inbox-compose-view').style.display = 'none';
-      selectMainChat();
+      document.getElementById('inbox-empty-state').style.display = 'flex';
+      closeMobileThread();
     }
 
     async function submitComposeDM() {
-      const roomNameInput = document.getElementById('compose-room-name').value.trim();
-      const checkboxes = document.querySelectorAll('#compose-members-checkboxes input:checked');
-      const text = document.getElementById('compose-message-input').value.trim();
+      const select = document.getElementById('compose-recipient-select');
+      const input = document.getElementById('compose-message-input');
 
-      if (checkboxes.length === 0 || !text) return alert("Please tick at least one member box and write a message!");
+      const recipientHash = select.value;
+      const recipientName = knownUsers.get(recipientHash);
+      const text = input.value.trim();
 
-      const selectedHash = checkboxes[0].value;
-      const roomTitle = roomNameInput || `Room with @${checkboxes[0].dataset.name}`;
+      if (!recipientHash || !text) {
+        return alert("Please select a recipient and enter a message!");
+      }
 
-      document.getElementById('compose-message-input').value = '';
-      document.getElementById('compose-room-name').value = '';
-
+      input.value = '';
       const { error } = await supabaseClient.from('dms').insert([{
-        sender_name: currentUser, sender_hash: currentUserHash,
-        recipient_name: roomTitle, recipient_hash: selectedHash,
-        group_name: roomTitle, content: text
+        sender_name: currentUser,
+        sender_hash: currentUserHash,
+        recipient_name: recipientName,
+        recipient_hash: recipientHash,
+        content: text
       }]);
 
-      if (error) alert("Error creating room: " + error.message);
-      else selectDMThread(roomTitle, selectedHash, currentUserHash);
+      if (error) {
+        alert("Error sending message: " + error.message);
+      } else {
+        selectDMThread(recipientName, recipientHash);
+      }
     }
 
     function subscribeToDMs() {
@@ -1030,8 +1732,9 @@
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
           if (payload.new.recipient_hash === currentUserHash) {
             playNotificationSound();
+
             const senderHash = payload.new.sender_hash;
-            const isCurrentlyViewingThread = (activeDMTarget && activeDMTarget.hash === senderHash);
+            const isCurrentlyViewingThread = (currentView === 'inbox' && activeDMTarget && activeDMTarget.hash === senderHash);
 
             if (!isCurrentlyViewingThread) {
               const currentUnread = unreadDMCounters.get(senderHash) || 0;
@@ -1039,17 +1742,26 @@
               updateTotalUnreadBadge();
             }
 
-            loadInboxConversations();
-            if (isCurrentlyViewingThread) loadInboxThreadMessages();
+            if (currentView === 'inbox') {
+              loadInboxConversations();
+              if (isCurrentlyViewingThread) {
+                loadInboxThreadMessages();
+              }
+            }
           }
         })
         .subscribe();
     }
 
+    // Realtime Presence Setup
     const presenceChannel = supabaseClient.channel('chat_room_presence');
 
     function updatePresence(name) {
-      presenceChannel.track({ user: name || 'Anon', user_hash: currentUserHash, online_at: new Date().toISOString() });
+      presenceChannel.track({
+        user: name || 'Anon',
+        user_hash: currentUserHash,
+        online_at: new Date().toISOString()
+      });
     }
 
     presenceChannel
@@ -1058,28 +1770,43 @@
         const users = [];
         for (const id in state) {
           state[id].forEach(u => {
-            if (u.user && !users.some(e => e.user === u.user && e.user_hash === u.user_hash)) users.push(u);
+            if (u.user && !users.some(existing => existing.user === u.user && existing.user_hash === u.user_hash)) {
+              users.push(u);
+            }
           });
         }
+
         document.getElementById('presence-count').textContent = `${users.length}`;
         const listContainer = document.getElementById('presence-list');
         listContainer.innerHTML = '';
+
         users.forEach(u => {
           if (u.user_hash && u.user) knownUsers.set(u.user_hash, u.user);
           const uColor = getUserColor(u.user_hash || u.user);
           const item = document.createElement('div');
-          item.className = `presence-user-item`;
-          item.onclick = () => { selectDMThread(u.user, u.user_hash, null); };
+          item.className = 'presence-user-item';
+          item.onclick = () => { 
+            switchView('inbox');
+            selectDMThread(u.user, u.user_hash);
+          };
           item.innerHTML = `<span class="status-dot" style="width: 7px; height: 7px; background-color: ${uColor}"></span> ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
           listContainer.appendChild(item);
         });
       })
-      .subscribe(async status => { if (status === 'SUBSCRIBED') updatePresence(currentUser); });
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          updatePresence(currentUser);
+        }
+      });
 
+    // Realtime Messages Setup
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        if (activeDMTarget && activeDMTarget.isMainChat) loadMainChatMessages();
+        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.user_hash, payload.new.content, payload.new.created_at);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, payload => {
+        removeMessageFromUI(payload.old.id);
       })
       .subscribe();
 
@@ -1089,7 +1816,7 @@
       currentPin = localStorage.getItem('chat_pin') || '0000';
       currentUserHash = await generateUserHash(currentUser, currentPin);
       knownUsers.set(currentUserHash, currentUser);
-      await loadInboxConversations();
+      await loadMessages();
       subscribeToDMs();
       checkFirstVisit();
     }
