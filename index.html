@@ -302,7 +302,7 @@
       align-items: center;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="password"] {
       background-color: var(--bg-color);
       border: 1px solid var(--border-color);
       color: var(--text-color);
@@ -314,13 +314,8 @@
       transition: border-color 0.2s ease;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, input[type="password"]:focus {
       border-color: var(--accent-color);
-    }
-
-    #username {
-      width: 20%;
-      min-width: 110px;
     }
 
     #message {
@@ -378,7 +373,7 @@
       background-color: var(--my-msg-bg);
       color: #ffffff;
       border: none;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1.25rem;
       border-radius: 8px;
       font-weight: 600;
       font-size: 0.95rem;
@@ -395,7 +390,7 @@
       transform: scale(0.97);
     }
 
-    /* Settings & Rules Modals */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -467,6 +462,18 @@
 
     .rules-list-item span.icon {
       font-size: 1.1rem;
+    }
+
+    .identity-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .identity-form label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #94a3b8;
     }
 
     .preset-section h4 {
@@ -586,12 +593,6 @@
     }
 
     @media (max-width: 600px) {
-      .input-container {
-        flex-direction: column;
-      }
-      #username {
-        width: 100%;
-      }
       .msg {
         max-width: 90%;
       }
@@ -615,6 +616,7 @@
         </div>
       </div>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Notification Sound">🔊</button>
+      <button class="icon-btn" onclick="openProfileModal()" title="Edit Name & PIN">👤 Profile</button>
       <button class="icon-btn" onclick="openRulesModal()" title="View Rules & Guide">❓ Help</button>
       <button class="icon-btn" onclick="openSettings()">⚙ Settings</button>
     </div>
@@ -649,7 +651,6 @@
     </div>
 
     <div class="input-container">
-      <input type="text" id="username" placeholder="Your Name">
       <input type="text" id="message" placeholder="Type a message or paste image link..." onkeydown="if(event.key === 'Enter') sendMessage()">
       <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
       <button class="btn-primary" onclick="sendMessage()">Send</button>
@@ -674,10 +675,18 @@
         </div>
 
         <div class="rules-list-item">
+          <span class="icon">🔑</span>
+          <div>
+            <strong>Device Syncing (Name & PIN):</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">You will set up a Display Name and secret 4-digit PIN. Entering the same Name + PIN on any device will sync your user color identity and ownership across devices!</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
           <span class="icon">🎨</span>
           <div>
-            <strong>Unique User Colors & Themes:</strong>
-            <p style="color: #94a3b8; margin-top: 0.2rem;">Everyone gets a unique name and border color automatically! You can change themes (Miku, Teto, Rin/Len, etc.) or custom colors in <strong>⚙ Settings</strong>.</p>
+            <strong>Unique Colors & Themes:</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Your accent color is generated from your Name + PIN signature. Pick Vocaloid themes (Miku, Teto, etc.) or custom colors in <strong>⚙ Settings</strong>.</p>
           </div>
         </div>
 
@@ -685,21 +694,42 @@
           <span class="icon">🖼️</span>
           <div>
             <strong>Sending Images:</strong>
-            <p style="color: #94a3b8; margin-top: 0.2rem;">Paste any direct image URL (from Discord, Google Images, Reddit, Imgur, etc.) into the message box and press Send to share it instantly.</p>
-          </div>
-        </div>
-
-        <div class="rules-list-item">
-          <span class="icon">👥</span>
-          <div>
-            <strong>Live Online List & Sounds:</strong>
-            <p style="color: #94a3b8; margin-top: 0.2rem;">Click the <strong>Online</strong> badge in the header to see who is active right now. Toggle the speaker icon to mute or enable chime notifications.</p>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Paste any image link (Google thumbnails, Discord, Imgur, Reddit) into the text box and press Send.</p>
           </div>
         </div>
       </div>
 
       <div class="modal-actions" style="justify-content: flex-end;">
-        <button class="btn-primary" onclick="closeRulesModal()">Got it, let's chat!</button>
+        <button class="btn-primary" onclick="proceedToIdentityModal()">Next: Set Name & PIN →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile / Name & PIN Setup Modal -->
+  <div class="modal-overlay" id="profile-modal">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Setup Identity 👤</h3>
+        <button class="close-btn" onclick="closeProfileModal()">✕</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
+        Enter your display name and a secret 4-digit PIN. Use the same Name + PIN on another phone or computer to sync your messages!
+      </p>
+
+      <div class="identity-form">
+        <div>
+          <label for="modal-username">Display Name</label>
+          <input type="text" id="modal-username" placeholder="e.g. Miku" style="width: 100%; margin-top: 0.3rem;">
+        </div>
+        <div>
+          <label for="modal-pin">4-Digit PIN</label>
+          <input type="password" id="modal-pin" maxlength="4" placeholder="••••" style="width: 100%; margin-top: 0.3rem; letter-spacing: 0.15em;">
+        </div>
+      </div>
+
+      <div class="modal-actions" style="justify-content: flex-end;">
+        <button class="btn-primary" onclick="saveProfileIdentity()">Save & Continue</button>
       </div>
     </div>
   </div>
@@ -795,17 +825,60 @@
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const chatDiv = document.getElementById('chat');
-    const usernameInput = document.getElementById('username');
     const messageInput = document.getElementById('message');
     const toast = document.getElementById('unread-toast');
     const modal = document.getElementById('settings-modal');
     const rulesModal = document.getElementById('rules-modal');
+    const profileModal = document.getElementById('profile-modal');
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
 
+    const modalUsernameInput = document.getElementById('modal-username');
+    const modalPinInput = document.getElementById('modal-pin');
+
     let pendingDeleteId = null;
     let soundEnabled = true;
+    let currentUser = 'Anon';
+    let currentPin = '0000';
+    let currentUserHash = '';
+
+    // Fast SHA-256 Hashing for Name + PIN identity
+    async function generateUserHash(name, pin) {
+      const cleanName = (name || 'Anon').trim().toLowerCase();
+      const cleanPin = (pin || '0000').trim();
+      const encoder = new TextEncoder();
+      const data = encoder.encode(`${cleanName}:${cleanPin}`);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function saveProfileIdentity() {
+      const name = modalUsernameInput.value.trim() || 'Anon';
+      const pin = modalPinInput.value.trim() || '0000';
+
+      currentUser = name;
+      currentPin = pin;
+
+      localStorage.setItem('chat_username', currentUser);
+      localStorage.setItem('chat_pin', currentPin);
+
+      currentUserHash = await generateUserHash(currentUser, currentPin);
+      updatePresence(currentUser);
+      closeProfileModal();
+      loadMessages();
+    }
+
+    function openProfileModal() {
+      modalUsernameInput.value = currentUser;
+      modalPinInput.value = currentPin;
+      profileModal.style.display = 'flex';
+    }
+
+    function closeProfileModal() {
+      profileModal.style.display = 'none';
+    }
 
     // Rules Modal Handling
     function openRulesModal() {
@@ -817,10 +890,19 @@
       localStorage.setItem('chat_has_seen_rules', 'true');
     }
 
+    function proceedToIdentityModal() {
+      closeRulesModal();
+      if (!localStorage.getItem('chat_username')) {
+        openProfileModal();
+      }
+    }
+
     function checkFirstVisit() {
       const hasSeen = localStorage.getItem('chat_has_seen_rules');
       if (!hasSeen) {
         openRulesModal();
+      } else if (!localStorage.getItem('chat_username')) {
+        openProfileModal();
       }
     }
 
@@ -860,15 +942,13 @@
       '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
     ];
 
-    function getUserColor(username) {
-      if (!username) return userColorPalette[0];
-      let hash = 0;
-      const cleanName = username.trim().toLowerCase();
-      for (let i = 0; i < cleanName.length; i++) {
-        hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+    function getUserColor(hash) {
+      if (!hash) return userColorPalette[0];
+      let num = 0;
+      for (let i = 0; i < hash.length; i++) {
+        num += hash.charCodeAt(i);
       }
-      const index = Math.abs(hash) % userColorPalette.length;
-      return userColorPalette[index];
+      return userColorPalette[num % userColorPalette.length];
     }
 
     const defaultTheme = {
@@ -1002,17 +1082,6 @@
       }
     });
 
-    const savedName = localStorage.getItem('chat_username');
-    if (savedName) {
-      usernameInput.value = savedName;
-    }
-
-    usernameInput.addEventListener('input', () => {
-      const name = usernameInput.value.trim() || 'Anon';
-      localStorage.setItem('chat_username', name);
-      updatePresence(name);
-    });
-
     function formatTime(isoString) {
       if (!isoString) return '';
       const date = new Date(isoString);
@@ -1024,16 +1093,13 @@
       const cleanUrl = url.trim().toLowerCase();
       if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
 
-      // Google Image search thumbnails / static content
       if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) {
         return true;
       }
 
-      // Standard image extensions (matching file extensions anywhere before or inside URL parameters)
       const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#|&)/i;
       if (imageExtensions.test(cleanUrl)) return true;
 
-      // Common image hosts and CDNs
       const imageHosts = [
         'media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net',
         'images.unsplash.com', 'i.postimg.cc', 'i.redd.it', 'preview.redd.it', 'tenor.com/view'
@@ -1042,17 +1108,16 @@
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
-    function appendMessage(id, user, text, createdAt) {
+    function appendMessage(id, user, userHash, text, createdAt) {
       if (id && document.getElementById(`msg-${id}`)) return;
 
-      const currentUser = usernameInput.value.trim() || 'Anon';
-      const isMe = user.toLowerCase() === currentUser.toLowerCase();
+      const isMe = userHash && userHash === currentUserHash;
 
       const msgDiv = document.createElement('div');
       msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
       if (id) msgDiv.id = `msg-${id}`;
 
-      const userColor = getUserColor(user);
+      const userColor = getUserColor(userHash || user);
       msgDiv.style.setProperty('--user-accent-color', userColor);
 
       const formattedTime = formatTime(createdAt);
@@ -1147,20 +1212,27 @@
       const { data } = await supabaseClient.from('messages').select('*').order('created_at', { ascending: true });
       if (data) {
         chatDiv.innerHTML = '';
-        data.forEach(msg => appendMessage(msg.id, msg.username || 'Anon', msg.content, msg.created_at));
+        data.forEach(msg => appendMessage(msg.id, msg.username || 'Anon', msg.user_hash, msg.content, msg.created_at));
         scrollToBottom();
       }
     }
 
     async function sendMessage() {
-      const user = usernameInput.value.trim() || 'Anon';
       const text = messageInput.value.trim();
       if (!text) return;
 
-      localStorage.setItem('chat_username', user);
+      if (!currentUserHash) {
+        currentUserHash = await generateUserHash(currentUser, currentPin);
+      }
+
       messageInput.value = '';
       
-      const { error } = await supabaseClient.from('messages').insert([{ username: user, content: text }]);
+      const { error } = await supabaseClient.from('messages').insert([{ 
+        username: currentUser, 
+        user_hash: currentUserHash,
+        content: text 
+      }]);
+
       if (error) {
         alert("Error sending message: " + error.message);
       }
@@ -1177,6 +1249,7 @@
     function updatePresence(name) {
       presenceChannel.track({
         user: name || 'Anon',
+        user_hash: currentUserHash,
         online_at: new Date().toISOString()
       });
     }
@@ -1187,7 +1260,9 @@
         const users = [];
         for (const id in state) {
           state[id].forEach(u => {
-            if (u.user && !users.includes(u.user)) users.push(u.user);
+            if (u.user && !users.some(existing => existing.user === u.user && existing.user_hash === u.user_hash)) {
+              users.push(u);
+            }
           });
         }
 
@@ -1197,17 +1272,16 @@
         const listContainer = document.getElementById('presence-list');
         listContainer.innerHTML = '';
         users.forEach(u => {
-          const uColor = getUserColor(u);
+          const uColor = getUserColor(u.user_hash || u.user);
           const item = document.createElement('div');
           item.className = 'presence-user-item';
-          item.innerHTML = `<span class="status-dot" style="width: 6px; height: 6px; background-color: ${uColor}"></span> ${escapeHtml(u)}`;
+          item.innerHTML = `<span class="status-dot" style="width: 6px; height: 6px; background-color: ${uColor}"></span> ${escapeHtml(u.user)}`;
           listContainer.appendChild(item);
         });
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          const name = usernameInput.value.trim() || 'Anon';
-          updatePresence(name);
+          updatePresence(currentUser);
         }
       });
 
@@ -1215,16 +1289,23 @@
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.content, payload.new.created_at);
+        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.user_hash, payload.new.content, payload.new.created_at);
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, payload => {
         removeMessageFromUI(payload.old.id);
       })
       .subscribe();
 
-    loadSavedTheme();
-    loadMessages();
-    checkFirstVisit();
+    async function init() {
+      loadSavedTheme();
+      currentUser = localStorage.getItem('chat_username') || 'Anon';
+      currentPin = localStorage.getItem('chat_pin') || '0000';
+      currentUserHash = await generateUserHash(currentUser, currentPin);
+      await loadMessages();
+      checkFirstVisit();
+    }
+
+    init();
   </script>
 </body>
 </html>
