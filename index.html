@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Friends Chat</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital@0;1&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-color: #0f172a;
@@ -1060,8 +1060,8 @@
         <div class="rules-list-item">
           <span class="icon">✨</span>
           <div>
-            <strong>Rich Formatting & Image Paste:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Use *italics*, **bold**, `code`, and paste screenshots directly from your clipboard!</p>
+            <strong>Rich Formatting & Custom Fonts:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Use *italics*, **bold**, `code`, or custom font tags like [pixel], [script], [serif], and [mono]!</p>
           </div>
         </div>
 
@@ -1556,7 +1556,7 @@
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
-    // MARKDOWN & HYPERLINK PARSER
+    // MARKDOWN, HYPERLINK & CUSTOM FONT BRACKETS PARSER
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
 
@@ -1566,17 +1566,17 @@
         return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
       });
 
-      // **Bold** -> <strong>
-      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Custom Font Brackets: [pixel], [script], [serif], [mono]
+      escaped = escaped.replace(/\[pixel\](.*?)\[\/pixel\]/gi, '<span style="font-family: \'Press Start 2P\', monospace; font-size: 0.75em;">$1</span>');
+      escaped = escaped.replace(/\[script\](.*?)\[\/script\]/gi, '<span style="font-family: \'Caveat\', cursive; font-size: 1.25em;">$1</span>');
+      escaped = escaped.replace(/\[serif\](.*?)\[\/serif\]/gi, '<span style="font-family: \'Playfair Display\', serif;">$1</span>');
+      escaped = escaped.replace(/\[mono\](.*?)\[\/mono\]/gi, '<span style="font-family: monospace; background: rgba(0,0,0,0.25); padding: 0.1rem 0.3rem; border-radius: 4px;">$1</span>');
 
-      // *Italics* or _Italics_ -> <em>
+      // Standard Markdown Syntax
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
       escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
-
-      // ~~Strikethrough~~ -> <del>
       escaped = escaped.replace(/~~(.*?)~~/g, '<del>$1</del>');
-
-      // `Code` -> <span class="msg-code">
       escaped = escaped.replace(/`(.*?)`/g, '<span class="msg-code">$1</span>');
 
       return escaped;
