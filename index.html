@@ -341,7 +341,7 @@
       transform: scale(0.97);
     }
 
-    /* Settings Modal */
+    /* Settings Modal & Delete Confirmation Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -498,6 +498,22 @@
       background-color: var(--border-color);
     }
 
+    .btn-danger {
+      background-color: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
     @media (max-width: 600px) {
       .input-container {
         flex-direction: column;
@@ -626,6 +642,23 @@
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3>Delete Message</h3>
+        <button class="close-btn" onclick="closeDeleteModal()">✕</button>
+      </div>
+      <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">
+        Are you sure you want to delete this message? Please make sure you have the sender's permission if this isn't your message.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" id="confirm-delete-btn">Delete Message</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdm1uaXRod2ZtZGNmd3J6cWR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTkyODksImV4cCI6MjEwODI3NTI4OX0.OvdamS8cb7F3AS9w1RUtLedZiQBdv9_FgO_YTdK1DX0";
@@ -637,7 +670,11 @@
     const messageInput = document.getElementById('message');
     const toast = document.getElementById('unread-toast');
     const modal = document.getElementById('settings-modal');
+    const deleteModal = document.getElementById('delete-modal');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
+
+    let pendingDeleteId = null;
 
     const defaultTheme = {
       '--bg-color': '#0f172a',
@@ -761,7 +798,6 @@
       emojiPopover.style.display = 'none';
     }
 
-    // Close emoji popover when clicking outside
     document.addEventListener('click', (e) => {
       if (!e.target.closest('.emoji-popover') && !e.target.closest('.emoji-picker-btn')) {
         emojiPopover.style.display = 'none';
@@ -810,7 +846,8 @@
         contentHtml = `<div class="msg-content">${escapeHtml(text)}</div>`;
       }
 
-      const deleteBtnHtml = isMe && id ? `<button class="delete-btn" onclick="deleteMessage(${id})" title="Delete message">✕</button>` : '';
+      // Show delete button on all messages
+      const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
 
       msgDiv.innerHTML = `
         <div class="msg-header">
@@ -834,7 +871,30 @@
       }
     }
 
-    async function deleteMessage(id) {
+    function promptDelete(id, isMe) {
+      if (isMe) {
+        // Direct delete for messages sent in current session
+        executeDelete(id);
+      } else {
+        // Show confirmation popup for other messages/devices
+        pendingDeleteId = id;
+        deleteModal.style.display = 'flex';
+      }
+    }
+
+    function closeDeleteModal() {
+      pendingDeleteId = null;
+      deleteModal.style.display = 'none';
+    }
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (pendingDeleteId) {
+        executeDelete(pendingDeleteId);
+        closeDeleteModal();
+      }
+    });
+
+    async function executeDelete(id) {
       const { error } = await supabaseClient.from('messages').delete().eq('id', id);
       if (error) {
         alert("Error deleting message: " + error.message);
