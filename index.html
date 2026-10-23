@@ -38,6 +38,7 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
+    /* Top Header */
     .chat-header {
       padding: 0.75rem 1rem;
       background-color: var(--card-color);
@@ -76,74 +77,20 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
-      flex-shrink: 0;
-    }
-
-    .presence-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      background-color: var(--border-color);
-      color: var(--text-color);
-      padding: 0.3rem 0.5rem;
-      border-radius: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      position: relative;
-      white-space: nowrap;
-    }
-
-    .presence-badge:hover {
-      opacity: 0.9;
-    }
-
-    .presence-dropdown {
-      position: absolute;
-      top: 2.2rem;
-      right: 0;
-      background-color: var(--card-color);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.75rem;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-      display: none;
-      flex-direction: column;
-      gap: 0.4rem;
-      min-width: 150px;
-      z-index: 50;
-    }
-
-    .presence-dropdown h4 {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: #94a3b8;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 0.3rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .presence-user-item {
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-weight: 500;
+      gap: 0.5rem;
     }
 
     .icon-btn {
       background: none;
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      padding: 0.4rem 0.6rem;
+      padding: 0.4rem 0.65rem;
       border-radius: 8px;
       font-size: 0.85rem;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.35rem;
       transition: background-color 0.2s;
     }
 
@@ -151,6 +98,125 @@
       background-color: var(--border-color);
     }
 
+    .app-layout {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sidebar Overlay & Drawer */
+    .sidebar-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 30;
+      display: none;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar {
+      width: 260px;
+      background-color: var(--card-color);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      z-index: 35;
+      transition: transform 0.25s ease;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .sidebar.open ~ .sidebar-overlay {
+        display: block;
+      }
+    }
+
+    .sidebar-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .sidebar-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--text-color);
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-align: left;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .sidebar-btn:hover {
+      background-color: var(--border-color);
+    }
+
+    .sidebar-btn.active {
+      background-color: var(--border-color);
+      border-color: var(--accent-color);
+    }
+
+    .presence-container {
+      margin-top: auto;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+    }
+
+    .presence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      max-height: 160px;
+      overflow-y: auto;
+      margin-top: 0.4rem;
+    }
+
+    .presence-user-item {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      padding: 0.3rem 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .presence-user-item:hover {
+      background-color: var(--border-color);
+    }
+
+    /* Main Chat Display */
     .chat-wrapper {
       flex: 1;
       position: relative;
@@ -171,7 +237,6 @@
       margin: 0 auto;
     }
 
-    /* Custom Scrollbar */
     #chat::-webkit-scrollbar {
       width: 6px;
     }
@@ -180,7 +245,6 @@
       border-radius: 4px;
     }
 
-    /* Message Bubbles */
     .msg {
       background-color: var(--friend-msg-bg);
       border: 1px solid var(--border-color);
@@ -199,7 +263,6 @@
       position: relative;
     }
 
-    /* Own Messages (Right-aligned) */
     .msg.user-me {
       align-self: flex-end;
       background-color: var(--my-msg-bg);
@@ -279,7 +342,6 @@
       object-fit: contain;
     }
 
-    /* Unread Toast Banner */
     #unread-toast {
       position: absolute;
       bottom: 0.75rem;
@@ -352,7 +414,6 @@
       background-color: var(--border-color);
     }
 
-    /* Emoji Picker Popover */
     .emoji-popover {
       position: absolute;
       bottom: 4rem;
@@ -608,73 +669,48 @@
       background-color: #dc2626;
     }
 
-    /* Arcade Games Menu Styling */
-    .games-menu {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    /* Inbox / Direct Messages Modal */
+    .inbox-list {
+      display: flex;
+      flex-direction: column;
       gap: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
     }
 
-    .game-tab-btn {
+    .inbox-item {
+      padding: 0.6rem 0.75rem;
       background-color: var(--bg-color);
       border: 1px solid var(--border-color);
-      color: var(--text-color);
-      padding: 0.6rem;
       border-radius: 8px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.2rem;
     }
 
-    .game-tab-btn.active {
+    .inbox-item:hover {
       border-color: var(--accent-color);
-      background-color: var(--border-color);
     }
 
-    .game-viewport {
+    .dm-thread {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 0.5rem;
-      position: relative;
-      min-height: 320px;
-    }
-
-    canvas {
-      background: #000;
-      border-radius: 8px;
-      max-width: 100%;
-      touch-action: none;
-    }
-
-    .game-controls {
-      display: flex;
       gap: 0.5rem;
-      margin-top: 0.5rem;
+      height: 220px;
+      overflow-y: auto;
+      background-color: var(--bg-color);
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
 
-    /* Mobile Header & Layout Optimization */
     @media (max-width: 600px) {
       .chat-header {
         padding: 0.6rem 0.75rem;
       }
       .chat-header h2 {
         font-size: 0.95rem;
-      }
-      .btn-label {
-        display: none;
-      }
-      .icon-btn {
-        padding: 0.4rem 0.5rem;
-        font-size: 0.9rem;
       }
       .msg {
         max-width: 90%;
@@ -687,32 +723,50 @@
 </head>
 <body>
 
+  <!-- Top Header Bar -->
   <div class="chat-header">
-    <h2><span class="status-dot"></span> Chatroom</h2>
+    <div style="display: flex; align-items: center; gap: 0.6rem;">
+      <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Sidebar">☰</button>
+      <h2><span class="status-dot"></span> Chatroom</h2>
+    </div>
     <div class="header-actions">
-      <div class="presence-badge" onclick="togglePresenceDropdown()">
-        <span class="status-dot" style="width: 6px; height: 6px;"></span>
-        <span id="presence-count">1</span>
-        <div class="presence-dropdown" id="presence-dropdown">
-          <h4>Active Now</h4>
-          <div id="presence-list"></div>
-        </div>
-      </div>
-      <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Notification Sound">🔊</button>
-      <button class="icon-btn" onclick="openGamesModal()" title="Arcade Games">🎮 <span class="btn-label">Games</span></button>
-      <button class="icon-btn" onclick="openProfileModal()" title="Edit Name & PIN">👤 <span class="btn-label">Profile</span></button>
-      <button class="icon-btn" onclick="openRulesModal()" title="View Rules & Guide">❓ <span class="btn-label">Help</span></button>
-      <button class="icon-btn" onclick="openSettings()" title="Settings">⚙️ <span class="btn-label">Settings</span></button>
+      <button class="icon-btn" onclick="openInboxModal()" title="Direct Messages">📥 DM <span id="dm-badge" style="background: #ef4444; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 10px; display: none;">New</span></button>
+      <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
     </div>
   </div>
 
-  <div class="chat-wrapper">
-    <div id="chat"></div>
-    <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-section-title">Navigation</div>
+      <div class="sidebar-nav">
+        <button class="sidebar-btn active" onclick="switchChannel('public')">💬 Public Chat</button>
+        <button class="sidebar-btn" onclick="openInboxModal(); closeSidebar();">📥 Direct Messages</button>
+      </div>
+
+      <div class="sidebar-section-title" style="margin-top: 0.5rem;">Preferences</div>
+      <div class="sidebar-nav">
+        <button class="sidebar-btn" onclick="openProfileModal(); closeSidebar();">👤 Setup Identity</button>
+        <button class="sidebar-btn" onclick="openRulesModal(); closeSidebar();">❓ Rules & Help</button>
+        <button class="sidebar-btn" onclick="openSettings(); closeSidebar();">⚙️ Theme Settings</button>
+      </div>
+
+      <div class="presence-container">
+        <div class="sidebar-section-title">Active Now (<span id="presence-count">1</span>)</div>
+        <div class="presence-list" id="presence-list"></div>
+      </div>
+    </div>
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Main Chat Window -->
+    <div class="chat-wrapper">
+      <div id="chat"></div>
+      <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
+    </div>
   </div>
 
+  <!-- Bottom Message Input Footer -->
   <div class="chat-footer">
-    <!-- Emoji Popover -->
     <div class="emoji-popover" id="emoji-popover">
       <span onclick="insertEmoji('😀')">😀</span>
       <span onclick="insertEmoji('😂')">😂</span>
@@ -754,7 +808,7 @@
           <span class="icon">⚠️</span>
           <div>
             <strong>Chatroom Rules:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Please do not spam or send massive blocks of illegible text. Any spam or disruptive messages will be deleted by the moderator.</p>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Please do not spam or send massive blocks of illegible text.</p>
           </div>
         </div>
 
@@ -762,31 +816,15 @@
           <span class="icon">🔑</span>
           <div>
             <strong>Device Syncing (Name & PIN):</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">You will set up a Display Name and secret 4-digit PIN. Entering the same Name + PIN on any device will sync your user color identity and ownership across devices!</p>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Your display name and secret 4-digit PIN sync your messages across devices!</p>
           </div>
         </div>
 
         <div class="rules-list-item">
-          <span class="icon">🎨</span>
+          <span class="icon">📥</span>
           <div>
-            <strong>Unique Colors & Themes:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Your accent color is generated from your Name + PIN signature. Pick Vocaloid themes (Miku, Teto, etc.) or custom colors in <strong>⚙️ Settings</strong>.</p>
-          </div>
-        </div>
-
-        <div class="rules-list-item">
-          <span class="icon">🎮</span>
-          <div>
-            <strong>Arcade Mini-Games:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Play Flappy Bird, Snake, or Solitaire right inside the app using the new <strong>🎮 Games</strong> header button!</p>
-          </div>
-        </div>
-
-        <div class="rules-list-item">
-          <span class="icon">🖼️</span>
-          <div>
-            <strong>Sending Images:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Paste any image link (Google thumbnails, Discord, Imgur, Reddit) into the text box and press Send.</p>
+            <strong>Direct Messaging:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Click on any active online user in the sidebar to send a private Direct Message.</p>
           </div>
         </div>
       </div>
@@ -806,7 +844,7 @@
       </div>
 
       <p style="font-size: 0.85rem; color: #94a3b8; line-height: 1.4;">
-        Enter your display name and a secret 4-digit PIN. Use the same Name + PIN on another phone or computer to sync your messages!
+        Enter your display name and secret 4-digit PIN to sync across phones and computers!
       </p>
 
       <div class="identity-form">
@@ -826,30 +864,30 @@
     </div>
   </div>
 
-  <!-- Games Modal -->
-  <div class="modal-overlay" id="games-modal">
-    <div class="modal-card" style="max-width: 420px;">
+  <!-- Direct Messaging / Inbox Modal -->
+  <div class="modal-overlay" id="inbox-modal">
+    <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
-        <h3>Arcade Games 🎮</h3>
-        <button class="close-btn" onclick="closeGamesModal()">✕</button>
+        <h3 id="inbox-title">Direct Messages 📥</h3>
+        <button class="close-btn" onclick="closeInboxModal()">✕</button>
       </div>
 
-      <div class="games-menu">
-        <button class="game-tab-btn active" id="tab-flappy" onclick="switchGame('flappy')">🐤 Flappy</button>
-        <button class="game-tab-btn" id="tab-snake" onclick="switchGame('snake')">🐍 Snake</button>
-        <button class="game-tab-btn" id="tab-solitaire" onclick="switchGame('solitaire')">🃏 Solitaire</button>
-      </div>
-
-      <div class="game-viewport">
-        <canvas id="gameCanvas" width="300" height="300"></canvas>
-        <div id="solitaireContainer" style="display: none; width: 100%; text-align: center; font-size: 0.85rem; color: #94a3b8;">
-          <div id="solitaireBoard" style="margin-bottom: 0.5rem; min-height: 200px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; justify-content: center;"></div>
+      <!-- DM Conversations List -->
+      <div id="inbox-view">
+        <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.5rem;">Select an active conversation or click an online user from the sidebar:</p>
+        <div class="inbox-list" id="inbox-list">
+          <p style="font-size: 0.85rem; color: #64748b;">No recent private conversations yet.</p>
         </div>
       </div>
 
-      <div class="game-controls">
-        <button class="btn-primary" style="width: 100%;" id="gameActionBtn" onclick="triggerGameAction()">Tap / Jump (Space)</button>
-        <button class="btn-secondary" onclick="shareGameScore()">Share Score to Chat 💬</button>
+      <!-- Single DM Thread View -->
+      <div id="dm-thread-view" style="display: none; flex-direction: column; gap: 0.75rem;">
+        <div class="dm-thread" id="dm-thread"></div>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="dm-input" placeholder="Type a private message..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendDM()">
+          <button class="btn-primary" onclick="sendDM()">Send</button>
+        </div>
+        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start;">← Back to Conversations</button>
       </div>
     </div>
   </div>
@@ -862,7 +900,6 @@
         <button class="close-btn" onclick="closeSettings()">✕</button>
       </div>
 
-      <!-- Vocaloid Presets -->
       <div class="preset-section">
         <h4>Vocaloid Themes</h4>
         <div class="preset-grid">
@@ -875,7 +912,6 @@
         </div>
       </div>
 
-      <!-- Custom Color Adjustments -->
       <div class="preset-section">
         <h4>Custom Colors</h4>
         <div class="color-setting-row">
@@ -905,13 +941,6 @@
             <input type="color" id="picker-friend-msg" value="#1e293b" onchange="updateColor('--friend-msg-bg', this.value)">
           </div>
         </div>
-
-        <div class="color-setting-row" style="margin-top: 0.5rem;">
-          <label for="picker-accent">Fallback Accent Color</label>
-          <div class="color-picker-wrapper">
-            <input type="color" id="picker-accent" value="#38bdf8" onchange="updateColor('--accent-color', this.value)">
-          </div>
-        </div>
       </div>
 
       <div class="modal-actions">
@@ -929,7 +958,7 @@
         <button class="close-btn" onclick="closeDeleteModal()">✕</button>
       </div>
       <p style="font-size: 0.95rem; line-height: 1.5; color: var(--text-color);">
-        Are you sure you want to delete this message? Please make sure you have the sender's permission if this isn't your message.
+        Are you sure you want to delete this message?
       </p>
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
@@ -950,7 +979,7 @@
     const modal = document.getElementById('settings-modal');
     const rulesModal = document.getElementById('rules-modal');
     const profileModal = document.getElementById('profile-modal');
-    const gamesModal = document.getElementById('games-modal');
+    const inboxModal = document.getElementById('inbox-modal');
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
@@ -963,8 +992,8 @@
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
+    let activeDMTarget = null; // { name, hash }
 
-    // Fast SHA-256 Hashing for Name + PIN identity
     async function generateUserHash(name, pin) {
       const cleanName = (name || 'Anon').trim().toLowerCase();
       const cleanPin = (pin || '0000').trim();
@@ -973,6 +1002,14 @@
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
     }
 
     async function saveProfileIdentity() {
@@ -989,6 +1026,7 @@
       updatePresence(currentUser);
       closeProfileModal();
       loadMessages();
+      subscribeToDMs();
     }
 
     function openProfileModal() {
@@ -1001,7 +1039,6 @@
       profileModal.style.display = 'none';
     }
 
-    // Rules Modal Handling
     function openRulesModal() {
       rulesModal.style.display = 'flex';
     }
@@ -1027,7 +1064,6 @@
       }
     }
 
-    // Web Audio Chime Generator
     function playNotificationSound() {
       if (!soundEnabled) return;
       try {
@@ -1047,9 +1083,7 @@
 
         osc.start();
         osc.stop(audioCtx.currentTime + 0.3);
-      } catch (e) {
-        // AudioContext blocked or unsupported
-      }
+      } catch (e) {}
     }
 
     function toggleSound() {
@@ -1057,7 +1091,6 @@
       document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
     }
 
-    // User Color Palette
     const userColorPalette = [
       '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
       '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
@@ -1083,60 +1116,12 @@
     };
 
     const vocaloidPresets = {
-      miku: {
-        '--bg-color': '#0a1a1a',
-        '--card-color': '#112e2e',
-        '--border-color': '#1e4d4d',
-        '--text-color': '#e6ffff',
-        '--my-msg-bg': '#39c5bb',
-        '--friend-msg-bg': '#112e2e',
-        '--accent-color': '#39c5bb'
-      },
-      rinlen: {
-        '--bg-color': '#1a180a',
-        '--card-color': '#2e2b11',
-        '--border-color': '#4d471e',
-        '--text-color': '#ffffe6',
-        '--my-msg-bg': '#d4be00',
-        '--friend-msg-bg': '#2e2b11',
-        '--accent-color': '#ffe600'
-      },
-      luka: {
-        '--bg-color': '#1a0d13',
-        '--card-color': '#2e1722',
-        '--border-color': '#4d2638',
-        '--text-color': '#ffe6f0',
-        '--my-msg-bg': '#e6739f',
-        '--friend-msg-bg': '#2e1722',
-        '--accent-color': '#ffbacc'
-      },
-      teto: {
-        '--bg-color': '#1a0808',
-        '--card-color': '#2e0e0e',
-        '--border-color': '#4d1717',
-        '--text-color': '#ffe6e6',
-        '--my-msg-bg': '#d80000',
-        '--friend-msg-bg': '#2e0e0e',
-        '--accent-color': '#ff6666'
-      },
-      kaito: {
-        '--bg-color': '#080d1a',
-        '--card-color': '#0e172e',
-        '--border-color': '#17264d',
-        '--text-color': '#e6ecff',
-        '--my-msg-bg': '#0040ff',
-        '--friend-msg-bg': '#0e172e',
-        '--accent-color': '#6690ff'
-      },
-      gumi: {
-        '--bg-color': '#0a1a0b',
-        '--card-color': '#112e13',
-        '--border-color': '#1d4d21',
-        '--text-color': '#e6ffe8',
-        '--my-msg-bg': '#2ea823',
-        '--friend-msg-bg': '#112e13',
-        '--accent-color': '#39d02b'
-      }
+      miku: { '--bg-color': '#0a1a1a', '--card-color': '#112e2e', '--border-color': '#1e4d4d', '--text-color': '#e6ffff', '--my-msg-bg': '#39c5bb', '--friend-msg-bg': '#112e2e', '--accent-color': '#39c5bb' },
+      rinlen: { '--bg-color': '#1a180a', '--card-color': '#2e2b11', '--border-color': '#4d471e', '--text-color': '#ffffe6', '--my-msg-bg': '#d4be00', '--friend-msg-bg': '#2e2b11', '--accent-color': '#ffe600' },
+      luka: { '--bg-color': '#1a0d13', '--card-color': '#2e1722', '--border-color': '#4d2638', '--text-color': '#ffe6f0', '--my-msg-bg': '#e6739f', '--friend-msg-bg': '#2e1722', '--accent-color': '#ffbacc' },
+      teto: { '--bg-color': '#1a0808', '--card-color': '#2e0e0e', '--border-color': '#4d1717', '--text-color': '#ffe6e6', '--my-msg-bg': '#d80000', '--friend-msg-bg': '#2e0e0e', '--accent-color': '#ff6666' },
+      kaito: { '--bg-color': '#080d1a', '--card-color': '#0e172e', '--border-color': '#17264d', '--text-color': '#e6ecff', '--my-msg-bg': '#0040ff', '--friend-msg-bg': '#0e172e', '--accent-color': '#6690ff' },
+      gumi: { '--bg-color': '#0a1a0b', '--card-color': '#112e13', '--border-color': '#1d4d21', '--text-color': '#e6ffe8', '--my-msg-bg': '#2ea823', '--friend-msg-bg': '#112e13', '--accent-color': '#39d02b' }
     };
 
     function loadSavedTheme() {
@@ -1144,12 +1129,6 @@
       for (const [varName, colorVal] of Object.entries(savedTheme)) {
         document.documentElement.style.setProperty(varName, colorVal);
       }
-
-      document.getElementById('picker-bg').value = savedTheme['--bg-color'] || defaultTheme['--bg-color'];
-      document.getElementById('picker-card').value = savedTheme['--card-color'] || defaultTheme['--card-color'];
-      document.getElementById('picker-my-msg').value = savedTheme['--my-msg-bg'] || defaultTheme['--my-msg-bg'];
-      document.getElementById('picker-friend-msg').value = savedTheme['--friend-msg-bg'] || defaultTheme['--friend-msg-bg'];
-      document.getElementById('picker-accent').value = savedTheme['--accent-color'] || defaultTheme['--accent-color'];
     }
 
     function applyPreset(name) {
@@ -1176,17 +1155,9 @@
       loadSavedTheme();
     }
 
-    function openSettings() {
-      modal.style.display = 'flex';
-    }
-
-    function closeSettings() {
-      modal.style.display = 'none';
-    }
-
-    function toggleEmojiPicker() {
-      emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid';
-    }
+    function openSettings() { modal.style.display = 'flex'; }
+    function closeSettings() { modal.style.display = 'none'; }
+    function toggleEmojiPicker() { emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid'; }
 
     function insertEmoji(emoji) {
       messageInput.value += emoji;
@@ -1198,15 +1169,11 @@
       if (!e.target.closest('.emoji-popover') && !e.target.closest('.emoji-picker-btn')) {
         emojiPopover.style.display = 'none';
       }
-      if (!e.target.closest('.presence-badge')) {
-        document.getElementById('presence-dropdown').style.display = 'none';
-      }
     });
 
     function formatTime(isoString) {
       if (!isoString) return '';
-      const date = new Date(isoString);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
     function isImageUrl(url) {
@@ -1214,18 +1181,12 @@
       const cleanUrl = url.trim().toLowerCase();
       if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
 
-      if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) {
-        return true;
-      }
+      if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) return true;
 
       const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#|&)/i;
       if (imageExtensions.test(cleanUrl)) return true;
 
-      const imageHosts = [
-        'media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net',
-        'images.unsplash.com', 'i.postimg.cc', 'i.redd.it', 'preview.redd.it', 'tenor.com/view'
-      ];
-
+      const imageHosts = ['media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net', 'images.unsplash.com', 'i.postimg.cc', 'i.redd.it'];
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
@@ -1233,7 +1194,6 @@
       if (id && document.getElementById(`msg-${id}`)) return;
 
       const isMe = userHash && userHash === currentUserHash;
-
       const msgDiv = document.createElement('div');
       msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
       if (id) msgDiv.id = `msg-${id}`;
@@ -1241,14 +1201,9 @@
       const userColor = getUserColor(userHash || user);
       msgDiv.style.setProperty('--user-accent-color', userColor);
 
-      const formattedTime = formatTime(createdAt);
-
-      let contentHtml = '';
-      if (isImageUrl(text)) {
-        contentHtml = `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>`;
-      } else {
-        contentHtml = `<div class="msg-content">${escapeHtml(text)}</div>`;
-      }
+      let contentHtml = isImageUrl(text) 
+        ? `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>` 
+        : `<div class="msg-content">${escapeHtml(text)}</div>`;
 
       const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
 
@@ -1256,7 +1211,7 @@
         <div class="msg-header">
           <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
           <div class="timestamp-wrapper">
-            <span class="timestamp">${formattedTime}</span>
+            <span class="timestamp">${formatTime(createdAt)}</span>
             ${deleteBtnHtml}
           </div>
         </div>
@@ -1264,24 +1219,17 @@
       `;
 
       const isAtBottom = chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100;
-
       chatDiv.appendChild(msgDiv);
 
-      if (isMe || isAtBottom) {
-        scrollToBottom();
-      } else {
-        toast.style.display = 'block';
-      }
+      if (isMe || isAtBottom) scrollToBottom();
+      else toast.style.display = 'block';
 
-      if (!isMe) {
-        playNotificationSound();
-      }
+      if (!isMe) playNotificationSound();
     }
 
     function promptDelete(id, isMe) {
-      if (isMe) {
-        executeDelete(id);
-      } else {
+      if (isMe) executeDelete(id);
+      else {
         pendingDeleteId = id;
         deleteModal.style.display = 'flex';
       }
@@ -1301,9 +1249,7 @@
 
     async function executeDelete(id) {
       const { error } = await supabaseClient.from('messages').delete().eq('id', id);
-      if (error) {
-        alert("Error deleting message: " + error.message);
-      }
+      if (error) alert("Error deleting message: " + error.message);
     }
 
     function removeMessageFromUI(id) {
@@ -1317,8 +1263,7 @@
     }
 
     chatDiv.addEventListener('scroll', () => {
-      const isAtBottom = chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100;
-      if (isAtBottom) {
+      if (chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100) {
         toast.style.display = 'none';
       }
     });
@@ -1347,25 +1292,150 @@
       }
 
       messageInput.value = '';
-      
       const { error } = await supabaseClient.from('messages').insert([{ 
         username: currentUser, 
         user_hash: currentUserHash,
         content: text 
       }]);
 
-      if (error) {
-        alert("Error sending message: " + error.message);
+      if (error) alert("Error sending message: " + error.message);
+    }
+
+    // Direct Messages & Inbox Logic
+    function openInboxModal() {
+      inboxModal.style.display = 'flex';
+      loadInboxConversations();
+    }
+
+    function closeInboxModal() {
+      inboxModal.style.display = 'none';
+      backToInboxList();
+    }
+
+    function backToInboxList() {
+      document.getElementById('inbox-view').style.display = 'block';
+      document.getElementById('dm-thread-view').style.display = 'none';
+      document.getElementById('inbox-title').textContent = 'Direct Messages 📥';
+      activeDMTarget = null;
+    }
+
+    async function startDMWith(userName, userHash) {
+      if (userHash === currentUserHash) return alert("You cannot DM yourself!");
+      activeDMTarget = { name: userName, hash: userHash };
+      
+      document.getElementById('inbox-view').style.display = 'none';
+      document.getElementById('dm-thread-view').style.display = 'flex';
+      document.getElementById('inbox-title').textContent = `DM with @${userName}`;
+      openInboxModal();
+      loadDMThread();
+    }
+
+    async function loadInboxConversations() {
+      const { data } = await supabaseClient
+        .from('dms')
+        .select('*')
+        .or(`sender_hash.eq.${currentUserHash},recipient_hash.eq.${currentUserHash}`)
+        .order('created_at', { ascending: false });
+
+      const inboxList = document.getElementById('inbox-list');
+      inboxList.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        inboxList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No direct messages yet. Click an online user in the sidebar to start a chat!</p>`;
+        return;
       }
+
+      const partners = new Map();
+      data.forEach(dm => {
+        const isMe = dm.sender_hash === currentUserHash;
+        const partnerHash = isMe ? dm.recipient_hash : dm.sender_hash;
+        const partnerName = isMe ? dm.recipient_name : dm.sender_name;
+
+        if (!partners.has(partnerHash)) {
+          partners.set(partnerHash, { name: partnerName, lastMsg: dm.content, time: dm.created_at });
+        }
+      });
+
+      partners.forEach((info, hash) => {
+        const item = document.createElement('div');
+        item.className = 'inbox-item';
+        item.onclick = () => startDMWith(info.name, hash);
+        item.innerHTML = `
+          <div>
+            <strong style="color: ${getUserColor(hash)}">@${escapeHtml(info.name)}</strong>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.1rem;">${escapeHtml(info.lastMsg)}</p>
+          </div>
+          <span style="font-size: 0.65rem; color: #64748b;">${formatTime(info.time)}</span>
+        `;
+        inboxList.appendChild(item);
+      });
+    }
+
+    async function loadDMThread() {
+      if (!activeDMTarget) return;
+
+      const { data } = await supabaseClient
+        .from('dms')
+        .select('*')
+        .or(`and(sender_hash.eq.${currentUserHash},recipient_hash.eq.${activeDMTarget.hash}),and(sender_hash.eq.${activeDMTarget.hash},recipient_hash.eq.${currentUserHash})`)
+        .order('created_at', { ascending: true });
+
+      const thread = document.getElementById('dm-thread');
+      thread.innerHTML = '';
+
+      if (data) {
+        data.forEach(dm => {
+          const isMe = dm.sender_hash === currentUserHash;
+          const msg = document.createElement('div');
+          msg.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
+          msg.style.background = isMe ? 'var(--my-msg-bg)' : 'var(--friend-msg-bg)';
+          msg.style.padding = '0.5rem 0.75rem';
+          msg.style.borderRadius = '8px';
+          msg.style.maxWidth = '80%';
+          msg.style.fontSize = '0.85rem';
+
+          msg.innerHTML = `<div>${escapeHtml(dm.content)}</div><div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); text-align: right; margin-top: 0.2rem;">${formatTime(dm.created_at)}</div>`;
+          thread.appendChild(msg);
+        });
+        thread.scrollTop = thread.scrollHeight;
+      }
+    }
+
+    async function sendDM() {
+      const input = document.getElementById('dm-input');
+      const text = input.value.trim();
+      if (!text || !activeDMTarget) return;
+
+      input.value = '';
+      const { error } = await supabaseClient.from('dms').insert([{
+        sender_name: currentUser,
+        sender_hash: currentUserHash,
+        recipient_name: activeDMTarget.name,
+        recipient_hash: activeDMTarget.hash,
+        content: text
+      }]);
+
+      if (error) alert("Error sending DM: " + error.message);
+      else loadDMThread();
+    }
+
+    function subscribeToDMs() {
+      supabaseClient
+        .channel('public:dms')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
+          if (payload.new.recipient_hash === currentUserHash) {
+            document.getElementById('dm-badge').style.display = 'inline';
+            playNotificationSound();
+            if (activeDMTarget && activeDMTarget.hash === payload.new.sender_hash) {
+              loadDMThread();
+            }
+          }
+        })
+        .subscribe();
     }
 
     // Realtime Presence Setup
     const presenceChannel = supabaseClient.channel('chat_room_presence');
-
-    function togglePresenceDropdown() {
-      const dropdown = document.getElementById('presence-dropdown');
-      dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-    }
 
     function updatePresence(name) {
       presenceChannel.track({
@@ -1387,16 +1457,16 @@
           });
         }
 
-        const countSpan = document.getElementById('presence-count');
-        countSpan.textContent = `${users.length}`;
-
+        document.getElementById('presence-count').textContent = `${users.length}`;
         const listContainer = document.getElementById('presence-list');
         listContainer.innerHTML = '';
+
         users.forEach(u => {
           const uColor = getUserColor(u.user_hash || u.user);
           const item = document.createElement('div');
           item.className = 'presence-user-item';
-          item.innerHTML = `<span class="status-dot" style="width: 6px; height: 6px; background-color: ${uColor}"></span> ${escapeHtml(u.user)}`;
+          item.onclick = () => startDMWith(u.user, u.user_hash);
+          item.innerHTML = `<span class="status-dot" style="width: 7px; height: 7px; background-color: ${uColor}"></span> ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
           listContainer.appendChild(item);
         });
       })
@@ -1417,269 +1487,13 @@
       })
       .subscribe();
 
-    // ----------------------------------------------------
-    // ARCADE MINI-GAMES LOGIC (Flappy, Snake, Solitaire)
-    // ----------------------------------------------------
-    let activeGame = 'flappy';
-    let gameLoop = null;
-    let gameScore = 0;
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-
-    // Flappy Bird State
-    let bird = { x: 50, y: 150, velocity: 0, gravity: 0.4, jump: -6.5 };
-    let pipes = [];
-
-    // Snake State
-    let snake = [{x: 10, y: 10}];
-    let snakeDir = {x: 1, y: 0};
-    let food = {x: 15, y: 15};
-
-    // Solitaire State
-    let solitaireCardsDrawn = 0;
-
-    function openGamesModal() {
-      gamesModal.style.display = 'flex';
-      switchGame(activeGame);
-    }
-
-    function closeGamesModal() {
-      gamesModal.style.display = 'none';
-      if (gameLoop) clearInterval(gameLoop);
-    }
-
-    function switchGame(game) {
-      activeGame = game;
-      gameScore = 0;
-      if (gameLoop) clearInterval(gameLoop);
-
-      document.querySelectorAll('.game-tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(`tab-${game}`).classList.add('active');
-
-      const solContainer = document.getElementById('solitaireContainer');
-      const actionBtn = document.getElementById('gameActionBtn');
-
-      if (game === 'solitaire') {
-        canvas.style.display = 'none';
-        solContainer.style.display = 'block';
-        actionBtn.textContent = 'Draw Card 🃏';
-        initSolitaire();
-      } else {
-        canvas.style.display = 'block';
-        solContainer.style.display = 'none';
-        if (game === 'flappy') {
-          actionBtn.textContent = 'Flap / Jump 🐤';
-          initFlappy();
-        } else if (game === 'snake') {
-          actionBtn.textContent = 'Change Direction 🐍';
-          initSnake();
-        }
-      }
-    }
-
-    function triggerGameAction() {
-      if (activeGame === 'flappy') {
-        bird.velocity = bird.jump;
-      } else if (activeGame === 'snake') {
-        if (snakeDir.x === 1) { snakeDir = {x: 0, y: 1}; }
-        else if (snakeDir.y === 1) { snakeDir = {x: -1, y: 0}; }
-        else if (snakeDir.x === -1) { snakeDir = {x: 0, y: -1}; }
-        else { snakeDir = {x: 1, y: 0}; }
-      } else if (activeGame === 'solitaire') {
-        drawSolitaireCard();
-      }
-    }
-
-    // Key Press Listener for Arcade
-    document.addEventListener('keydown', (e) => {
-      if (gamesModal.style.display === 'flex') {
-        if (e.code === 'Space') {
-          e.preventDefault();
-          triggerGameAction();
-        } else if (activeGame === 'snake') {
-          if (e.key === 'ArrowUp' && snakeDir.y !== 1) snakeDir = {x: 0, y: -1};
-          if (e.key === 'ArrowDown' && snakeDir.y !== -1) snakeDir = {x: 0, y: 1};
-          if (e.key === 'ArrowLeft' && snakeDir.x !== 1) snakeDir = {x: -1, y: 0};
-          if (e.key === 'ArrowRight' && snakeDir.x !== -1) snakeDir = {x: 1, y: 0};
-        }
-      }
-    });
-
-    // Touch Listener for Flappy/Snake Canvas
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      triggerGameAction();
-    });
-
-    // 1. FLAPPY BIRD
-    function initFlappy() {
-      bird = { x: 50, y: 150, velocity: 0, gravity: 0.4, jump: -6.5 };
-      pipes = [];
-      gameScore = 0;
-      gameLoop = setInterval(updateFlappy, 1000 / 30);
-    }
-
-    function updateFlappy() {
-      bird.velocity += bird.gravity;
-      bird.y += bird.velocity;
-
-      if (pipes.length === 0 || pipes[pipes.length - 1].x < 180) {
-        let gap = 90;
-        let topHeight = Math.floor(Math.random() * (150 - 40)) + 40;
-        pipes.push({ x: 300, top: topHeight, bottom: 300 - topHeight - gap, passed: false });
-      }
-
-      for (let i = 0; i < pipes.length; i++) {
-        pipes[i].x -= 3;
-
-        if (!pipes[i].passed && pipes[i].x < bird.x) {
-          pipes[i].passed = true;
-          gameScore++;
-        }
-
-        // Collision Check
-        if (bird.x + 10 > pipes[i].x && bird.x - 10 < pipes[i].x + 40) {
-          if (bird.y - 10 < pipes[i].top || bird.y + 10 > 300 - pipes[i].bottom) {
-            initFlappy();
-            return;
-          }
-        }
-      }
-
-      if (bird.y > 300 || bird.y < 0) {
-        initFlappy();
-        return;
-      }
-
-      // Draw Flappy Frame
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, 300, 300);
-
-      // Draw Bird
-      ctx.fillStyle = '#facc15';
-      ctx.beginPath();
-      ctx.arc(bird.x, bird.y, 10, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw Pipes
-      ctx.fillStyle = '#22c55e';
-      pipes.forEach(p => {
-        ctx.fillRect(p.x, 0, 40, p.top);
-        ctx.fillRect(p.x, 300 - p.bottom, 40, p.bottom);
-      });
-
-      // Draw Score
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 16px Inter';
-      ctx.fillText(`Score: ${gameScore}`, 15, 25);
-    }
-
-    // 2. SNAKE
-    function initSnake() {
-      snake = [{x: 10, y: 10}];
-      snakeDir = {x: 1, y: 0};
-      food = {x: 15, y: 15};
-      gameScore = 0;
-      gameLoop = setInterval(updateSnake, 120);
-    }
-
-    function updateSnake() {
-      let head = {x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y};
-
-      if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
-        initSnake();
-        return;
-      }
-
-      for (let i = 0; i < snake.length; i++) {
-        if (snake[i].x === head.x && snake[i].y === head.y) {
-          initSnake();
-          return;
-        }
-      }
-
-      snake.unshift(head);
-
-      if (head.x === food.x && head.y === food.y) {
-        gameScore += 10;
-        food = {
-          x: Math.floor(Math.random() * 20),
-          y: Math.floor(Math.random() * 20)
-        };
-      } else {
-        snake.pop();
-      }
-
-      // Draw Snake Frame
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, 0, 300, 300);
-
-      // Draw Food
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(food.x * 15, food.y * 15, 14, 14);
-
-      // Draw Snake Body
-      ctx.fillStyle = '#38bdf8';
-      snake.forEach(part => {
-        ctx.fillRect(part.x * 15, part.y * 15, 14, 14);
-      });
-
-      // Draw Score
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 16px Inter';
-      ctx.fillText(`Score: ${gameScore}`, 15, 25);
-    }
-
-    // 3. SOLITAIRE (Mini Card Draw Race)
-    const suits = ['♠', '♥', '♦', '♣'];
-    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-
-    function initSolitaire() {
-      solitaireCardsDrawn = 0;
-      gameScore = 0;
-      updateSolitaireUI("Tap 'Draw Card' to flip through the deck and stack suit combos!");
-    }
-
-    function drawSolitaireCard() {
-      solitaireCardsDrawn++;
-      const randomSuit = suits[Math.floor(Math.random() * suits.length)];
-      const randomVal = values[Math.floor(Math.random() * values.length)];
-      const isRed = randomSuit === '♥' || randomSuit === '♦';
-
-      gameScore += 15;
-
-      const cardHtml = `
-        <div style="width: 70px; height: 100px; background: #ffffff; color: ${isRed ? '#ef4444' : '#000000'}; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.4rem; font-weight: 700; box-shadow: 0 4px 8px rgba(0,0,0,0.3); font-size: 1.1rem; margin: 0 auto;">
-          <div>${randomVal} ${randomSuit}</div>
-          <div style="align-self: center; font-size: 1.6rem;">${randomSuit}</div>
-          <div style="align-self: flex-end;">${randomVal}</div>
-        </div>
-      `;
-
-      updateSolitaireUI(`Cards Drawn: <strong>${solitaireCardsDrawn}</strong>`, cardHtml);
-    }
-
-    function updateSolitaireUI(statusText, cardMarkup = '') {
-      const board = document.getElementById('solitaireBoard');
-      board.innerHTML = `
-        <p style="margin-bottom: 0.5rem;">${statusText}</p>
-        ${cardMarkup}
-        <p style="margin-top: 0.5rem; font-weight: 600; color: #ffffff;">Current Score: ${gameScore}</p>
-      `;
-    }
-
-    function shareGameScore() {
-      messageInput.value = `🎮 I scored ${gameScore} points in ${activeGame.toUpperCase()}! Can you beat me?`;
-      closeGamesModal();
-      sendMessage();
-    }
-
     async function init() {
       loadSavedTheme();
       currentUser = localStorage.getItem('chat_username') || 'Anon';
       currentPin = localStorage.getItem('chat_pin') || '0000';
       currentUserHash = await generateUserHash(currentUser, currentPin);
       await loadMessages();
+      subscribeToDMs();
       checkFirstVisit();
     }
 
