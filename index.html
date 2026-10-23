@@ -395,7 +395,7 @@
       transform: scale(0.97);
     }
 
-    /* Settings Modal & Delete Confirmation Modal */
+    /* Settings & Rules Modals */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -416,7 +416,7 @@
       padding: 1.5rem;
       border-radius: 16px;
       width: 90%;
-      max-width: 480px;
+      max-width: 500px;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
@@ -449,6 +449,24 @@
 
     .close-btn:hover {
       opacity: 1;
+    }
+
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .rules-list-item {
+      display: flex;
+      gap: 0.6rem;
+      align-items: flex-start;
+    }
+
+    .rules-list-item span.icon {
+      font-size: 1.1rem;
     }
 
     .preset-section h4 {
@@ -597,6 +615,7 @@
         </div>
       </div>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Notification Sound">🔊</button>
+      <button class="icon-btn" onclick="openRulesModal()" title="View Rules & Guide">❓ Help</button>
       <button class="icon-btn" onclick="openSettings()">⚙ Settings</button>
     </div>
   </div>
@@ -634,6 +653,54 @@
       <input type="text" id="message" placeholder="Type a message or paste image link..." onkeydown="if(event.key === 'Enter') sendMessage()">
       <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
       <button class="btn-primary" onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- Welcome / Rules & Guide Modal -->
+  <div class="modal-overlay" id="rules-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Welcome to Friends Chatroom! 👋</h3>
+        <button class="close-btn" onclick="closeRulesModal()">✕</button>
+      </div>
+
+      <div class="rules-list">
+        <div class="rules-list-item">
+          <span class="icon">⚠️</span>
+          <div>
+            <strong>Chatroom Rules:</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Please do not spam or send massive blocks of illegible text. Any spam or disruptive messages will be deleted by the moderator.</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
+          <span class="icon">🎨</span>
+          <div>
+            <strong>Unique User Colors & Themes:</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Everyone gets a unique name and border color automatically! You can change themes (Miku, Teto, Rin/Len, etc.) or custom colors in <strong>⚙ Settings</strong>.</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
+          <span class="icon">🖼️</span>
+          <div>
+            <strong>Sending Images:</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Paste any direct image URL (from Discord, Google Images, Reddit, Imgur, etc.) into the message box and press Send to share it instantly.</p>
+          </div>
+        </div>
+
+        <div class="rules-list-item">
+          <span class="icon">👥</span>
+          <div>
+            <strong>Live Online List & Sounds:</strong>
+            <p style="color: #94a3b8; margin-top: 0.2rem;">Click the <strong>Online</strong> badge in the header to see who is active right now. Toggle the speaker icon to mute or enable chime notifications.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="justify-content: flex-end;">
+        <button class="btn-primary" onclick="closeRulesModal()">Got it, let's chat!</button>
+      </div>
     </div>
   </div>
 
@@ -732,12 +799,30 @@
     const messageInput = document.getElementById('message');
     const toast = document.getElementById('unread-toast');
     const modal = document.getElementById('settings-modal');
+    const rulesModal = document.getElementById('rules-modal');
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
 
     let pendingDeleteId = null;
     let soundEnabled = true;
+
+    // Rules Modal Handling
+    function openRulesModal() {
+      rulesModal.style.display = 'flex';
+    }
+
+    function closeRulesModal() {
+      rulesModal.style.display = 'none';
+      localStorage.setItem('chat_has_seen_rules', 'true');
+    }
+
+    function checkFirstVisit() {
+      const hasSeen = localStorage.getItem('chat_has_seen_rules');
+      if (!hasSeen) {
+        openRulesModal();
+      }
+    }
 
     // Web Audio Chime Generator
     function playNotificationSound() {
@@ -748,8 +833,8 @@
         const gain = audioCtx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
 
         gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
@@ -1002,7 +1087,6 @@
         toast.style.display = 'block';
       }
 
-      // Play sound notification for incoming messages from others
       if (!isMe) {
         playNotificationSound();
       }
@@ -1140,6 +1224,7 @@
 
     loadSavedTheme();
     loadMessages();
+    checkFirstVisit();
   </script>
 </body>
 </html>
