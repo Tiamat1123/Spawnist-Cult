@@ -105,7 +105,7 @@
       overflow: hidden;
     }
 
-    /* Sidebar Overlay & Drawer */
+    /* Sidebar Navigation */
     .sidebar-overlay {
       position: absolute;
       top: 0;
@@ -119,7 +119,7 @@
     }
 
     .sidebar {
-      width: 260px;
+      width: 240px;
       background-color: var(--card-color);
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -128,6 +128,7 @@
       padding: 1rem;
       z-index: 35;
       transition: transform 0.25s ease;
+      flex-shrink: 0;
     }
 
     @media (max-width: 768px) {
@@ -216,7 +217,23 @@
       background-color: var(--border-color);
     }
 
-    /* Main Chat Display */
+    /* Views (Public Chat vs Full Inbox) */
+    .view-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .view-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Public Chat Area */
     .chat-wrapper {
       flex: 1;
       position: relative;
@@ -237,13 +254,8 @@
       margin: 0 auto;
     }
 
-    #chat::-webkit-scrollbar {
-      width: 6px;
-    }
-    #chat::-webkit-scrollbar-thumb {
-      background-color: var(--border-color);
-      border-radius: 4px;
-    }
+    #chat::-webkit-scrollbar { width: 6px; }
+    #chat::-webkit-scrollbar-thumb { background-color: var(--border-color); border-radius: 4px; }
 
     .msg {
       background-color: var(--friend-msg-bg);
@@ -270,13 +282,8 @@
       border-left: 1px solid var(--my-msg-bg) !important;
     }
 
-    .msg.user-me .username {
-      color: #ffffff !important;
-    }
-
-    .msg.user-me .timestamp {
-      color: rgba(255, 255, 255, 0.75);
-    }
+    .msg.user-me .username { color: #ffffff !important; }
+    .msg.user-me .timestamp { color: rgba(255, 255, 255, 0.75); }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
@@ -303,10 +310,7 @@
       gap: 0.4rem;
     }
 
-    .timestamp {
-      font-size: 0.65rem;
-      color: #94a3b8;
-    }
+    .timestamp { font-size: 0.65rem; color: #94a3b8; }
 
     .delete-btn {
       background: none;
@@ -320,18 +324,9 @@
       transition: opacity 0.2s, color 0.2s;
     }
 
-    .delete-btn:hover {
-      opacity: 1;
-      color: #ef4444;
-    }
-
-    .msg.user-me .delete-btn {
-      color: rgba(255, 255, 255, 0.75);
-    }
-
-    .msg.user-me .delete-btn:hover {
-      color: #fca5a5;
-    }
+    .delete-btn:hover { opacity: 1; color: #ef4444; }
+    .msg.user-me .delete-btn { color: rgba(255, 255, 255, 0.75); }
+    .msg.user-me .delete-btn:hover { color: #fca5a5; }
 
     .msg-content img {
       max-width: 100%;
@@ -377,7 +372,7 @@
       align-items: center;
     }
 
-    input[type="text"] {
+    input[type="text"], select {
       background-color: var(--bg-color);
       border: 1px solid var(--border-color);
       color: var(--text-color);
@@ -389,14 +384,11 @@
       transition: border-color 0.2s ease;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus, select:focus {
       border-color: var(--accent-color);
     }
 
-    #message {
-      flex: 1;
-      min-width: 0;
-    }
+    #message { flex: 1; min-width: 0; }
 
     .emoji-picker-btn {
       background: none;
@@ -410,9 +402,7 @@
       transition: background-color 0.2s;
     }
 
-    .emoji-picker-btn:hover {
-      background-color: var(--border-color);
-    }
+    .emoji-picker-btn:hover { background-color: var(--border-color); }
 
     .emoji-popover {
       position: absolute;
@@ -459,12 +449,180 @@
       transition: opacity 0.2s ease, transform 0.1s ease;
     }
 
-    .btn-primary:hover {
-      opacity: 0.9;
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.97); }
+
+    /* =================================================== */
+    /* FULL-SCREEN EMAIL-STYLE INBOX LAYOUT                */
+    /* =================================================== */
+    .inbox-container {
+      flex: 1;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: var(--bg-color);
     }
 
-    .btn-primary:active {
-      transform: scale(0.97);
+    /* Left Pane: Threads & Contacts List */
+    .inbox-sidebar {
+      width: 320px;
+      background-color: var(--card-color);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .inbox-sidebar-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .inbox-thread-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inbox-thread-item {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      transition: background-color 0.15s;
+    }
+
+    .inbox-thread-item:hover, .inbox-thread-item.active {
+      background-color: var(--border-color);
+    }
+
+    .inbox-thread-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inbox-thread-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .inbox-thread-time {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    .inbox-thread-snippet {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Right Pane: Main Email Canvas */
+    .inbox-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color);
+      position: relative;
+    }
+
+    .inbox-main-header {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--card-color);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inbox-main-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .inbox-messages-canvas {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .inbox-composer {
+      padding: 0.85rem 1.25rem;
+      background-color: var(--card-color);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .dm-bubble {
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      max-width: 75%;
+      font-size: 0.9rem;
+      color: #ffffff !important;
+      word-break: break-word;
+      line-height: 1.4;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .dm-bubble.me {
+      align-self: flex-end;
+      background-color: var(--my-msg-bg);
+    }
+
+    .dm-bubble.them {
+      align-self: flex-start;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .compose-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 2rem auto;
+      width: 90%;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      border-radius: 12px;
+    }
+
+    /* Mobile Adaptations for Inbox */
+    @media (max-width: 768px) {
+      .inbox-sidebar {
+        width: 100%;
+      }
+      .inbox-main {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+      }
+      .inbox-main.active-mobile {
+        display: flex;
+      }
     }
 
     /* Modals */
@@ -505,10 +663,7 @@
       padding-bottom: 0.6rem;
     }
 
-    .modal-header h3 {
-      font-size: 1rem;
-      font-weight: 700;
-    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; }
 
     .close-btn {
       background: none;
@@ -519,9 +674,7 @@
       opacity: 0.7;
     }
 
-    .close-btn:hover {
-      opacity: 1;
-    }
+    .close-btn:hover { opacity: 1; }
 
     .rules-list {
       display: flex;
@@ -531,27 +684,11 @@
       line-height: 1.45;
     }
 
-    .rules-list-item {
-      display: flex;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
+    .rules-list-item { display: flex; gap: 0.5rem; align-items: flex-start; }
+    .rules-list-item span.icon { font-size: 1rem; }
 
-    .rules-list-item span.icon {
-      font-size: 1rem;
-    }
-
-    .identity-form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .identity-form label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #94a3b8;
-    }
+    .identity-form { display: flex; flex-direction: column; gap: 0.75rem; }
+    .identity-form label { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
 
     .preset-section h4 {
       font-size: 0.8rem;
@@ -582,12 +719,8 @@
       transition: transform 0.1s, opacity 0.2s;
     }
 
-    .preset-btn:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
+    .preset-btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-    /* Vocaloid Presets Styling */
     .preset-miku { background-color: #39C5BB !important; color: #000000 !important; border-color: #39C5BB !important; }
     .preset-rinlen { background-color: #FFE600 !important; color: #000000 !important; border-color: #FFE600 !important; }
     .preset-luka { background-color: #FFBACC !important; color: #000000 !important; border-color: #FFBACC !important; }
@@ -602,15 +735,9 @@
       font-size: 0.85rem;
     }
 
-    .color-setting-row label {
-      font-weight: 500;
-    }
+    .color-setting-row label { font-weight: 500; }
 
-    .color-picker-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
+    .color-picker-wrapper { display: flex; align-items: center; gap: 0.4rem; }
 
     input[type="color"] {
       -webkit-appearance: none;
@@ -622,14 +749,8 @@
       background: none;
     }
 
-    input[type="color"]::-webkit-color-swatch-wrapper {
-      padding: 0;
-    }
-
-    input[type="color"]::-webkit-color-swatch {
-      border: 1px solid var(--border-color);
-      border-radius: 50%;
-    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 1px solid var(--border-color); border-radius: 50%; }
 
     .modal-actions {
       display: flex;
@@ -649,9 +770,7 @@
       font-family: inherit;
     }
 
-    .btn-secondary:hover {
-      background-color: var(--border-color);
-    }
+    .btn-secondary:hover { background-color: var(--border-color); }
 
     .btn-danger {
       background-color: #ef4444;
@@ -665,60 +784,7 @@
       font-family: inherit;
     }
 
-    .btn-danger:hover {
-      background-color: #dc2626;
-    }
-
-    /* Inbox / Direct Messages Modal */
-    .inbox-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .inbox-item {
-      padding: 0.6rem 0.75rem;
-      background-color: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .inbox-item:hover {
-      border-color: var(--accent-color);
-    }
-
-    .dm-thread {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      height: 220px;
-      overflow-y: auto;
-      background-color: var(--bg-color);
-      padding: 0.75rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-
-    @media (max-width: 600px) {
-      .chat-header {
-        padding: 0.6rem 0.75rem;
-      }
-      .chat-header h2 {
-        font-size: 0.95rem;
-      }
-      .msg {
-        max-width: 90%;
-      }
-      .preset-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
+    .btn-danger:hover { background-color: #dc2626; }
   </style>
 </head>
 <body>
@@ -727,21 +793,20 @@
   <div class="chat-header">
     <div style="display: flex; align-items: center; gap: 0.6rem;">
       <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Sidebar">☰</button>
-      <h2><span class="status-dot"></span> Chatroom</h2>
+      <h2 id="page-title"><span class="status-dot"></span> Chatroom</h2>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" onclick="openInboxModal()" title="Direct Messages">📥 DM <span id="dm-badge" style="background: #ef4444; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 10px; display: none;">New</span></button>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
     </div>
   </div>
 
   <div class="app-layout">
-    <!-- Sidebar -->
+    <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
       <div class="sidebar-section-title">Navigation</div>
       <div class="sidebar-nav">
-        <button class="sidebar-btn active" onclick="closeSidebar()">💬 Public Chat</button>
-        <button class="sidebar-btn" onclick="openInboxModal(); closeSidebar();">📥 Direct Messages</button>
+        <button class="sidebar-btn active" id="nav-public-btn" onclick="switchView('public')">💬 Public Chat</button>
+        <button class="sidebar-btn" id="nav-inbox-btn" onclick="switchView('inbox')">📥 Inbox / DMs <span id="dm-badge" style="background: #ef4444; font-size: 0.65rem; padding: 0.1rem 0.35rem; border-radius: 10px; display: none;">New</span></button>
       </div>
 
       <div class="sidebar-section-title" style="margin-top: 0.5rem;">Preferences</div>
@@ -758,40 +823,109 @@
     </div>
     <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
-    <!-- Main Chat Window -->
-    <div class="chat-wrapper">
-      <div id="chat"></div>
-      <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
-    </div>
-  </div>
+    <!-- View Container -->
+    <div class="view-container">
 
-  <!-- Bottom Message Input Footer -->
-  <div class="chat-footer">
-    <div class="emoji-popover" id="emoji-popover">
-      <span onclick="insertEmoji('😀')">😀</span>
-      <span onclick="insertEmoji('😂')">😂</span>
-      <span onclick="insertEmoji('😍')">😍</span>
-      <span onclick="insertEmoji('🔥')">🔥</span>
-      <span onclick="insertEmoji('❤️')">❤️</span>
-      <span onclick="insertEmoji('🎉')">🎉</span>
-      <span onclick="insertEmoji('😎')">😎</span>
-      <span onclick="insertEmoji('✨')">✨</span>
-      <span onclick="insertEmoji('💀')">💀</span>
-      <span onclick="insertEmoji('👍')">👍</span>
-      <span onclick="insertEmoji('🙌')">🙌</span>
-      <span onclick="insertEmoji('🎵')">🎵</span>
-      <span onclick="insertEmoji('😭')">😭</span>
-      <span onclick="insertEmoji('🥺')">🥺</span>
-      <span onclick="insertEmoji('💯')">💯</span>
-      <span onclick="insertEmoji('💬')">💬</span>
-      <span onclick="insertEmoji('🚀')">🚀</span>
-      <span onclick="insertEmoji('⭐')">⭐</span>
-    </div>
+      <!-- SCREEN 1: PUBLIC CHAT -->
+      <div class="view-screen" id="public-view">
+        <div class="chat-wrapper">
+          <div id="chat"></div>
+          <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
+        </div>
+        <div class="chat-footer">
+          <div class="emoji-popover" id="emoji-popover">
+            <span onclick="insertEmoji('😀')">😀</span>
+            <span onclick="insertEmoji('😂')">😂</span>
+            <span onclick="insertEmoji('😍')">😍</span>
+            <span onclick="insertEmoji('🔥')">🔥</span>
+            <span onclick="insertEmoji('❤️')">❤️</span>
+            <span onclick="insertEmoji('🎉')">🎉</span>
+            <span onclick="insertEmoji('😎')">😎</span>
+            <span onclick="insertEmoji('✨')">✨</span>
+            <span onclick="insertEmoji('💀')">💀</span>
+            <span onclick="insertEmoji('👍')">👍</span>
+            <span onclick="insertEmoji('🙌')">🙌</span>
+            <span onclick="insertEmoji('🎵')">🎵</span>
+            <span onclick="insertEmoji('😭')">😭</span>
+            <span onclick="insertEmoji('🥺')">🥺</span>
+            <span onclick="insertEmoji('💯')">💯</span>
+            <span onclick="insertEmoji('💬')">💬</span>
+            <span onclick="insertEmoji('🚀')">🚀</span>
+            <span onclick="insertEmoji('⭐')">⭐</span>
+          </div>
 
-    <div class="input-container">
-      <input type="text" id="message" placeholder="Type a message or paste image link..." onkeydown="if(event.key === 'Enter') sendMessage()">
-      <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
-      <button class="btn-primary" onclick="sendMessage()">Send</button>
+          <div class="input-container">
+            <input type="text" id="message" placeholder="Type a message or paste image link..." onkeydown="if(event.key === 'Enter') sendMessage()">
+            <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
+            <button class="btn-primary" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: FULL-SCREEN EMAIL-STYLE INBOX -->
+      <div class="view-screen" id="inbox-view" style="display: none;">
+        <div class="inbox-container">
+          
+          <!-- Inbox Sidebar Pane -->
+          <div class="inbox-sidebar">
+            <div class="inbox-sidebar-header">
+              <button class="btn-primary" style="width: 100%;" onclick="openComposeView()">✏️ Compose New DM</button>
+            </div>
+            <div class="inbox-thread-list" id="inbox-thread-list">
+              <p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">Loading conversations...</p>
+            </div>
+          </div>
+
+          <!-- Inbox Main View Canvas -->
+          <div class="inbox-main" id="inbox-main-pane">
+            
+            <!-- Default View when no thread is open -->
+            <div id="inbox-empty-state" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; gap: 0.5rem; padding: 1rem; text-align: center;">
+              <span style="font-size: 2.5rem;">📥</span>
+              <p>Select a conversation from the left pane or compose a new DM!</p>
+            </div>
+
+            <!-- Active Thread View Canvas -->
+            <div id="inbox-active-thread" style="display: none; flex: 1; flex-direction: column; height: 100%;">
+              <div class="inbox-main-header">
+                <h3 id="active-thread-title">@User</h3>
+                <button class="btn-secondary" style="display: none;" id="mobile-back-btn" onclick="closeMobileThread()">← Back</button>
+              </div>
+              <div class="inbox-messages-canvas" id="dm-canvas"></div>
+              <div class="inbox-composer">
+                <input type="text" id="dm-canvas-input" placeholder="Type a private message..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendCanvasDM()">
+                <button class="btn-primary" onclick="sendCanvasDM()">Send</button>
+              </div>
+            </div>
+
+            <!-- Compose View Canvas -->
+            <div id="inbox-compose-view" style="display: none; flex: 1; flex-direction: column; height: 100%; overflow-y: auto;">
+              <div class="inbox-main-header">
+                <h3>✏️ Compose Message</h3>
+                <button class="btn-secondary" id="mobile-compose-back-btn" onclick="closeMobileThread()">← Back</button>
+              </div>
+              <div class="compose-card">
+                <div>
+                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Recipient (To:)</label>
+                  <select id="compose-recipient-select" style="width: 100%;">
+                    <option value="">-- Select a Contact --</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.3rem;">Message</label>
+                  <input type="text" id="compose-message-input" placeholder="Write your private message here..." style="width: 100%;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                  <button class="btn-secondary" onclick="cancelCompose()">Cancel</button>
+                  <button class="btn-primary" onclick="submitComposeDM()">Send DM →</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -823,8 +957,8 @@
         <div class="rules-list-item">
           <span class="icon">📥</span>
           <div>
-            <strong>Direct Messaging:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Start private conversations with any room member directly from your Inbox or sidebar!</p>
+            <strong>Full-Screen Direct Messaging:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Switch seamlessly between the Public Chatroom and your private Email-Style Inbox!</p>
           </div>
         </div>
       </div>
@@ -860,44 +994,6 @@
 
       <div class="modal-actions" style="justify-content: flex-end;">
         <button class="btn-primary" onclick="saveProfileIdentity()">Save & Continue</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Direct Messaging / Inbox Modal -->
-  <div class="modal-overlay" id="inbox-modal">
-    <div class="modal-card" style="max-width: 440px;">
-      <div class="modal-header">
-        <h3 id="inbox-title">Direct Messages 📥</h3>
-        <button class="close-btn" onclick="closeInboxModal()">✕</button>
-      </div>
-
-      <!-- Inbox Main View -->
-      <div id="inbox-view">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-          <span style="font-size: 0.8rem; color: #94a3b8;">Recent Conversations</span>
-          <button class="btn-secondary" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="openNewDMMenu()">+ New DM</button>
-        </div>
-        <div class="inbox-list" id="inbox-list">
-          <p style="font-size: 0.85rem; color: #64748b;">No recent private conversations yet.</p>
-        </div>
-      </div>
-
-      <!-- New DM Contacts Selection View -->
-      <div id="new-dm-view" style="display: none; flex-direction: column; gap: 0.6rem;">
-        <p style="font-size: 0.8rem; color: #94a3b8;">Pick a room member to start a chat:</p>
-        <div class="inbox-list" id="contacts-list"></div>
-        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start; margin-top: 0.4rem;">← Back</button>
-      </div>
-
-      <!-- Single DM Thread View -->
-      <div id="dm-thread-view" style="display: none; flex-direction: column; gap: 0.75rem;">
-        <div class="dm-thread" id="dm-thread"></div>
-        <div style="display: flex; gap: 0.5rem;">
-          <input type="text" id="dm-input" placeholder="Type a private message..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendDM()">
-          <button class="btn-primary" onclick="sendDM()">Send</button>
-        </div>
-        <button class="btn-secondary" onclick="backToInboxList()" style="align-self: flex-start;">← Back to Inbox</button>
       </div>
     </div>
   </div>
@@ -989,7 +1085,6 @@
     const modal = document.getElementById('settings-modal');
     const rulesModal = document.getElementById('rules-modal');
     const profileModal = document.getElementById('profile-modal');
-    const inboxModal = document.getElementById('inbox-modal');
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
@@ -1002,9 +1097,9 @@
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
-    let activeDMTarget = null;
+    let currentView = 'public'; // 'public' | 'inbox'
+    let activeDMTarget = null; // { name, hash }
     
-    // Memory map storing known users: userHash -> displayName
     const knownUsers = new Map();
 
     async function generateUserHash(name, pin) {
@@ -1019,6 +1114,28 @@
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+
+    // Screen View Switcher (Public Chat vs Full Inbox)
+    function switchView(view) {
+      currentView = view;
+      closeSidebar();
+
+      document.getElementById('nav-public-btn').classList.toggle('active', view === 'public');
+      document.getElementById('nav-inbox-btn').classList.toggle('active', view === 'inbox');
+
+      const pageTitle = document.getElementById('page-title');
+      if (view === 'public') {
+        document.getElementById('public-view').style.display = 'flex';
+        document.getElementById('inbox-view').style.display = 'none';
+        pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
+      } else {
+        document.getElementById('public-view').style.display = 'none';
+        document.getElementById('inbox-view').style.display = 'flex';
+        pageTitle.innerHTML = `📥 Direct Messages`;
+        document.getElementById('dm-badge').style.display = 'none';
+        loadInboxConversations();
+      }
+    }
 
     async function saveProfileIdentity() {
       const name = modalUsernameInput.value.trim() || 'Anon';
@@ -1300,65 +1417,9 @@
       if (error) alert("Error sending message: " + error.message);
     }
 
-    // Direct Messages & Inbox System
-    function openInboxModal() {
-      inboxModal.style.display = 'flex';
-      loadInboxConversations();
-    }
-
-    function closeInboxModal() {
-      inboxModal.style.display = 'none';
-      backToInboxList();
-    }
-
-    function backToInboxList() {
-      document.getElementById('inbox-view').style.display = 'block';
-      document.getElementById('new-dm-view').style.display = 'none';
-      document.getElementById('dm-thread-view').style.display = 'none';
-      document.getElementById('inbox-title').textContent = 'Direct Messages 📥';
-      activeDMTarget = null;
-    }
-
-    function openNewDMMenu() {
-      document.getElementById('inbox-view').style.display = 'none';
-      document.getElementById('new-dm-view').style.display = 'flex';
-      document.getElementById('inbox-title').textContent = 'Start a New DM 💬';
-
-      const contactsList = document.getElementById('contacts-list');
-      contactsList.innerHTML = '';
-
-      let availableCount = 0;
-      knownUsers.forEach((name, hash) => {
-        if (hash !== currentUserHash) {
-          availableCount++;
-          const item = document.createElement('div');
-          item.className = 'inbox-item';
-          item.onclick = () => startDMWith(name, hash);
-          item.innerHTML = `
-            <strong style="color: ${getUserColor(hash)}">@${escapeHtml(name)}</strong>
-            <span style="font-size: 0.75rem; color: var(--accent-color);">Start Chat →</span>
-          `;
-          contactsList.appendChild(item);
-        }
-      });
-
-      if (availableCount === 0) {
-        contactsList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No room contacts found yet. Have your friends type a message in the public chat to find them here!</p>`;
-      }
-    }
-
-    async function startDMWith(userName, userHash) {
-      if (userHash === currentUserHash) return alert("You cannot DM yourself!");
-      activeDMTarget = { name: userName, hash: userHash };
-      
-      document.getElementById('inbox-view').style.display = 'none';
-      document.getElementById('new-dm-view').style.display = 'none';
-      document.getElementById('dm-thread-view').style.display = 'flex';
-      document.getElementById('inbox-title').textContent = `DM with @${userName}`;
-      openInboxModal();
-      loadDMThread();
-    }
-
+    // ===================================================
+    // FULL-SCREEN INBOX & DM SYSTEM LOGIC
+    // ===================================================
     async function loadInboxConversations() {
       const { data } = await supabaseClient
         .from('dms')
@@ -1366,11 +1427,11 @@
         .or(`sender_hash.eq.${currentUserHash},recipient_hash.eq.${currentUserHash}`)
         .order('created_at', { ascending: false });
 
-      const inboxList = document.getElementById('inbox-list');
-      inboxList.innerHTML = '';
+      const listContainer = document.getElementById('inbox-thread-list');
+      listContainer.innerHTML = '';
 
       if (!data || data.length === 0) {
-        inboxList.innerHTML = `<p style="font-size: 0.85rem; color: #64748b;">No recent private conversations yet.</p>`;
+        listContainer.innerHTML = `<p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">No direct messages yet.</p>`;
         return;
       }
 
@@ -1378,7 +1439,7 @@
       data.forEach(dm => {
         const isMe = dm.sender_hash === currentUserHash;
         const partnerHash = isMe ? dm.recipient_hash : dm.sender_hash;
-        const partnerName = isMe ? dm.recipient_name : dm.sender_name;
+        const partnerName = isMe ? (dm.recipient_name || knownUsers.get(partnerHash) || 'User') : (dm.sender_name || knownUsers.get(partnerHash) || 'User');
 
         if (partnerHash && partnerName) {
           knownUsers.set(partnerHash, partnerName);
@@ -1391,20 +1452,45 @@
 
       partners.forEach((info, hash) => {
         const item = document.createElement('div');
-        item.className = 'inbox-item';
-        item.onclick = () => startDMWith(info.name, hash);
+        item.className = `inbox-thread-item ${activeDMTarget && activeDMTarget.hash === hash ? 'active' : ''}`;
+        item.onclick = () => selectDMThread(info.name, hash);
         item.innerHTML = `
-          <div>
-            <strong style="color: ${getUserColor(hash)}">@${escapeHtml(info.name)}</strong>
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.1rem;">${escapeHtml(info.lastMsg)}</p>
+          <div class="inbox-thread-top">
+            <span class="inbox-thread-name" style="color: ${getUserColor(hash)}">@${escapeHtml(info.name)}</span>
+            <span class="inbox-thread-time">${formatTime(info.time)}</span>
           </div>
-          <span style="font-size: 0.65rem; color: #64748b;">${formatTime(info.time)}</span>
+          <div class="inbox-thread-snippet">${escapeHtml(info.lastMsg)}</div>
         `;
-        inboxList.appendChild(item);
+        listContainer.appendChild(item);
       });
     }
 
-    async function loadDMThread() {
+    function selectDMThread(userName, userHash) {
+      if (userHash === currentUserHash) return alert("You cannot DM yourself!");
+      activeDMTarget = { name: userName, hash: userHash };
+
+      document.getElementById('inbox-empty-state').style.display = 'none';
+      document.getElementById('inbox-compose-view').style.display = 'none';
+      
+      const threadView = document.getElementById('inbox-active-thread');
+      threadView.style.display = 'flex';
+
+      document.getElementById('active-thread-title').innerHTML = `<span style="color: ${getUserColor(userHash)}">@${escapeHtml(userName)}</span>`;
+      
+      if (window.innerWidth <= 768) {
+        document.getElementById('inbox-main-pane').classList.add('active-mobile');
+        document.getElementById('mobile-back-btn').style.display = 'block';
+      }
+
+      loadInboxThreadMessages();
+      loadInboxConversations();
+    }
+
+    function closeMobileThread() {
+      document.getElementById('inbox-main-pane').classList.remove('active-mobile');
+    }
+
+    async function loadInboxThreadMessages() {
       if (!activeDMTarget) return;
 
       const { data } = await supabaseClient
@@ -1413,29 +1499,26 @@
         .or(`and(sender_hash.eq.${currentUserHash},recipient_hash.eq.${activeDMTarget.hash}),and(sender_hash.eq.${activeDMTarget.hash},recipient_hash.eq.${currentUserHash})`)
         .order('created_at', { ascending: true });
 
-      const thread = document.getElementById('dm-thread');
-      thread.innerHTML = '';
+      const canvas = document.getElementById('dm-canvas');
+      canvas.innerHTML = '';
 
       if (data) {
         data.forEach(dm => {
           const isMe = dm.sender_hash === currentUserHash;
           const msg = document.createElement('div');
-          msg.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
-          msg.style.background = isMe ? 'var(--my-msg-bg)' : 'var(--friend-msg-bg)';
-          msg.style.padding = '0.5rem 0.75rem';
-          msg.style.borderRadius = '8px';
-          msg.style.maxWidth = '80%';
-          msg.style.fontSize = '0.85rem';
-
-          msg.innerHTML = `<div>${escapeHtml(dm.content)}</div><div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); text-align: right; margin-top: 0.2rem;">${formatTime(dm.created_at)}</div>`;
-          thread.appendChild(msg);
+          msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
+          msg.innerHTML = `
+            <div>${escapeHtml(dm.content)}</div>
+            <div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); text-align: right; margin-top: 0.2rem;">${formatTime(dm.created_at)}</div>
+          `;
+          canvas.appendChild(msg);
         });
-        thread.scrollTop = thread.scrollHeight;
+        canvas.scrollTop = canvas.scrollHeight;
       }
     }
 
-    async function sendDM() {
-      const input = document.getElementById('dm-input');
+    async function sendCanvasDM() {
+      const input = document.getElementById('dm-canvas-input');
       const text = input.value.trim();
       if (!text || !activeDMTarget) return;
 
@@ -1448,8 +1531,73 @@
         content: text
       }]);
 
-      if (error) alert("Error sending DM: " + error.message);
-      else loadDMThread();
+      if (error) {
+        alert("Error sending DM: " + error.message);
+      } else {
+        loadInboxThreadMessages();
+        loadInboxConversations();
+      }
+    }
+
+    // Compose View Handling
+    function openComposeView() {
+      activeDMTarget = null;
+      document.getElementById('inbox-empty-state').style.display = 'none';
+      document.getElementById('inbox-active-thread').style.display = 'none';
+
+      const composeView = document.getElementById('inbox-compose-view');
+      composeView.style.display = 'flex';
+
+      if (window.innerWidth <= 768) {
+        document.getElementById('inbox-main-pane').classList.add('active-mobile');
+        document.getElementById('mobile-compose-back-btn').style.display = 'block';
+      }
+
+      const select = document.getElementById('compose-recipient-select');
+      select.innerHTML = '<option value="">-- Select a Room Contact --</option>';
+
+      knownUsers.forEach((name, hash) => {
+        if (hash !== currentUserHash) {
+          const opt = document.createElement('option');
+          opt.value = hash;
+          opt.textContent = `@${name}`;
+          select.appendChild(opt);
+        }
+      });
+    }
+
+    function cancelCompose() {
+      document.getElementById('inbox-compose-view').style.display = 'none';
+      document.getElementById('inbox-empty-state').style.display = 'flex';
+      closeMobileThread();
+    }
+
+    async function submitComposeDM() {
+      const select = document.getElementById('compose-recipient-select');
+      const input = document.getElementById('compose-message-input');
+
+      const recipientHash = select.value;
+      const recipientName = knownUsers.get(recipientHash);
+      const text = input.value.trim();
+
+      if (!recipientHash || !text) {
+        return alert("Please select a recipient and enter a message!");
+      }
+
+      input.value = '';
+      const { error } = await supabaseClient.from('dms').insert([{
+        sender_name: currentUser,
+        sender_hash: currentUserHash,
+        recipient_name: recipientName,
+        recipient_hash: recipientHash,
+        content: text
+      }]);
+
+      if (error) {
+        alert("Error sending message: " + error.message);
+      } else {
+        selectDMThread(recipientName, recipientHash);
+      }
     }
 
     function subscribeToDMs() {
@@ -1457,10 +1605,15 @@
         .channel('public:dms')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
           if (payload.new.recipient_hash === currentUserHash) {
-            document.getElementById('dm-badge').style.display = 'inline';
             playNotificationSound();
-            if (activeDMTarget && activeDMTarget.hash === payload.new.sender_hash) {
-              loadDMThread();
+
+            if (currentView !== 'inbox') {
+              document.getElementById('dm-badge').style.display = 'inline';
+            } else {
+              loadInboxConversations();
+              if (activeDMTarget && activeDMTarget.hash === payload.new.sender_hash) {
+                loadInboxThreadMessages();
+              }
             }
           }
         })
@@ -1499,7 +1652,10 @@
           const uColor = getUserColor(u.user_hash || u.user);
           const item = document.createElement('div');
           item.className = 'presence-user-item';
-          item.onclick = () => { closeSidebar(); startDMWith(u.user, u.user_hash); };
+          item.onclick = () => { 
+            switchView('inbox');
+            selectDMThread(u.user, u.user_hash);
+          };
           item.innerHTML = `<span class="status-dot" style="width: 7px; height: 7px; background-color: ${uColor}"></span> ${escapeHtml(u.user)} <span style="font-size: 0.65rem; color: #64748b; margin-left: auto;">DM 💬</span>`;
           listContainer.appendChild(item);
         });
