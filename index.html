@@ -939,9 +939,16 @@
       const cleanUrl = url.trim().toLowerCase();
       if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
 
-      const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#)/i;
+      // Google Image search thumbnails / static content
+      if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) {
+        return true;
+      }
+
+      // Standard image extensions (matching file extensions anywhere before or inside URL parameters)
+      const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#|&)/i;
       if (imageExtensions.test(cleanUrl)) return true;
 
+      // Common image hosts and CDNs
       const imageHosts = [
         'media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net',
         'images.unsplash.com', 'i.postimg.cc', 'i.redd.it', 'preview.redd.it', 'tenor.com/view'
