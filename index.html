@@ -585,12 +585,14 @@
     .dm-bubble.me {
       align-self: flex-end;
       background-color: var(--my-msg-bg);
+      color: #ffffff !important;
     }
 
     .dm-bubble.them {
       align-self: flex-start;
       background-color: var(--card-color);
       border: 1px solid var(--border-color);
+      color: var(--text-color) !important;
     }
 
     .compose-card {
@@ -1097,8 +1099,8 @@
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
-    let currentView = 'public'; // 'public' | 'inbox'
-    let activeDMTarget = null; // { name, hash }
+    let currentView = 'public';
+    let activeDMTarget = null;
     
     const knownUsers = new Map();
 
@@ -1115,7 +1117,6 @@
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-    // Screen View Switcher (Public Chat vs Full Inbox)
     function switchView(view) {
       currentView = view;
       closeSidebar();
@@ -1421,7 +1422,9 @@
     // FULL-SCREEN INBOX & DM SYSTEM LOGIC
     // ===================================================
     async function loadInboxConversations() {
-      const { data } = await supabaseClient
+      if (!currentUserHash) return;
+
+      const { data, error } = await supabaseClient
         .from('dms')
         .select('*')
         .or(`sender_hash.eq.${currentUserHash},recipient_hash.eq.${currentUserHash}`)
@@ -1429,6 +1432,12 @@
 
       const listContainer = document.getElementById('inbox-thread-list');
       listContainer.innerHTML = '';
+
+      if (error) {
+        console.error("Error loading inbox conversations:", error);
+        listContainer.innerHTML = `<p style="padding: 1rem; font-size: 0.85rem; color: #ef4444;">Unable to load conversations.</p>`;
+        return;
+      }
 
       if (!data || data.length === 0) {
         listContainer.innerHTML = `<p style="padding: 1rem; font-size: 0.85rem; color: #64748b;">No direct messages yet.</p>`;
@@ -1491,9 +1500,9 @@
     }
 
     async function loadInboxThreadMessages() {
-      if (!activeDMTarget) return;
+      if (!activeDMTarget || !currentUserHash) return;
 
-      const { data } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from('dms')
         .select('*')
         .or(`and(sender_hash.eq.${currentUserHash},recipient_hash.eq.${activeDMTarget.hash}),and(sender_hash.eq.${activeDMTarget.hash},recipient_hash.eq.${currentUserHash})`)
@@ -1501,6 +1510,11 @@
 
       const canvas = document.getElementById('dm-canvas');
       canvas.innerHTML = '';
+
+      if (error) {
+        console.error("Error loading DM messages:", error);
+        return;
+      }
 
       if (data) {
         data.forEach(dm => {
