@@ -839,11 +839,35 @@
     }
 
     function isImageUrl(url) {
-      return (
-        url.match(/^https?:\/\/.*\.(jpeg|jpg|gif|png|webp)($|\?)/i) != null ||
-        url.includes('media.giphy.com') ||
-        url.includes('i.imgur.com')
-      );
+      if (!url || typeof url !== 'string') return false;
+      
+      const cleanUrl = url.trim().toLowerCase();
+      
+      // Must start with http:// or https://
+      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        return false;
+      }
+
+      // Common image file extensions (including URL parameters)
+      const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#)/i;
+      if (imageExtensions.test(cleanUrl)) return true;
+
+      // Known image/media host domains and CDN patterns
+      const imageHosts = [
+        'media.giphy.com',
+        'i.imgur.com',
+        'cdn.discordapp.com',
+        'media.discordapp.net',
+        'images.unsplash.com',
+        'i.postimg.cc',
+        'i.redd.it',
+        'preview.redd.it',
+        'tenor.com/view'
+      ];
+
+      if (imageHosts.some(host => cleanUrl.includes(host))) return true;
+
+      return false;
     }
 
     function appendMessage(id, user, text, createdAt) {
