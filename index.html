@@ -64,10 +64,62 @@
       box-shadow: 0 0 10px #22c55e;
     }
 
+    .presence-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background-color: var(--border-color);
+      color: var(--text-color);
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      position: relative;
+    }
+
+    .presence-badge:hover {
+      opacity: 0.9;
+    }
+
+    .presence-dropdown {
+      position: absolute;
+      top: 2.2rem;
+      right: 0;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+      display: none;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-width: 160px;
+      z-index: 50;
+    }
+
+    .presence-dropdown h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .presence-user-item {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 500;
+    }
+
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
 
     .icon-btn {
@@ -136,6 +188,10 @@
       position: relative;
     }
 
+    .msg:hover .reaction-btn {
+      opacity: 1;
+    }
+
     /* Own Messages (Right-aligned) */
     .msg.user-me {
       align-self: flex-end;
@@ -182,6 +238,22 @@
       color: #94a3b8;
     }
 
+    .reaction-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0 2px;
+      line-height: 1;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+    }
+
+    .reaction-btn:hover {
+      opacity: 1;
+    }
+
     .delete-btn {
       background: none;
       border: none;
@@ -213,6 +285,57 @@
       border-radius: 8px;
       margin-top: 0.4rem;
       display: block;
+    }
+
+    /* Reactions Container */
+    .reactions-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+    }
+
+    .reaction-pill {
+      background-color: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.15rem 0.45rem;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .reaction-pill:hover {
+      transform: scale(1.08);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .reaction-picker-popover {
+      position: absolute;
+      top: -2.2rem;
+      right: 0.5rem;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 0.25rem 0.5rem;
+      display: none;
+      gap: 0.35rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 40;
+    }
+
+    .reaction-picker-popover span {
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .reaction-picker-popover span:hover {
+      transform: scale(1.3);
     }
 
     /* Unread Toast Banner */
@@ -536,6 +659,14 @@
   <div class="chat-header">
     <h2><span class="status-dot"></span> Friends Chatroom</h2>
     <div class="header-actions">
+      <div class="presence-badge" onclick="togglePresenceDropdown()">
+        <span class="status-dot" style="width: 7px; height: 7px;"></span>
+        <span id="presence-count">1 Online</span>
+        <div class="presence-dropdown" id="presence-dropdown">
+          <h4>Active Now</h4>
+          <div id="presence-list"></div>
+        </div>
+      </div>
       <button class="icon-btn" onclick="openSettings()">⚙ Settings</button>
     </div>
   </div>
@@ -676,14 +807,14 @@
     const emojiPopover = document.getElementById('emoji-popover');
 
     let pendingDeleteId = null;
+    let messageReactions = {};
 
-    // Palette of vibrant distinct user colors
+    // User Color Palette
     const userColorPalette = [
       '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
       '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
     ];
 
-    // Generate a consistent color based on user name string
     function getUserColor(username) {
       if (!username) return userColorPalette[0];
       let hash = 0;
@@ -821,6 +952,12 @@
       if (!e.target.closest('.emoji-popover') && !e.target.closest('.emoji-picker-btn')) {
         emojiPopover.style.display = 'none';
       }
+      if (!e.target.closest('.presence-badge')) {
+        document.getElementById('presence-dropdown').style.display = 'none';
+      }
+      if (!e.target.closest('.reaction-picker-popover') && !e.target.closest('.reaction-btn')) {
+        document.querySelectorAll('.reaction-picker-popover').forEach(el => el.style.display = 'none');
+      }
     });
 
     const savedName = localStorage.getItem('chat_username');
@@ -829,7 +966,9 @@
     }
 
     usernameInput.addEventListener('input', () => {
-      localStorage.setItem('chat_username', usernameInput.value.trim());
+      const name = usernameInput.value.trim() || 'Anon';
+      localStorage.setItem('chat_username', name);
+      updatePresence(name);
     });
 
     function formatTime(isoString) {
@@ -840,34 +979,18 @@
 
     function isImageUrl(url) {
       if (!url || typeof url !== 'string') return false;
-      
       const cleanUrl = url.trim().toLowerCase();
-      
-      // Must start with http:// or https://
-      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
-        return false;
-      }
+      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
 
-      // Common image file extensions (including URL parameters)
       const imageExtensions = /\.(jpeg|jpg|gif|png|webp|svg|bmp|tiff)($|\?|#)/i;
       if (imageExtensions.test(cleanUrl)) return true;
 
-      // Known image/media host domains and CDN patterns
       const imageHosts = [
-        'media.giphy.com',
-        'i.imgur.com',
-        'cdn.discordapp.com',
-        'media.discordapp.net',
-        'images.unsplash.com',
-        'i.postimg.cc',
-        'i.redd.it',
-        'preview.redd.it',
-        'tenor.com/view'
+        'media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net',
+        'images.unsplash.com', 'i.postimg.cc', 'i.redd.it', 'preview.redd.it', 'tenor.com/view'
       ];
 
-      if (imageHosts.some(host => cleanUrl.includes(host))) return true;
-
-      return false;
+      return imageHosts.some(host => cleanUrl.includes(host));
     }
 
     function appendMessage(id, user, text, createdAt) {
@@ -880,7 +1003,6 @@
       msgDiv.className = `msg ${isMe ? 'user-me' : ''}`;
       if (id) msgDiv.id = `msg-${id}`;
 
-      // Set user unique accent color
       const userColor = getUserColor(user);
       msgDiv.style.setProperty('--user-accent-color', userColor);
 
@@ -899,11 +1021,21 @@
         <div class="msg-header">
           <span class="username" style="color: ${isMe ? '#ffffff' : userColor} !important">${escapeHtml(user)}</span>
           <div class="timestamp-wrapper">
+            <button class="reaction-btn" onclick="toggleReactionPicker(${id})" title="Add reaction">➕</button>
             <span class="timestamp">${formattedTime}</span>
             ${deleteBtnHtml}
           </div>
         </div>
         ${contentHtml}
+        <div class="reactions-container" id="reactions-${id}"></div>
+        <div class="reaction-picker-popover" id="reaction-picker-${id}">
+          <span onclick="addReaction(${id}, '❤️')">❤️</span>
+          <span onclick="addReaction(${id}, '😂')">😂</span>
+          <span onclick="addReaction(${id}, '👍')">👍</span>
+          <span onclick="addReaction(${id}, '🔥')">🔥</span>
+          <span onclick="addReaction(${id}, '😮')">😮</span>
+          <span onclick="addReaction(${id}, '😭')">😭</span>
+        </div>
       `;
 
       const isAtBottom = chatDiv.scrollHeight - chatDiv.clientHeight - chatDiv.scrollTop < 100;
@@ -914,6 +1046,42 @@
         scrollToBottom();
       } else {
         toast.style.display = 'block';
+      }
+    }
+
+    function toggleReactionPicker(msgId) {
+      document.querySelectorAll('.reaction-picker-popover').forEach(el => {
+        if (el.id !== `reaction-picker-${msgId}`) el.style.display = 'none';
+      });
+      const picker = document.getElementById(`reaction-picker-${msgId}`);
+      if (picker) {
+        picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+      }
+    }
+
+    function addReaction(msgId, emoji) {
+      if (!messageReactions[msgId]) messageReactions[msgId] = {};
+      if (!messageReactions[msgId][emoji]) messageReactions[msgId][emoji] = 0;
+      messageReactions[msgId][emoji]++;
+      renderReactions(msgId);
+      document.getElementById(`reaction-picker-${msgId}`).style.display = 'none';
+    }
+
+    function renderReactions(msgId) {
+      const container = document.getElementById(`reactions-${msgId}`);
+      if (!container) return;
+      container.innerHTML = '';
+      const reactions = messageReactions[msgId];
+      if (!reactions) return;
+
+      for (const [emoji, count] of Object.entries(reactions)) {
+        if (count > 0) {
+          const pill = document.createElement('div');
+          pill.className = 'reaction-pill';
+          pill.innerHTML = `<span>${emoji}</span> <span>${count}</span>`;
+          pill.onclick = () => addReaction(msgId, emoji);
+          container.appendChild(pill);
+        }
       }
     }
 
@@ -991,6 +1159,52 @@
       }
     }
 
+    // Realtime Presence Setup
+    const presenceChannel = supabaseClient.channel('chat_room_presence');
+
+    function togglePresenceDropdown() {
+      const dropdown = document.getElementById('presence-dropdown');
+      dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function updatePresence(name) {
+      presenceChannel.track({
+        user: name || 'Anon',
+        online_at: new Date().toISOString()
+      });
+    }
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const users = [];
+        for (const id in state) {
+          state[id].forEach(u => {
+            if (u.user && !users.includes(u.user)) users.push(u.user);
+          });
+        }
+
+        const countSpan = document.getElementById('presence-count');
+        countSpan.textContent = `${users.length} Online`;
+
+        const listContainer = document.getElementById('presence-list');
+        listContainer.innerHTML = '';
+        users.forEach(u => {
+          const uColor = getUserColor(u);
+          const item = document.createElement('div');
+          item.className = 'presence-user-item';
+          item.innerHTML = `<span class="status-dot" style="width: 6px; height: 6px; background-color: ${uColor}"></span> ${escapeHtml(u)}`;
+          listContainer.appendChild(item);
+        });
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          const name = usernameInput.value.trim() || 'Anon';
+          updatePresence(name);
+        }
+      });
+
+    // Realtime Messages Setup
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
