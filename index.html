@@ -959,6 +959,11 @@
 
     .btn-secondary:hover { background-color: var(--border-color); }
 
+    .btn-secondary.active {
+      background-color: var(--border-color);
+      border-color: var(--accent-color);
+    }
+
     .btn-danger {
       background-color: #ef4444;
       color: #ffffff;
@@ -1239,8 +1244,8 @@
         <div class="rules-list-item">
           <span class="icon">🎨</span>
           <div>
-            <strong>Pixel Avatar Creator:</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Design your custom 10x10 pixel art avatar in identity setup!</p>
+            <strong>Pixel Art or Picture Avatar:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Design a 10x10 pixel avatar or paste/upload a picture for your profile!</p>
           </div>
         </div>
       </div>
@@ -1251,11 +1256,11 @@
     </div>
   </div>
 
-  <!-- Profile Setup Modal + 10x10 PFP MAKER & ERASER -->
+  <!-- Profile Setup Modal + PIXEL ART MAKER & PICTURE PFP SUPPORT -->
   <div class="modal-overlay" id="profile-modal">
     <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
-        <h3>Setup Identity & Custom PFP 🎨</h3>
+        <h3>Setup Identity & Avatar 🎨</h3>
         <button class="close-btn" onclick="closeProfileModal()">✕</button>
       </div>
 
@@ -1269,10 +1274,16 @@
           <input type="text" id="modal-pin" maxlength="4" placeholder="1234" style="width: 100%; margin-top: 0.3rem; letter-spacing: 0.15em; text-align: center;">
         </div>
 
-        <!-- 10x10 Pixel Art PFP Maker -->
+        <!-- PFP Selection Tabs -->
         <div>
-          <label>Design Pixel Avatar (10x10)</label>
-          <div class="pfp-maker-container" style="margin-top: 0.3rem;">
+          <label>Profile Picture Mode</label>
+          <div style="display: flex; gap: 0.5rem; margin: 0.4rem 0 0.6rem 0;">
+            <button type="button" class="btn-secondary active" id="pfp-tab-pixel" style="flex: 1;" onclick="switchPfpTab('pixel')">🎨 Pixel Grid</button>
+            <button type="button" class="btn-secondary" id="pfp-tab-picture" style="flex: 1;" onclick="switchPfpTab('picture')">🖼️ Picture / URL</button>
+          </div>
+
+          <!-- Tab 1: 10x10 Pixel Grid -->
+          <div id="pfp-pixel-container" class="pfp-maker-container">
             <div class="pfp-grid" id="pfp-grid"></div>
             <div class="pfp-controls">
               <div class="pfp-swatches">
@@ -1288,6 +1299,19 @@
                 <button class="btn-secondary" id="pfp-eraser-btn" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="toggleEraser()">✏️ Eraser</button>
                 <button class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="clearPfpGrid()">Clear</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Picture Upload / URL Paste -->
+          <div id="pfp-picture-container" style="display: none; flex-direction: column; gap: 0.6rem; background-color: var(--bg-color); padding: 0.85rem; border-radius: 12px; border: 1px solid var(--border-color);">
+            <input type="text" id="pfp-url-input" placeholder="Paste Image URL here..." style="width: 100%;" oninput="previewPicturePfp(this.value)">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;">
+              <span style="font-size: 0.75rem; color: #94a3b8;">Or select file:</span>
+              <input type="file" id="pfp-file-input" accept="image/*" style="font-size: 0.75rem; color: var(--text-color);" onchange="handlePfpFileUpload(event)">
+            </div>
+            <div id="pfp-picture-preview-box" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem;">
+              <span style="font-size: 0.75rem; color: #94a3b8;">Preview:</span>
+              <div id="pfp-picture-preview"></div>
             </div>
           </div>
         </div>
@@ -1406,11 +1430,52 @@
     const knownUsers = new Map();
     const userAvatars = new Map();
 
-    // 10x10 PFP Grid + Eraser Logic
+    // 10x10 PFP Grid + Eraser Logic + Picture PFP Logic
+    let currentPfpMode = 'pixel'; // 'pixel' or 'picture'
+    let picturePfpData = '';
     let currentPfpColor = '#38bdf8';
     let isEraserActive = false;
     let pfpGridData = Array(100).fill('#1e293b');
     let isDrawingPfp = false;
+
+    function switchPfpTab(mode) {
+      currentPfpMode = mode;
+      const pixelBtn = document.getElementById('pfp-tab-pixel');
+      const pictureBtn = document.getElementById('pfp-tab-picture');
+      const pixelCont = document.getElementById('pfp-pixel-container');
+      const pictureCont = document.getElementById('pfp-picture-container');
+
+      if (mode === 'pixel') {
+        pixelBtn.classList.add('active');
+        pictureBtn.classList.remove('active');
+        pixelCont.style.display = 'flex';
+        pictureCont.style.display = 'none';
+      } else {
+        pictureBtn.classList.add('active');
+        pixelBtn.classList.remove('active');
+        pixelCont.style.display = 'none';
+        pictureCont.style.display = 'flex';
+      }
+    }
+
+    function previewPicturePfp(url) {
+      picturePfpData = url.trim();
+      const previewDiv = document.getElementById('pfp-picture-preview');
+      previewDiv.innerHTML = renderPfpSvg(picturePfpData);
+    }
+
+    function handlePfpFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        picturePfpData = event.target.result;
+        document.getElementById('pfp-url-input').value = '';
+        previewPicturePfp(picturePfpData);
+      };
+      reader.readAsDataURL(file);
+    }
 
     function initPfpGrid() {
       const gridContainer = document.getElementById('pfp-grid');
@@ -1476,22 +1541,42 @@
     }
 
     function getPfpString() {
+      if (currentPfpMode === 'picture' && picturePfpData) {
+        return picturePfpData;
+      }
       return pfpGridData.join(',');
     }
 
     function loadPfpString(str) {
       if (!str) return;
-      const parts = str.split(',');
-      if (parts.length === 100) {
-        pfpGridData = parts;
-        const pixels = document.querySelectorAll('.pfp-pixel');
-        pixels.forEach((p, idx) => p.style.backgroundColor = pfpGridData[idx]);
+      if (str.startsWith('data:image/') || str.startsWith('http://') || str.startsWith('https://')) {
+        picturePfpData = str;
+        switchPfpTab('picture');
+        if (str.startsWith('http')) {
+          document.getElementById('pfp-url-input').value = str;
+        }
+        previewPicturePfp(str);
+      } else {
+        const parts = str.split(',');
+        if (parts.length === 100) {
+          pfpGridData = parts;
+          switchPfpTab('pixel');
+          const pixels = document.querySelectorAll('.pfp-pixel');
+          pixels.forEach((p, idx) => p.style.backgroundColor = pfpGridData[idx]);
+        }
       }
     }
 
-    function renderPfpSvg(pixelStr) {
-      if (!pixelStr) return '';
-      const colors = pixelStr.split(',');
+    function renderPfpSvg(pfpData) {
+      if (!pfpData) return '';
+      
+      // Check if image URL or Base64 picture string
+      if (pfpData.startsWith('data:image/') || pfpData.startsWith('http://') || pfpData.startsWith('https://')) {
+        return `<img src="${pfpData}" class="pfp-avatar-img" style="object-fit: cover;" alt="PFP" />`;
+      }
+
+      // 10x10 Pixel Grid SVG
+      const colors = pfpData.split(',');
       if (colors.length !== 100) return '';
 
       let rects = '';
@@ -1735,24 +1820,27 @@
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
 
-      // Convert URL Links into Clickable <a> tags
+      // 1. Convert URL Links into Clickable <a> tags
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
       escaped = escaped.replace(urlRegex, function(url) {
         return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
       });
 
-      // Custom Color Tags: [color=red], [color=cyan], [color=#38bdf8], [color=rgb(255,0,0)]
-      escaped = escaped.replace(/\[color=([#a-zA-Z0-9(),\s]+)\](.*?)\[\/color\]/gi, '<span style="color: $1;">$2</span>');
+      // 2. FIXED Color Tags Parser: Handles color names, hex, rgb/hsl, and cleans quotes
+      escaped = escaped.replace(/\[color=(.*?)\](.*?)\[\/color\]/gi, function(match, colorVal, content) {
+        let cleanColor = colorVal.replace(/&(quot|#039);|["']/g, '').trim();
+        return `<span style="color: ${cleanColor};">${content}</span>`;
+      });
 
-      // Special Text Effects: [glow] and [rainbow]
+      // 3. Special Text Effects: [glow] and [rainbow]
       escaped = escaped.replace(/\[glow\](.*?)\[\/glow\]/gi, '<span class="msg-glow">$1</span>');
       escaped = escaped.replace(/\[rainbow\](.*?)\[\/rainbow\]/gi, '<span class="msg-rainbow">$1</span>');
 
-      // Spoiler Tags: ||spoiler|| or [spoiler]text[/spoiler]
+      // 4. Spoiler Tags: ||spoiler|| or [spoiler]text[/spoiler]
       escaped = escaped.replace(/\|\|(.*?)\|\|/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
       escaped = escaped.replace(/\[spoiler\](.*?)\[\/spoiler\]/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
 
-      // Fonts: [pixel], [script], [serif], [mono], [gothic], [comic]
+      // 5. Fonts: [pixel], [script], [serif], [mono], [gothic], [comic]
       escaped = escaped.replace(/\[pixel\](.*?)\[\/pixel\]/gi, '<span style="font-family: \'Press Start 2P\', monospace; font-size: 0.75em;">$1</span>');
       escaped = escaped.replace(/\[script\](.*?)\[\/script\]/gi, '<span style="font-family: \'Caveat\', cursive; font-size: 1.25em;">$1</span>');
       escaped = escaped.replace(/\[serif\](.*?)\[\/serif\]/gi, '<span style="font-family: \'Playfair Display\', serif;">$1</span>');
@@ -1760,7 +1848,7 @@
       escaped = escaped.replace(/\[gothic\](.*?)\[\/gothic\]/gi, '<span style="font-family: \'UnifrakturMaguntia\', serif; font-size: 1.25em;">$1</span>');
       escaped = escaped.replace(/\[comic\](.*?)\[\/comic\]/gi, '<span style="font-family: \'Comic Neue\', cursive; font-weight: 700;">$1</span>');
 
-      // Standard Markdown Syntax
+      // 6. Standard Markdown Syntax
       escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
       escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
