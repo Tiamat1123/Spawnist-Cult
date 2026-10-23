@@ -199,7 +199,6 @@
       position: relative;
     }
 
-    /* Own Messages (Right-aligned) */
     .msg.user-me {
       align-self: flex-end;
       background-color: var(--my-msg-bg);
@@ -279,6 +278,34 @@
       object-fit: contain;
     }
 
+    /* Challenge Message Box */
+    .challenge-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--accent-color);
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      margin-top: 0.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .challenge-btn {
+      background-color: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    .challenge-btn:hover {
+      opacity: 0.9;
+    }
+
     /* Unread Toast Banner */
     #unread-toast {
       position: absolute;
@@ -352,7 +379,6 @@
       background-color: var(--border-color);
     }
 
-    /* Emoji Picker Popover */
     .emoji-popover {
       position: absolute;
       bottom: 4rem;
@@ -406,7 +432,7 @@
       transform: scale(0.97);
     }
 
-    /* Modals */
+    /* Modals & Subwindows */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -460,6 +486,105 @@
 
     .close-btn:hover {
       opacity: 1;
+    }
+
+    /* Games Sidebar Drawer */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100dvh;
+      background-color: var(--card-color);
+      border-left: 1px solid var(--border-color);
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+      z-index: 90;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+
+    .sidebar-overlay.open {
+      right: 0;
+    }
+
+    .game-item-card {
+      background-color: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+
+    .game-item-card:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+    }
+
+    .game-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .game-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    .game-info p {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    /* Connect 4 Board Subwindow */
+    .c4-board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .c4-status-banner {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+      color: var(--accent-color);
+    }
+
+    .c4-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      background-color: #1e3a8a;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .c4-cell {
+      width: 38px;
+      height: 38px;
+      background-color: var(--bg-color);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .c4-cell.p1 {
+      background-color: #facc15; /* Yellow */
+      box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .c4-cell.p2 {
+      background-color: #ef4444; /* Red */
+      box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .rules-list {
@@ -608,7 +733,6 @@
       background-color: #dc2626;
     }
 
-    /* Mobile Header & Layout Optimization */
     @media (max-width: 600px) {
       .chat-header {
         padding: 0.6rem 0.75rem;
@@ -629,6 +753,10 @@
       .preset-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+      .c4-cell {
+        width: 32px;
+        height: 32px;
+      }
     }
   </style>
 </head>
@@ -645,6 +773,7 @@
           <div id="presence-list"></div>
         </div>
       </div>
+      <button class="icon-btn" onclick="toggleGamesSidebar()" title="Mini-Games">🎮 <span class="btn-label">Games</span></button>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Notification Sound">🔊</button>
       <button class="icon-btn" onclick="openProfileModal()" title="Edit Name & PIN">👤 <span class="btn-label">Profile</span></button>
       <button class="icon-btn" onclick="openRulesModal()" title="View Rules & Guide">❓ <span class="btn-label">Help</span></button>
@@ -655,6 +784,29 @@
   <div class="chat-wrapper">
     <div id="chat"></div>
     <div id="unread-toast" onclick="scrollToBottom()">New messages below ↓</div>
+  </div>
+
+  <!-- Games Sidebar Drawer -->
+  <div class="sidebar-overlay" id="games-sidebar">
+    <div class="modal-header">
+      <h3>Mini-Games 🎮</h3>
+      <button class="close-btn" onclick="toggleGamesSidebar()">✕</button>
+    </div>
+    
+    <div class="game-item-card" onclick="initiateGameChallenge('Connect 4')">
+      <div class="game-info">
+        <h4>Connect 4 🟡🔴</h4>
+        <p>Connect 4 tokens vertically, horizontally, or diagonally!</p>
+      </div>
+      <span style="font-weight: 700;">Play →</span>
+    </div>
+
+    <div class="game-item-card" style="opacity: 0.5; cursor: not-allowed;">
+      <div class="game-info">
+        <h4>Checkers 🏁</h4>
+        <p>Coming soon...</p>
+      </div>
+    </div>
   </div>
 
   <div class="chat-footer">
@@ -687,7 +839,26 @@
     </div>
   </div>
 
-  <!-- Welcome / Rules & Guide Modal -->
+  <!-- Game Subwindow Modal -->
+  <div class="modal-overlay" id="game-subwindow">
+    <div class="modal-card" style="max-width: 400px;">
+      <div class="modal-header">
+        <h3 id="game-subwindow-title">Connect 4 🟡🔴</h3>
+        <button class="close-btn" onclick="closeGameSubwindow()">✕</button>
+      </div>
+
+      <div class="c4-board-container">
+        <div class="c4-status-banner" id="c4-status">Waiting for an opponent to accept...</div>
+        <div class="c4-grid" id="c4-grid"></div>
+      </div>
+
+      <div class="modal-actions" style="justify-content: center;">
+        <button class="btn-secondary" onclick="closeGameSubwindow()">Leave Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome / Rules Modal -->
   <div class="modal-overlay" id="rules-modal">
     <div class="modal-card">
       <div class="modal-header">
@@ -735,7 +906,7 @@
     </div>
   </div>
 
-  <!-- Profile / Name & PIN Setup Modal -->
+  <!-- Profile Setup Modal -->
   <div class="modal-overlay" id="profile-modal">
     <div class="modal-card" style="max-width: 420px;">
       <div class="modal-header">
@@ -772,7 +943,6 @@
         <button class="close-btn" onclick="closeSettings()">✕</button>
       </div>
 
-      <!-- Vocaloid Presets -->
       <div class="preset-section">
         <h4>Vocaloid Themes</h4>
         <div class="preset-grid">
@@ -785,7 +955,6 @@
         </div>
       </div>
 
-      <!-- Custom Color Adjustments -->
       <div class="preset-section">
         <h4>Custom Colors</h4>
         <div class="color-setting-row">
@@ -863,6 +1032,8 @@
     const deleteModal = document.getElementById('delete-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
+    const gamesSidebar = document.getElementById('games-sidebar');
+    const gameSubwindow = document.getElementById('game-subwindow');
 
     const modalUsernameInput = document.getElementById('modal-username');
     const modalPinInput = document.getElementById('modal-pin');
@@ -873,7 +1044,13 @@
     let currentPin = '0000';
     let currentUserHash = '';
 
-    // Fast SHA-256 Hashing for Name + PIN identity
+    // Game Variables
+    let currentGameChannel = null;
+    let currentGameId = null;
+    let myPlayerRole = null; // 1 = Yellow, 2 = Red
+    let currentTurn = 1;
+    let boardState = Array(6).fill(null).map(() => Array(7).fill(0));
+
     async function generateUserHash(name, pin) {
       const cleanName = (name || 'Anon').trim().toLowerCase();
       const cleanPin = (pin || '0000').trim();
@@ -910,7 +1087,6 @@
       profileModal.style.display = 'none';
     }
 
-    // Rules Modal Handling
     function openRulesModal() {
       rulesModal.style.display = 'flex';
     }
@@ -936,7 +1112,6 @@
       }
     }
 
-    // Web Audio Chime Generator
     function playNotificationSound() {
       if (!soundEnabled) return;
       try {
@@ -956,9 +1131,7 @@
 
         osc.start();
         osc.stop(audioCtx.currentTime + 0.3);
-      } catch (e) {
-        // AudioContext blocked or unsupported
-      }
+      } catch (e) {}
     }
 
     function toggleSound() {
@@ -966,7 +1139,6 @@
       document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
     }
 
-    // User Color Palette
     const userColorPalette = [
       '#38bdf8', '#f43f5e', '#a855f7', '#34d399', '#fbbf24', 
       '#fb923c', '#e879f9', '#4ade80', '#22d3ee', '#f472b6'
@@ -1093,6 +1265,10 @@
       modal.style.display = 'none';
     }
 
+    function toggleGamesSidebar() {
+      gamesSidebar.classList.toggle('open');
+    }
+
     function toggleEmojiPicker() {
       emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid';
     }
@@ -1153,7 +1329,21 @@
       const formattedTime = formatTime(createdAt);
 
       let contentHtml = '';
-      if (isImageUrl(text)) {
+      
+      // Check for Game Challenge Payload
+      if (text.startsWith('GAME_CHALLENGE:')) {
+        const parts = text.split(':');
+        const gameName = parts[1];
+        const gameId = parts[2];
+        contentHtml = `
+          <div class="msg-content">
+            <strong>🎮 ${escapeHtml(user)} invited everyone to play ${escapeHtml(gameName)}!</strong>
+            <div class="challenge-card">
+              <button class="challenge-btn" onclick="acceptGameChallenge('${gameId}', '${escapeHtml(user)}')">Accept Challenge ⚔️</button>
+            </div>
+          </div>
+        `;
+      } else if (isImageUrl(text)) {
         contentHtml = `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>`;
       } else {
         contentHtml = `<div class="msg-content">${escapeHtml(text)}</div>`;
@@ -1185,6 +1375,189 @@
       if (!isMe) {
         playNotificationSound();
       }
+    }
+
+    /* MINI-GAMES LOGIC (CONNECT 4) */
+    async function initiateGameChallenge(gameName) {
+      toggleGamesSidebar();
+      const gameId = 'g_' + Math.random().toString(36).substr(2, 9);
+      
+      // Open game subwindow as Player 1 (Yellow)
+      myPlayerRole = 1;
+      currentGameId = gameId;
+      openGameSubwindow("Connect 4 🟡🔴", "Waiting for an opponent to click Accept...");
+      
+      // Post Challenge to Chat
+      await supabaseClient.from('messages').insert([{ 
+        username: currentUser, 
+        user_hash: currentUserHash,
+        content: `GAME_CHALLENGE:${gameName}:${gameId}`
+      }]);
+
+      subscribeToGameChannel(gameId);
+    }
+
+    function acceptGameChallenge(gameId, challengerName) {
+      myPlayerRole = 2; // Player 2 (Red)
+      currentGameId = gameId;
+      openGameSubwindow("Connect 4 🟡🔴", `Playing against ${challengerName}! Yellow's turn.`);
+      
+      subscribeToGameChannel(gameId);
+
+      // Notify host that player 2 joined
+      if (currentGameChannel) {
+        currentGameChannel.send({
+          type: 'broadcast',
+          event: 'player_joined',
+          payload: { player2: currentUser }
+        });
+      }
+    }
+
+    function subscribeToGameChannel(gameId) {
+      if (currentGameChannel) {
+        supabaseClient.removeChannel(currentGameChannel);
+      }
+
+      resetConnect4Board();
+
+      currentGameChannel = supabaseClient.channel(`game_${gameId}`);
+      
+      currentGameChannel
+        .on('broadcast', { event: 'player_joined' }, payload => {
+          if (myPlayerRole === 1) {
+            document.getElementById('c4-status').textContent = `${payload.payload.player2} joined! Your turn (Yellow).`;
+          }
+        })
+        .on('broadcast', { event: 'move_made' }, payload => {
+          handleIncomingMove(payload.payload.col, payload.payload.playerRole);
+        })
+        .subscribe();
+    }
+
+    function openGameSubwindow(title, statusMsg) {
+      document.getElementById('game-subwindow-title').textContent = title;
+      document.getElementById('c4-status').textContent = statusMsg;
+      gameSubwindow.style.display = 'flex';
+      renderConnect4Board();
+    }
+
+    function closeGameSubwindow() {
+      gameSubwindow.style.display = 'none';
+      if (currentGameChannel) {
+        supabaseClient.removeChannel(currentGameChannel);
+        currentGameChannel = null;
+      }
+    }
+
+    function resetConnect4Board() {
+      boardState = Array(6).fill(null).map(() => Array(7).fill(0));
+      currentTurn = 1;
+    }
+
+    function renderConnect4Board() {
+      const grid = document.getElementById('c4-grid');
+      grid.innerHTML = '';
+
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 7; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'c4-cell';
+          if (boardState[r][c] === 1) cell.classList.add('p1');
+          if (boardState[r][c] === 2) cell.classList.add('p2');
+          
+          cell.onclick = () => makeConnect4Move(c);
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function makeConnect4Move(col) {
+      if (currentTurn !== myPlayerRole) {
+        alert("Wait for your turn!");
+        return;
+      }
+
+      // Find lowest empty row in selected column
+      let targetRow = -1;
+      for (let r = 5; r >= 0; r--) {
+        if (boardState[r][col] === 0) {
+          targetRow = r;
+          break;
+        }
+      }
+
+      if (targetRow === -1) return; // Column is full
+
+      boardState[targetRow][col] = myPlayerRole;
+      renderConnect4Board();
+
+      // Broadcast move
+      if (currentGameChannel) {
+        currentGameChannel.send({
+          type: 'broadcast',
+          event: 'move_made',
+          payload: { col, playerRole: myPlayerRole }
+        });
+      }
+
+      if (checkWin(targetRow, col, myPlayerRole)) {
+        document.getElementById('c4-status').textContent = "🎉 YOU WON!";
+        currentTurn = 0;
+        return;
+      }
+
+      currentTurn = myPlayerRole === 1 ? 2 : 1;
+      document.getElementById('c4-status').textContent = "Opponent's turn...";
+    }
+
+    function handleIncomingMove(col, playerRole) {
+      let targetRow = -1;
+      for (let r = 5; r >= 0; r--) {
+        if (boardState[r][col] === 0) {
+          targetRow = r;
+          break;
+        }
+      }
+
+      if (targetRow === -1) return;
+
+      boardState[targetRow][col] = playerRole;
+      renderConnect4Board();
+
+      if (checkWin(targetRow, col, playerRole)) {
+        document.getElementById('c4-status').textContent = "❌ Opponent won!";
+        currentTurn = 0;
+        return;
+      }
+
+      currentTurn = myPlayerRole;
+      document.getElementById('c4-status').textContent = "Your turn!";
+    }
+
+    function checkWin(r, c, p) {
+      // Horizontal, Vertical, and Diagonal Win Condition
+      const directions = [
+        [[0, 1], [0, -1]],  // Horizontal
+        [[1, 0], [-1, 0]],  // Vertical
+        [[1, 1], [-1, -1]], // Diagonal \
+        [[1, -1], [-1, 1]]  // Diagonal /
+      ];
+
+      for (let dir of directions) {
+        let count = 1;
+        for (let [dr, dc] of dir) {
+          let row = r + dr;
+          let col = c + dc;
+          while (row >= 0 && row < 6 && col >= 0 && col < 7 && boardState[row][col] === p) {
+            count++;
+            row += dr;
+            col += dc;
+          }
+        }
+        if (count >= 4) return true;
+      }
+      return false;
     }
 
     function promptDelete(id, isMe) {
