@@ -346,11 +346,29 @@
 
     .msg-content img {
       max-width: 100%;
-      max-height: 240px;
+      max-height: 260px;
       border-radius: 8px;
       margin-top: 0.3rem;
       display: block;
       object-fit: contain;
+    }
+
+    .msg-content a {
+      color: var(--accent-color);
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    .msg.user-me .msg-content a {
+      color: #ffffff;
+    }
+
+    .msg-code {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.85em;
     }
 
     #unread-toast {
@@ -950,7 +968,7 @@
           </div>
 
           <div class="input-container">
-            <input type="text" id="message" placeholder="Type a message or paste image link..." oninput="handlePublicTyping()" onkeydown="if(event.key === 'Enter') sendMessage()">
+            <input type="text" id="message" placeholder="Type a message or paste a screenshot..." oninput="handlePublicTyping()" onkeydown="if(event.key === 'Enter') sendMessage()">
             <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
             <button class="btn-primary" onclick="sendMessage()">Send</button>
           </div>
@@ -1040,10 +1058,10 @@
         </div>
 
         <div class="rules-list-item">
-          <span class="icon">🔑</span>
+          <span class="icon">✨</span>
           <div>
-            <strong>Device Syncing (Name & PIN):</strong>
-            <p style="color: #94a3b8; margin-top: 0.15rem;">Your display name and secret 4-digit PIN sync your messages across devices!</p>
+            <strong>Rich Formatting & Image Paste:</strong>
+            <p style="color: #94a3b8; margin-top: 0.15rem;">Use *italics*, **bold**, `code`, and paste screenshots directly from your clipboard!</p>
           </div>
         </div>
 
@@ -1525,6 +1543,8 @@
     function isImageUrl(url) {
       if (!url || typeof url !== 'string') return false;
       const cleanUrl = url.trim().toLowerCase();
+      
+      if (cleanUrl.startsWith('data:image/')) return true;
       if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return false;
 
       if (cleanUrl.includes('gstatic.com/images') || cleanUrl.includes('googleusercontent.com')) return true;
@@ -1534,6 +1554,32 @@
 
       const imageHosts = ['media.giphy.com', 'i.imgur.com', 'cdn.discordapp.com', 'media.discordapp.net', 'images.unsplash.com', 'i.postimg.cc', 'i.redd.it'];
       return imageHosts.some(host => cleanUrl.includes(host));
+    }
+
+    // MARKDOWN & HYPERLINK PARSER
+    function parseFormattedText(text) {
+      let escaped = escapeHtml(text);
+
+      // Convert URL Links into Clickable <a> tags
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
+      escaped = escaped.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
+
+      // **Bold** -> <strong>
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      // *Italics* or _Italics_ -> <em>
+      escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      escaped = escaped.replace(/_(.*?)_/g, '<em>$1</em>');
+
+      // ~~Strikethrough~~ -> <del>
+      escaped = escaped.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+      // `Code` -> <span class="msg-code">
+      escaped = escaped.replace(/`(.*?)`/g, '<span class="msg-code">$1</span>');
+
+      return escaped;
     }
 
     function appendMessage(id, user, userHash, text, createdAt) {
@@ -1551,7 +1597,7 @@
 
       let contentHtml = isImageUrl(text) 
         ? `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>` 
-        : `<div class="msg-content">${escapeHtml(text)}</div>`;
+        : `<div class="msg-content">${parseFormattedText(text)}</div>`;
 
       const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
 
@@ -1656,6 +1702,26 @@
 
       if (error) alert("Error sending message: " + error.message);
     }
+
+    // CLIPBOARD IMAGE PASTE HANDLER
+    function handlePasteImage(e, targetInput) {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (let item of items) {
+        if (item.kind === 'file' && item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            targetInput.value = event.target.result;
+          };
+          reader.readAsDataURL(file);
+          break;
+        }
+      }
+    }
+
+    messageInput.addEventListener('paste', (e) => handlePasteImage(e, messageInput));
+    document.getElementById('dm-canvas-input').addEventListener('paste', (e) => handlePasteImage(e, document.getElementById('dm-canvas-input')));
 
     // TYPING INDICATORS
     const publicTypingChannel = supabaseClient.channel('public_chat_typing');
@@ -1826,8 +1892,13 @@
           const msg = document.createElement('div');
           msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
           msg.style.display = 'block';
+
+          let dmContent = isImageUrl(dm.content) 
+            ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 240px; border-radius: 8px;" loading="lazy">`
+            : parseFormattedText(dm.content);
+
           msg.innerHTML = `
-            <div style="color: #ffffff !important;">${escapeHtml(dm.content)}</div>
+            <div style="color: #ffffff !important;">${dmContent}</div>
             <div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); text-align: right; margin-top: 0.2rem;">${formatTime(dm.created_at)}</div>
           `;
           canvas.appendChild(msg);
