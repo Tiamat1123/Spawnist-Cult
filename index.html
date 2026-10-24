@@ -714,6 +714,49 @@
       border-radius: 12px;
     }
 
+    /* GAME DM INVITE CARD STYLING */
+    .game-invite-card {
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--accent-color);
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.3rem;
+    }
+
+    .game-invite-card h5 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .game-invite-card p {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+
+    .game-invite-btn {
+      background-color: #38bdf8;
+      color: #0f172a;
+      border: none;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      transition: opacity 0.2s;
+    }
+
+    .game-invite-btn:hover {
+      opacity: 0.9;
+    }
+
     /* GAMES TAB STYLING */
     .games-lobby {
       flex: 1;
@@ -1258,13 +1301,13 @@
             <div class="game-card">
               <h4>📦 5x5 Dots & Boxes</h4>
               <p>Take turns connecting dots! Completing a 1x1 box earns a point and gives an extra turn. Most boxes wins!</p>
-              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('dots_and_boxes')">Challenge a Friend</button>
+              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('dots_and_boxes')">Challenge via DM 📥</button>
             </div>
 
             <div class="game-card">
               <h4>🕸️ Game of SIM</h4>
               <p>6 nodes, 15 lines. Take turns coloring lines. <strong>Misère Rule:</strong> The first player forced to form a triangle of their color LOSES!</p>
-              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('sim')">Challenge a Friend</button>
+              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('sim')">Challenge via DM 📥</button>
             </div>
 
           </div>
@@ -1307,7 +1350,7 @@
   <div class="modal-overlay" id="game-challenge-modal">
     <div class="modal-card" style="max-width: 400px;">
       <div class="modal-header">
-        <h3 id="game-challenge-title">Challenge a Friend</h3>
+        <h3 id="game-challenge-title">Send DM Challenge</h3>
         <button class="close-btn" onclick="closeGameChallengeModal()">✕</button>
       </div>
 
@@ -1320,7 +1363,7 @@
 
       <div class="modal-actions" style="justify-content: flex-end;">
         <button class="btn-secondary" onclick="closeGameChallengeModal()">Cancel</button>
-        <button class="btn-primary" onclick="sendGameChallenge()">Send Invite 🎮</button>
+        <button class="btn-primary" onclick="sendGameChallenge()">Send DM Invite 📥</button>
       </div>
     </div>
   </div>
@@ -1868,7 +1911,6 @@
       closeProfileModal();
       loadMessages();
       subscribeToDMs();
-      subscribeToGameInvites();
     }
 
     function openProfileModal() {
@@ -2022,9 +2064,26 @@
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
-    // ADVANCED PARSER FOR FONTS, COLOR, GLOW, RAINBOW & SPOILERS
+    // ADVANCED PARSER FOR FONTS, COLOR, GLOW, RAINBOW, SPOILERS & GAME INVITE CARDS
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
+
+      // Check if message is a Game Challenge Invite Payload
+      if (text.startsWith('[GAME_INVITE]:')) {
+        try {
+          const rawJson = text.replace('[GAME_INVITE]:', '');
+          const data = JSON.parse(rawJson);
+          const gameName = data.gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
+          
+          return `
+            <div class="game-invite-card">
+              <h5>🎮 Game Challenge!</h5>
+              <p>Challenged you to a game of <strong>${gameName}</strong>!</p>
+              <button class="game-invite-btn" onclick="acceptDMGameInvite('${data.gameType}', '${data.roomCode}', '${data.hostHash}')">🎮 Accept Challenge & Play</button>
+            </div>
+          `;
+        } catch(e) {}
+      }
 
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
       escaped = escaped.replace(urlRegex, function(url) {
@@ -2291,8 +2350,13 @@
           knownUsers.set(partnerHash, partnerName);
         }
 
+        let snippetText = dm.content;
+        if (snippetText.startsWith('[GAME_INVITE]:')) {
+          snippetText = '🎮 Game Challenge Invite';
+        }
+
         if (!partners.has(partnerHash)) {
-          partners.set(partnerHash, { name: partnerName, lastMsg: dm.content, time: dm.created_at });
+          partners.set(partnerHash, { name: partnerName, lastMsg: snippetText, time: dm.created_at });
         }
       });
 
@@ -2507,7 +2571,7 @@
     let dbP2Score = 0;
 
     // SIM State
-    let simEdges = {}; // e.g., "0-1": 'p1'
+    let simEdges = {};
     let simVerticesPos = [];
 
     function openGameChallengeModal(gameType) {
@@ -2535,41 +2599,42 @@
       document.getElementById('game-challenge-modal').style.display = 'none';
     }
 
-    function sendGameChallenge() {
+    async function sendGameChallenge() {
       const recipientHash = document.getElementById('game-opponent-select').value;
+      const recipientName = knownUsers.get(recipientHash);
       if (!recipientHash) return alert("Please select an opponent!");
 
       const roomCode = `game_${Date.now()}_${Math.floor(Math.random()*1000)}`;
       
-      const invitesChannel = supabaseClient.channel('game_invites_global');
-      invitesChannel.send({
-        type: 'broadcast',
-        event: 'invite',
-        payload: {
-          gameType: selectedGameType,
-          roomCode: roomCode,
-          hostName: currentUser,
-          hostHash: currentUserHash,
-          recipientHash: recipientHash
-        }
-      });
+      const payloadObj = {
+        gameType: selectedGameType,
+        roomCode: roomCode,
+        hostHash: currentUserHash
+      };
+
+      const inviteMsgContent = `[GAME_INVITE]:${JSON.stringify(payloadObj)}`;
+
+      // Post Game Invite directly into the DM database table
+      const { error } = await supabaseClient.from('dms').insert([{
+        sender_name: currentUser,
+        sender_hash: currentUserHash,
+        recipient_name: recipientName,
+        recipient_hash: recipientHash,
+        content: inviteMsgContent
+      }]);
 
       closeGameChallengeModal();
-      startActiveGame(selectedGameType, roomCode, 'p1', recipientHash);
+
+      if (error) {
+        alert("Error sending game invite DM: " + error.message);
+      } else {
+        startActiveGame(selectedGameType, roomCode, 'p1', recipientHash);
+      }
     }
 
-    function subscribeToGameInvites() {
-      const invitesChannel = supabaseClient.channel('game_invites_global');
-      invitesChannel.on('broadcast', { event: 'invite' }, payload => {
-        if (payload.recipientHash === currentUserHash) {
-          playNotificationSound();
-          const gameName = payload.gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
-          if (confirm(`🎮 @${payload.hostName} challenged you to a game of ${gameName}! Accept?`)) {
-            switchView('games');
-            startActiveGame(payload.gameType, payload.roomCode, 'p2', payload.hostHash);
-          }
-        }
-      }).subscribe();
+    function acceptDMGameInvite(gameType, roomCode, hostHash) {
+      switchView('games');
+      startActiveGame(gameType, roomCode, 'p2', hostHash);
     }
 
     function startActiveGame(gameType, roomCode, role, opponentHash) {
@@ -2971,7 +3036,6 @@
 
       await loadMessages();
       subscribeToDMs();
-      subscribeToGameInvites();
       checkFirstVisit();
     }
 
