@@ -2525,6 +2525,20 @@
       await loadMessages();
       subscribeToDMs();
       checkFirstVisit();
+
+      // Refresh when switching back to this tab
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          window.location.reload();
+        }
+      });
+
+      // Refresh every 5 minutes if tab is open in background
+      setInterval(() => {
+        if (document.visibilityState === 'hidden') {
+          window.location.reload();
+        }
+      }, 5 * 60 * 1000);
     }
 
     init();
