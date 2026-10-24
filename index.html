@@ -285,23 +285,23 @@
       max-width: 340px;
     }
 
-    /* FLOATING DM DOCK BUTTON */
+    /* FLOATING DM DOCK BUTTON - MOVED DOWN FOR CLEAR VIEW */
     #floating-dm-dock-btn {
       position: fixed;
-      bottom: 5.5rem;
+      bottom: 1.25rem;
       right: 1.5rem;
       background-color: var(--my-msg-bg);
       color: #ffffff;
       border: 2px solid var(--accent-color);
-      padding: 0.7rem 1.1rem;
+      padding: 0.6rem 1rem;
       border-radius: 30px;
       font-weight: 700;
-      font-size: 0.9rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 0.85rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       z-index: 90;
       transition: transform 0.15s ease, background-color 0.2s ease;
     }
@@ -316,13 +316,15 @@
       top: 0;
       right: 0;
       width: 360px;
-      height: 100%;
+      height: calc(100% - 4.5rem);
       background-color: var(--card-color);
       border-left: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
       display: none;
       flex-direction: column;
       z-index: 80;
       box-shadow: -8px 0 24px rgba(0,0,0,0.3);
+      border-bottom-left-radius: 12px;
     }
 
     .dm-split-drawer.open {
@@ -349,6 +351,7 @@
     @media (max-width: 768px) {
       .dm-split-drawer {
         width: 100%;
+        height: calc(100% - 4.5rem);
       }
     }
 
