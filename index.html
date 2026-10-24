@@ -1318,9 +1318,12 @@
           <div class="game-header-bar">
             <div>
               <strong id="active-game-title">Game</strong>
-              <div id="active-game-status" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.15rem;">Waiting for opponent...</div>
+              <div id="active-game-status" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.15rem;">Waiting for opponent to accept...</div>
             </div>
-            <button class="btn-secondary" onclick="leaveGameArena()">Quit Game</button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn-secondary" id="rematch-btn" style="display: none;" onclick="requestRematch()">🔄 Rematch</button>
+              <button class="btn-secondary" onclick="leaveGameArena()">Quit Game</button>
+            </div>
           </div>
 
           <!-- Dots & Boxes Container -->
@@ -2068,7 +2071,6 @@
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
 
-      // Check if message is a Game Challenge Invite Payload
       if (text.startsWith('[GAME_INVITE]:')) {
         try {
           const rawJson = text.replace('[GAME_INVITE]:', '');
@@ -2079,7 +2081,7 @@
             <div class="game-invite-card">
               <h5>🎮 Game Challenge!</h5>
               <p>Challenged you to a game of <strong>${gameName}</strong>!</p>
-              <button class="game-invite-btn" onclick="acceptDMGameInvite('${data.gameType}', '${data.roomCode}', '${data.hostHash}')">🎮 Accept Challenge & Play</button>
+              <button class="game-invite-btn" onclick="acceptDMGameInvite('${data.gameType}', '${data.sessionId}', '${data.hostHash}')">🎮 Accept Challenge & Play</button>
             </div>
           `;
         } catch(e) {}
@@ -2556,12 +2558,13 @@
         .subscribe();
     }
 
-    // MULTIPLAYER GAMES ENGINE (DOTS & BOXES + SIM)
+    // MULTIPLAYER GAMES ENGINE WITH SESSION DATABASE HANDSHAKE
     let selectedGameType = null;
-    let activeGameRoom = null;
+    let activeSessionId = null;
     let activeGameChannel = null;
     let gameRole = null; // 'p1' or 'p2'
     let currentTurnRole = 'p1';
+    let activeOpponentName = 'Opponent';
 
     // Dots & Boxes State
     let dbHLines = Array(5).fill().map(() => Array(4).fill(null));
@@ -2604,17 +2607,18 @@
       const recipientName = knownUsers.get(recipientHash);
       if (!recipientHash) return alert("Please select an opponent!");
 
-      const roomCode = `game_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+      const sessionId = `game_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+      activeOpponentName = recipientName;
       
       const payloadObj = {
         gameType: selectedGameType,
-        roomCode: roomCode,
+        sessionId: sessionId,
         hostHash: currentUserHash
       };
 
       const inviteMsgContent = `[GAME_INVITE]:${JSON.stringify(payloadObj)}`;
 
-      // Post Game Invite directly into the DM database table
+      // Post Game Invite directly into DM table
       const { error } = await supabaseClient.from('dms').insert([{
         sender_name: currentUser,
         sender_hash: currentUserHash,
@@ -2628,21 +2632,25 @@
       if (error) {
         alert("Error sending game invite DM: " + error.message);
       } else {
-        startActiveGame(selectedGameType, roomCode, 'p1', recipientHash);
+        switchView('games');
+        startActiveGame(selectedGameType, sessionId, 'p1', recipientName);
       }
     }
 
-    function acceptDMGameInvite(gameType, roomCode, hostHash) {
+    async function acceptDMGameInvite(gameType, sessionId, hostHash) {
+      activeOpponentName = knownUsers.get(hostHash) || 'Player 1';
       switchView('games');
-      startActiveGame(gameType, roomCode, 'p2', hostHash);
+      startActiveGame(gameType, sessionId, 'p2', activeOpponentName);
     }
 
-    function startActiveGame(gameType, roomCode, role, opponentHash) {
+    function startActiveGame(gameType, sessionId, role, opponentName) {
       selectedGameType = gameType;
-      activeGameRoom = roomCode;
+      activeSessionId = sessionId;
       gameRole = role;
       currentTurnRole = 'p1';
+      activeOpponentName = opponentName || 'Opponent';
 
+      document.getElementById('rematch-btn').style.display = 'none';
       document.getElementById('games-lobby-screen').style.display = 'none';
       document.getElementById('games-arena-screen').style.display = 'flex';
 
@@ -2661,19 +2669,45 @@
       }
 
       if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
-      activeGameChannel = supabaseClient.channel(`game_room_${roomCode}`);
+      activeGameChannel = supabaseClient.channel(`game_session_${sessionId}`);
 
-      activeGameChannel.on('broadcast', { event: 'move' }, payload => {
-        if (selectedGameType === 'dots_and_boxes') {
-          handleDotsAndBoxesRemoteMove(payload);
-        } else {
-          handleSIMRemoteMove(payload);
-        }
-      }).subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          statusEl.textContent = role === 'p1' ? "Your Turn! (Player 1 - Blue)" : "Opponent's Turn (Player 1 - Blue)";
-        }
-      });
+      // Broadcast Listener for Live Moves and Join Sync
+      activeGameChannel
+        .on('broadcast', { event: 'player_joined' }, payload => {
+          if (role === 'p1') {
+            statusEl.textContent = `🟢 @${payload.joinerName} joined! Your Turn! (Player 1 - Blue)`;
+            playNotificationSound();
+          }
+        })
+        .on('broadcast', { event: 'move' }, payload => {
+          if (selectedGameType === 'dots_and_boxes') {
+            handleDotsAndBoxesRemoteMove(payload);
+          } else {
+            handleSIMRemoteMove(payload);
+          }
+        })
+        .on('broadcast', { event: 'rematch' }, () => {
+          if (selectedGameType === 'dots_and_boxes') initDotsAndBoxes();
+          else initSIM();
+          currentTurnRole = 'p1';
+          updateGameTurnDisplay('p1');
+          document.getElementById('rematch-btn').style.display = 'none';
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            if (role === 'p2') {
+              // Notify Player 1 that Player 2 joined the active channel!
+              activeGameChannel.send({
+                type: 'broadcast',
+                event: 'player_joined',
+                payload: { joinerName: currentUser }
+              });
+              statusEl.textContent = `Opponent's Turn (@${activeOpponentName} - Blue)`;
+            } else {
+              statusEl.textContent = `Waiting for @${activeOpponentName} to click Accept in DMs...`;
+            }
+          }
+        });
     }
 
     function updateGameTurnDisplay(turnRole) {
@@ -2681,13 +2715,30 @@
       const statusEl = document.getElementById('active-game-status');
       const isMyTurn = (turnRole === gameRole);
       const roleColor = turnRole === 'p1' ? 'Blue' : 'Red';
-      statusEl.textContent = isMyTurn ? `Your Turn! (${roleColor})` : `Opponent's Turn (${roleColor})`;
+      statusEl.textContent = isMyTurn ? `Your Turn! (${roleColor})` : `@${activeOpponentName}'s Turn (${roleColor})`;
     }
 
     function leaveGameArena() {
       if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
       document.getElementById('games-arena-screen').style.display = 'none';
       document.getElementById('games-lobby-screen').style.display = 'flex';
+    }
+
+    function requestRematch() {
+      if (selectedGameType === 'dots_and_boxes') initDotsAndBoxes();
+      else initSIM();
+
+      currentTurnRole = 'p1';
+      updateGameTurnDisplay('p1');
+      document.getElementById('rematch-btn').style.display = 'none';
+
+      if (activeGameChannel) {
+        activeGameChannel.send({
+          type: 'broadcast',
+          event: 'rematch',
+          payload: {}
+        });
+      }
     }
 
     /* --- 1. DOTS & BOXES ENGINE --- */
@@ -2780,11 +2831,13 @@
 
       applyDBMove(dir, r, c, gameRole);
 
-      activeGameChannel.send({
-        type: 'broadcast',
-        event: 'move',
-        payload: { dir, r, c, role: gameRole }
-      });
+      if (activeGameChannel) {
+        activeGameChannel.send({
+          type: 'broadcast',
+          event: 'move',
+          payload: { dir, r, c, role: gameRole }
+        });
+      }
     }
 
     function handleDotsAndBoxesRemoteMove(payload) {
@@ -2834,6 +2887,7 @@
         if (dbP1Score > dbP2Score) winnerMsg = "Player 1 (Blue) Wins! 🎉";
         if (dbP2Score > dbP1Score) winnerMsg = "Player 2 (Red) Wins! 🎉";
         document.getElementById('active-game-status').textContent = `Game Over! ${winnerMsg}`;
+        document.getElementById('rematch-btn').style.display = 'inline-block';
       }
     }
 
@@ -2915,11 +2969,13 @@
 
       applySIMMove(u, v, gameRole);
 
-      activeGameChannel.send({
-        type: 'broadcast',
-        event: 'move',
-        payload: { u, v, role: gameRole }
-      });
+      if (activeGameChannel) {
+        activeGameChannel.send({
+          type: 'broadcast',
+          event: 'move',
+          payload: { u, v, role: gameRole }
+        });
+      }
     }
 
     function handleSIMRemoteMove(payload) {
@@ -2935,6 +2991,7 @@
         const loserName = role === 'p1' ? 'Player 1 (Blue)' : 'Player 2 (Red)';
         const winnerName = role === 'p1' ? 'Player 2 (Red)' : 'Player 1 (Blue)';
         document.getElementById('active-game-status').textContent = `Game Over! ${loserName} formed a triangle and lost! ${winnerName} Wins! 🎉`;
+        document.getElementById('rematch-btn').style.display = 'inline-block';
         return;
       }
 
