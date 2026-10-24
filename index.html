@@ -594,66 +594,6 @@
 
     .yt-modal-close-btn:hover { opacity: 1; }
 
-    /* GAME OVERLAY MODAL (POPUP LIKE YT VIDEOS) */
-    .game-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100dvh;
-      background-color: rgba(0, 0, 0, 0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 500;
-      backdrop-filter: blur(6px);
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .game-modal-container {
-      position: relative;
-      width: 90%;
-      max-width: 960px;
-      height: 85dvh;
-      background-color: #0f172a;
-      border-radius: 14px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .game-modal-header {
-      padding: 0.75rem 1rem;
-      background-color: var(--card-color);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .game-modal-header h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .game-modal-body {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      background: #000;
-    }
-
-    .game-modal-body iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
     /* Custom Text Formatting Styles */
     .msg-code {
       background-color: rgba(0, 0, 0, 0.35);
@@ -832,6 +772,10 @@
       cursor: pointer;
       flex-shrink: 0;
       transition: opacity 0.2s ease, transform 0.1s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn-primary:hover { opacity: 0.9; }
@@ -1022,7 +966,7 @@
     }
 
     .game-card-content {
-      padding: 1rem;
+      padding: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
@@ -1352,19 +1296,6 @@
     </div>
   </div>
 
-  <!-- GAME PLAY EMBED POPUP MODAL (OPENED OVERLAY) -->
-  <div id="game-modal-overlay" class="game-modal-overlay" onclick="closeGameOverlay()">
-    <div class="game-modal-container" onclick="event.stopPropagation()">
-      <div class="game-modal-header">
-        <h3 id="game-modal-title">🎮 PolyTrack</h3>
-        <button class="icon-btn" onclick="closeGameOverlay()">✕ Close Game</button>
-      </div>
-      <div class="game-modal-body">
-        <iframe id="game-modal-iframe" allow="autoplay; gamepad; fullscreen; focus-without-user-activation" allowfullscreen></iframe>
-      </div>
-    </div>
-  </div>
-
   <!-- FLOATING DM QUICK-DOCK BUTTON -->
   <button id="floating-dm-dock-btn" onclick="toggleDMSplitDrawer()">
     💬 DMs
@@ -1531,14 +1462,14 @@
       <div class="view-screen" id="games-view" style="display: none;">
         <div class="games-grid">
           
-          <!-- PolyTrack Game Card using direct Kodub App URL -->
+          <!-- Kultisti's Games Card -->
           <div class="game-card">
-            <div class="game-card-content" style="padding-top: 1.2rem;">
-              <div class="game-card-title">🏎️ PolyTrack</div>
-              <div class="game-card-desc">Low-poly high-speed racing game inspired by TrackMania. Race against time or build custom tracks!</div>
-              <button class="btn-primary" onclick="openGameOverlay('PolyTrack', 'https://www.kodub.com/apps/polytrack')" style="width: 100%; margin-top: 0.6rem;">
-                ▶ Launch Overlay Window
-              </button>
+            <div class="game-card-content">
+              <div class="game-card-title">🕹️ Kultisti Games</div>
+              <div class="game-card-desc">Explore a collection of unique indie browser games made by Kultisti on itch.io!</div>
+              <a href="https://kultisti.itch.io/" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play Kultisti Games in New Tab
+              </a>
             </div>
           </div>
 
@@ -2189,26 +2120,6 @@
         document.getElementById('games-view').style.display = 'flex';
         pageTitle.innerHTML = `🎮 Arcade / Games`;
       }
-    }
-
-    function openGameOverlay(title, gameUrl) {
-      playSound('modal');
-      const overlay = document.getElementById('game-modal-overlay');
-      const iframe = document.getElementById('game-modal-iframe');
-      const titleEl = document.getElementById('game-modal-title');
-
-      titleEl.textContent = `🎮 ${title}`;
-      iframe.src = gameUrl;
-      overlay.style.display = 'flex';
-    }
-
-    function closeGameOverlay() {
-      playSound('click');
-      const overlay = document.getElementById('game-modal-overlay');
-      const iframe = document.getElementById('game-modal-iframe');
-
-      iframe.src = '';
-      overlay.style.display = 'none';
     }
 
     function updateTotalUnreadBadge() {
