@@ -227,6 +227,44 @@
       background-color: var(--border-color);
     }
 
+    /* Floating Notification Toasts */
+    #notification-toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 300;
+      pointer-events: none;
+    }
+
+    .app-toast {
+      pointer-events: auto;
+      background-color: var(--card-color);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-color);
+      color: var(--text-color);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: slideInToast 0.25s ease-out;
+      max-width: 340px;
+    }
+
+    .app-toast.error { border-left-color: #ef4444; }
+    .app-toast.success { border-left-color: #22c55e; }
+
+    @keyframes slideInToast {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     /* Floating In-App DM Toast Banner */
     #global-dm-toast {
       position: fixed;
@@ -245,11 +283,6 @@
       cursor: pointer;
       animation: slideInToast 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       max-width: 340px;
-    }
-
-    @keyframes slideInToast {
-      from { transform: translateY(-30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
     }
 
     /* Views */
@@ -1155,6 +1188,9 @@
 </head>
 <body>
 
+  <!-- Floating Toast Notifications Container -->
+  <div id="notification-toast-container"></div>
+
   <!-- Top Header Bar -->
   <div class="chat-header">
     <div style="display: flex; align-items: center; gap: 0.6rem;">
@@ -1634,6 +1670,18 @@
     </div>
   </div>
 
+  <!-- Generic Alert Modal (Replaces browser alert()) -->
+  <div class="modal-overlay" id="alert-modal">
+    <div class="modal-card" style="max-width: 380px; text-align: center;">
+      <div style="font-size: 2.2rem; margin-bottom: 0.2rem;" id="alert-modal-icon">🔔</div>
+      <h3 id="alert-modal-title" style="font-size: 1.1rem; font-weight: 700;">Notice</h3>
+      <p id="alert-modal-message" style="font-size: 0.9rem; color: #94a3b8; line-height: 1.4; margin: 0.4rem 0 1rem 0;"></p>
+      <div style="display: flex; justify-content: center;">
+        <button class="btn-primary" onclick="closeAppAlert()" style="width: 100%;">Okay</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = "https://vkvmnithwfmdcfwrzqdx.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrdm1uaXRod2ZtZGNmd3J6cWR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2OTkyODksImV4cCI6MjEwODI3NTI4OX0.OvdamS8cb7F3AS9w1RUtLedZiQBdv9_FgO_YTdK1DX0";
@@ -1648,6 +1696,7 @@
     const profileModal = document.getElementById('profile-modal');
     const textGuideModal = document.getElementById('text-guide-modal');
     const deleteModal = document.getElementById('delete-modal');
+    const alertModal = document.getElementById('alert-modal');
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     const emojiPopover = document.getElementById('emoji-popover');
 
@@ -1667,6 +1716,38 @@
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
     const userAvatars = new Map();
+
+    // CUSTOM MODERN IN-APP ALERTS & TOAST NOTIFICATIONS
+    function showAppToast(text, type = 'info') {
+      const container = document.getElementById('notification-toast-container');
+      const toastEl = document.createElement('div');
+      toastEl.className = `app-toast ${type}`;
+
+      let icon = 'ℹ️';
+      if (type === 'error') icon = '⚠️';
+      if (type === 'success') icon = '✅';
+
+      toastEl.innerHTML = `<span>${icon}</span> <span>${escapeHtml(text)}</span>`;
+      container.appendChild(toastEl);
+
+      setTimeout(() => {
+        toastEl.style.opacity = '0';
+        toastEl.style.transform = 'translateX(50px)';
+        toastEl.style.transition = 'all 0.25s ease';
+        setTimeout(() => toastEl.remove(), 250);
+      }, 3500);
+    }
+
+    function showAppAlert(title, message, icon = '🔔') {
+      document.getElementById('alert-modal-title').textContent = title;
+      document.getElementById('alert-modal-message').textContent = message;
+      document.getElementById('alert-modal-icon').textContent = icon;
+      alertModal.style.display = 'flex';
+    }
+
+    function closeAppAlert() {
+      alertModal.style.display = 'none';
+    }
 
     // 10x10 PFP Grid + Eraser Logic + Picture PFP Logic
     let currentPfpMode = 'pixel';
@@ -1906,6 +1987,7 @@
 
       updatePresence(currentUser);
       closeProfileModal();
+      showAppToast("Profile updated successfully!", "success");
       loadMessages();
       subscribeToDMs();
     }
@@ -1961,6 +2043,7 @@
     function toggleSound() {
       soundEnabled = !soundEnabled;
       document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
+      showAppToast(soundEnabled ? 'Audio notifications enabled' : 'Audio notifications muted', 'info');
     }
 
     const userColorPalette = [
@@ -2009,6 +2092,7 @@
       }
       localStorage.setItem('chat_theme_colors', JSON.stringify(preset));
       loadSavedTheme();
+      showAppToast(`Applied theme!`, 'success');
     }
 
     function updateColor(cssVar, colorVal) {
@@ -2021,6 +2105,7 @@
     function resetTheme() {
       localStorage.removeItem('chat_theme_colors');
       loadSavedTheme();
+      showAppToast("Theme reset to default", "info");
     }
 
     function openSettings() { modal.style.display = 'flex'; }
@@ -2164,9 +2249,10 @@
     async function executeDelete(id, table = 'messages') {
       const { error } = await supabaseClient.from(table).delete().eq('id', id);
       if (error) {
-        alert("Error deleting message: " + error.message);
+        showAppToast("Error deleting message: " + error.message, "error");
       } else {
         removeMessageFromUI(id);
+        showAppToast("Message deleted", "info");
       }
     }
 
@@ -2220,7 +2306,7 @@
         content: text 
       }]);
 
-      if (error) alert("Error sending message: " + error.message);
+      if (error) showAppToast("Error sending message: " + error.message, "error");
     }
 
     // CLIPBOARD IMAGE PASTE HANDLER
@@ -2233,6 +2319,7 @@
           const reader = new FileReader();
           reader.onload = function(event) {
             targetInput.value = event.target.result;
+            showAppToast("Image pasted into text field!", "info");
           };
           reader.readAsDataURL(file);
           break;
@@ -2361,7 +2448,7 @@
     }
 
     function selectDMThread(userName, userHash) {
-      if (userHash === currentUserHash) return alert("You cannot DM yourself!");
+      if (userHash === currentUserHash) return showAppToast("You cannot DM yourself!", "error");
       activeDMTarget = { name: userName, hash: userHash };
 
       unreadDMCounters.delete(userHash);
@@ -2447,7 +2534,7 @@
       }]);
 
       if (error) {
-        alert("Error sending DM: " + error.message);
+        showAppToast("Error sending DM: " + error.message, "error");
       } else {
         loadInboxThreadMessages();
         loadInboxConversations();
@@ -2495,7 +2582,7 @@
       const text = input.value.trim();
 
       if (!recipientHash || !text) {
-        return alert("Please select a recipient and enter a message!");
+        return showAppToast("Select a recipient and write a message!", "error");
       }
 
       input.value = '';
@@ -2508,7 +2595,7 @@
       }]);
 
       if (error) {
-        alert("Error sending message: " + error.message);
+        showAppToast("Error sending DM: " + error.message, "error");
       } else {
         selectDMThread(recipientName, recipientHash);
       }
@@ -2761,7 +2848,7 @@
             if (msGrid[i][j].mine) msGrid[i][j].revealed = true;
           }
         }
-        alert("Boom! Game Over!");
+        showAppAlert("Boom! 💥", "You hit a mine! Click Reset to try again.", "💣");
       } else if (msGrid[r][c].count === 0) {
         // Flood fill reveal empty spaces
         for (let dr = -1; dr <= 1; dr++) {
@@ -2837,7 +2924,7 @@
     supabaseClient
       .channel('public:messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.user_hash, payload.new.content, payload.new.created_at);
+        appendMessage(payload.new.id, payload.new.username || 'Anon', payload.new.user_hash, payload.content || payload.new.content, payload.new.created_at);
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, payload => {
         removeMessageFromUI(payload.old.id);
