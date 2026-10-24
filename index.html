@@ -1335,7 +1335,7 @@
         <button class="close-btn" onclick="closeProfileModal()">✕</button>
       </div>
 
-      <div class identity-form">
+      <div class="identity-form">
         <div>
           <label for="modal-username">Display Name</label>
           <input type="text" id="modal-username" placeholder="e.g. Miku" style="width: 100%; margin-top: 0.3rem;">
@@ -1504,6 +1504,7 @@
 
     let pendingDeleteTarget = null;
     let soundEnabled = true;
+    let isInitialLoading = true; // Mutes sounds during initial page setup & historical message sync
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
@@ -1530,7 +1531,7 @@
     }
 
     function playSound(type) {
-      if (!soundEnabled) return;
+      if (!soundEnabled || isInitialLoading) return;
       try {
         const ctx = getAudioContext();
         const osc = ctx.createOscillator();
@@ -1541,7 +1542,6 @@
 
         const now = ctx.currentTime;
 
-        // Uses soft sine waves and very quiet gain (0.02 to 0.04)
         if (type === 'send') {
           osc.type = 'sine';
           osc.frequency.setValueAtTime(320, now);
@@ -2602,6 +2602,9 @@
       await loadMessages();
       subscribeToDMs();
       checkFirstVisit();
+
+      // Complete initial loading: un-mute sounds for new live actions
+      isInitialLoading = false;
 
       // Refresh when switching back to this tab
       document.addEventListener('visibilitychange', () => {
