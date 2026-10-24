@@ -227,6 +227,31 @@
       background-color: var(--border-color);
     }
 
+    /* Floating In-App DM / Invite Toast Banner (NO BROWSER POPUPS) */
+    #global-dm-toast {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background-color: var(--card-color);
+      border: 2px solid var(--accent-color);
+      color: var(--text-color);
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 200;
+      cursor: pointer;
+      animation: slideInToast 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 340px;
+    }
+
+    @keyframes slideInToast {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     /* Views */
     .view-container {
       flex: 1;
@@ -686,6 +711,7 @@
       word-break: break-word;
       line-height: 1.4;
       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      position: relative;
     }
 
     .dm-bubble.me {
@@ -1156,6 +1182,15 @@
     <div class="header-actions">
       <button class="icon-btn" onclick="openTextGuideModal()" title="Formatting & Fonts Guide">✨ Formatting</button>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+    </div>
+  </div>
+
+  <!-- Global In-Tab Floating DM Toast Notification (NO BROWSER POPUPS) -->
+  <div id="global-dm-toast" onclick="openDMFromToast()">
+    <span style="font-size: 1.6rem;">📥</span>
+    <div>
+      <div id="toast-sender" style="font-weight: 700; font-size: 0.85rem; color: #38bdf8;">@Sender</div>
+      <div id="toast-text" style="font-size: 0.8rem; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">New message...</div>
     </div>
   </div>
 
@@ -1663,13 +1698,15 @@
     const modalUsernameInput = document.getElementById('modal-username');
     const modalPinInput = document.getElementById('modal-pin');
 
-    let pendingDeleteId = null;
+    let pendingDeleteTarget = null; // { id, table: 'messages' | 'dms' }
     let soundEnabled = true;
     let currentUser = 'Anon';
     let currentPin = '0000';
     let currentUserHash = '';
     let currentView = 'public';
     let activeDMTarget = null;
+    let toastDMTarget = null;
+    let toastTimeout = null;
     
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
@@ -1942,7 +1979,7 @@
       else if (!localStorage.getItem('chat_username')) openProfileModal();
     }
 
-    function playNotificationSound() {
+    function playNotificationSound(isInvite = false) {
       if (!soundEnabled) return;
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1950,17 +1987,22 @@
         const gain = audioCtx.createGain();
 
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+        
+        // Distinct higher-pitched double chime for Game Invites
+        const startFreq = isInvite ? 880 : 587.33;
+        const endFreq = isInvite ? 1318.51 : 880;
 
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
+        osc.stop(audioCtx.currentTime + 0.35);
       } catch (e) {}
     }
 
@@ -2136,7 +2178,7 @@
         ? `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>` 
         : `<div class="msg-content">${parseFormattedText(text)}</div>`;
 
-      const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe})" title="Delete message">✕</button>` : '';
+      const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe}, 'messages')" title="Delete message">✕</button>` : '';
 
       const pfpSvg = renderPfpSvg(userAvatars.get(userHash));
 
@@ -2160,37 +2202,42 @@
       if (isMe || isAtBottom) scrollToBottom();
       else toast.style.display = 'block';
 
-      if (!isMe) playNotificationSound();
+      if (!isMe) playNotificationSound(false);
     }
 
-    function promptDelete(id, isMe) {
-      if (isMe) executeDelete(id);
+    function promptDelete(id, isMe, table = 'messages') {
+      if (isMe) executeDelete(id, table);
       else {
-        pendingDeleteId = id;
+        pendingDeleteTarget = { id, table };
         deleteModal.style.display = 'flex';
       }
     }
 
     function closeDeleteModal() {
-      pendingDeleteId = null;
+      pendingDeleteTarget = null;
       deleteModal.style.display = 'none';
     }
 
     confirmDeleteBtn.addEventListener('click', () => {
-      if (pendingDeleteId) {
-        executeDelete(pendingDeleteId);
+      if (pendingDeleteTarget) {
+        executeDelete(pendingDeleteTarget.id, pendingDeleteTarget.table);
         closeDeleteModal();
       }
     });
 
-    async function executeDelete(id) {
-      const { error } = await supabaseClient.from('messages').delete().eq('id', id);
-      if (error) alert("Error deleting message: " + error.message);
+    async function executeDelete(id, table = 'messages') {
+      const { error } = await supabaseClient.from(table).delete().eq('id', id);
+      if (error) {
+        alert("Error deleting message: " + error.message);
+      } else {
+        removeMessageFromUI(id);
+      }
     }
 
     function removeMessageFromUI(id) {
-      const el = document.getElementById(`msg-${id}`);
+      const el = document.getElementById(`msg-${id}`) || document.getElementById(`dm-msg-${id}`);
       if (el) el.remove();
+      if (currentView === 'inbox') loadInboxConversations();
     }
 
     function scrollToBottom() {
@@ -2318,7 +2365,7 @@
       }
     }
 
-    // FULL-SCREEN INBOX & UNREAD DM COUNTERS
+    // FULL-SCREEN INBOX, UNREAD DM COUNTERS & DELETABLE DMS
     async function loadInboxConversations() {
       if (!currentUserHash) return;
 
@@ -2433,15 +2480,20 @@
           const isMe = dm.sender_hash === currentUserHash;
           const msg = document.createElement('div');
           msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
-          msg.style.display = 'block';
+          msg.id = `dm-msg-${dm.id}`;
 
           let dmContent = isImageUrl(dm.content) 
             ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 240px; border-radius: 8px;" loading="lazy">`
             : parseFormattedText(dm.content);
 
+          const deleteBtnHtml = `<button class="delete-btn" onclick="promptDelete(${dm.id}, ${isMe}, 'dms')" title="Delete DM" style="margin-left: 0.4rem;">✕</button>`;
+
           msg.innerHTML = `
             <div style="color: #ffffff !important;">${dmContent}</div>
-            <div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); text-align: right; margin-top: 0.2rem;">${formatTime(dm.created_at)}</div>
+            <div style="font-size: 0.6rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: flex-end; gap: 0.2rem; margin-top: 0.25rem;">
+              <span>${formatTime(dm.created_at)}</span>
+              ${deleteBtnHtml}
+            </div>
           `;
           canvas.appendChild(msg);
         });
@@ -2531,15 +2583,44 @@
       }
     }
 
+    function showGlobalDMToast(senderName, senderHash, snippetText) {
+      toastDMTarget = { name: senderName, hash: senderHash };
+      document.getElementById('toast-sender').textContent = `@${senderName}`;
+      
+      const isInvite = snippetText.startsWith('[GAME_INVITE]:');
+      document.getElementById('toast-text').textContent = isInvite ? '🎮 Sent you a Game Challenge Invite!' : snippetText;
+
+      const toastEl = document.getElementById('global-dm-toast');
+      toastEl.style.display = 'flex';
+
+      // Play "bing" sound (high pitch for game challenge invite)
+      playNotificationSound(isInvite);
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toastEl.style.display = 'none';
+      }, 5500);
+    }
+
+    function openDMFromToast() {
+      if (toastDMTarget) {
+        switchView('inbox');
+        selectDMThread(toastDMTarget.name, toastDMTarget.hash);
+        document.getElementById('global-dm-toast').style.display = 'none';
+      }
+    }
+
     function subscribeToDMs() {
       supabaseClient
         .channel('public:dms')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
           if (payload.new.recipient_hash === currentUserHash) {
-            playNotificationSound();
-
             const senderHash = payload.new.sender_hash;
+            const senderName = payload.new.sender_name || 'Friend';
             const isCurrentlyViewingThread = (currentView === 'inbox' && activeDMTarget && activeDMTarget.hash === senderHash);
+
+            // Pop Floating In-App Banner with Bing Sound!
+            showGlobalDMToast(senderName, senderHash, payload.new.content);
 
             if (!isCurrentlyViewingThread) {
               const currentUnread = unreadDMCounters.get(senderHash) || 0;
@@ -2555,10 +2636,13 @@
             }
           }
         })
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'dms' }, payload => {
+          removeMessageFromUI(payload.old.id);
+        })
         .subscribe();
     }
 
-    // MULTIPLAYER GAMES ENGINE WITH SESSION DATABASE HANDSHAKE
+    // MULTIPLAYER GAMES ENGINE WITH SESSION HANDSHAKE
     let selectedGameType = null;
     let activeSessionId = null;
     let activeGameChannel = null;
@@ -2676,7 +2760,7 @@
         .on('broadcast', { event: 'player_joined' }, payload => {
           if (role === 'p1') {
             statusEl.textContent = `🟢 @${payload.joinerName} joined! Your Turn! (Player 1 - Blue)`;
-            playNotificationSound();
+            playNotificationSound(true);
           }
         })
         .on('broadcast', { event: 'move' }, payload => {
