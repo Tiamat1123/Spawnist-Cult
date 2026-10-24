@@ -285,11 +285,11 @@
       max-width: 340px;
     }
 
-    /* FLOATING DM DOCK BUTTON */
+    /* FLOATING DM DOCK BUTTON - Positioned to clear send buttons */
     #floating-dm-dock-btn {
       position: fixed;
-      bottom: 1.25rem;
-      right: 1.5rem;
+      bottom: 5rem;
+      right: 1.25rem;
       background-color: var(--my-msg-bg);
       color: #ffffff;
       border: 2px solid var(--accent-color);
@@ -303,11 +303,20 @@
       align-items: center;
       gap: 0.4rem;
       z-index: 90;
-      transition: transform 0.15s ease, background-color 0.2s ease;
+      transition: transform 0.15s ease, background-color 0.2s ease, bottom 0.2s ease, opacity 0.2s ease;
     }
 
     #floating-dm-dock-btn:hover {
       transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      #floating-dm-dock-btn {
+        bottom: 5.5rem;
+        right: 1rem;
+        padding: 0.5rem 0.85rem;
+        font-size: 0.8rem;
+      }
     }
 
     /* INLINE SPLIT DM DRAWER */
@@ -2158,22 +2167,27 @@
       document.getElementById('nav-games-btn').classList.toggle('active', view === 'games');
 
       const pageTitle = document.getElementById('page-title');
+      const dockBtn = document.getElementById('floating-dm-dock-btn');
+
       if (view === 'public') {
         document.getElementById('public-view').style.display = 'flex';
         document.getElementById('inbox-view').style.display = 'none';
         document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
+        dockBtn.style.display = 'flex';
       } else if (view === 'inbox') {
         document.getElementById('public-view').style.display = 'none';
         document.getElementById('inbox-view').style.display = 'flex';
         document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `📥 Direct Messages`;
+        dockBtn.style.display = 'none'; // Auto-hide dock button in Inbox mode
         loadInboxConversations();
       } else if (view === 'games') {
         document.getElementById('public-view').style.display = 'none';
         document.getElementById('inbox-view').style.display = 'none';
         document.getElementById('games-view').style.display = 'flex';
         pageTitle.innerHTML = `🎮 Arcade / Games`;
+        dockBtn.style.display = 'flex';
       }
     }
 
@@ -2283,21 +2297,37 @@
 
       if (data && data.length > 0) {
         data.forEach(dm => {
-          const isMe = dm.sender_hash === currentUserHash;
-          const msg = document.createElement('div');
-          msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
-          msg.style.fontSize = '0.8rem';
-          msg.style.padding = '0.4rem 0.65rem';
-
-          let dmContent = isImageUrl(dm.content) 
-            ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 180px; border-radius: 6px;" loading="lazy">`
-            : parseFormattedText(dm.content);
-
-          msg.innerHTML = `<div>${dmContent}</div>`;
-          canvas.appendChild(msg);
+          appendSingleDMToCanvas(dm, canvas);
         });
         canvas.scrollTop = canvas.scrollHeight;
       }
+    }
+
+    // Helper to instantly append a DM element to an active canvas
+    function appendSingleDMToCanvas(dm, container) {
+      if (!container || document.getElementById(`dm-msg-${dm.id}`)) return;
+
+      const isMe = dm.sender_hash === currentUserHash;
+      const msg = document.createElement('div');
+      msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
+      msg.id = `dm-msg-${dm.id}`;
+
+      let dmContent = isImageUrl(dm.content) 
+        ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 240px; border-radius: 8px;" loading="lazy">`
+        : parseFormattedText(dm.content);
+
+      const deleteBtnHtml = `<button class="delete-btn" onclick="promptDelete(${dm.id}, ${isMe}, 'dms')" title="Delete DM" style="margin-left: 0.4rem;">✕</button>`;
+
+      msg.innerHTML = `
+        <div style="color: #ffffff !important;">${dmContent}</div>
+        <div style="font-size: 0.6rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: flex-end; gap: 0.2rem; margin-top: 0.25rem;">
+          <span>${formatTime(dm.created_at)}</span>
+          ${deleteBtnHtml}
+        </div>
+      `;
+
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
     }
 
     async function sendDrawerDM() {
@@ -2308,16 +2338,20 @@
       playSound('send');
       input.value = '';
 
-      const { error } = await supabaseClient.from('dms').insert([{
+      const { data, error } = await supabaseClient.from('dms').insert([{
         sender_name: currentUser,
         sender_hash: currentUserHash,
         recipient_name: activeDMTarget.name,
         recipient_hash: activeDMTarget.hash,
         content: text
-      }]);
+      }]).select('*').single();
 
-      if (error) showAppToast("Error: " + error.message, "error");
-      else loadDrawerThreadMessages();
+      if (error) {
+        showAppToast("Error: " + error.message, "error");
+      } else if (data) {
+        // Instant local insertion for zero lag
+        appendSingleDMToCanvas(data, document.getElementById('drawer-dm-canvas'));
+      }
     }
 
     async function saveProfileIdentity() {
@@ -2511,7 +2545,6 @@
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
 
-      // Extract YouTube links first and convert to clickable preview cards
       const ytId = extractYouTubeId(text);
       if (ytId) {
         const thumbUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
@@ -2673,7 +2706,6 @@
       const text = messageInput.value.trim();
       if (!text) return;
 
-      // Check for inline @mention format: e.g. "@miku hello"
       const mentionMatch = text.match(/^@([a-zA-Z0-9_\-\s]+?)\s+(.+)/);
 
       if (mentionMatch) {
@@ -2718,7 +2750,6 @@
         }
       }
 
-      // Standard Public Message
       playSound('send');
 
       if (!currentUserHash) {
@@ -2924,25 +2955,7 @@
 
       if (data && data.length > 0) {
         data.forEach(dm => {
-          const isMe = dm.sender_hash === currentUserHash;
-          const msg = document.createElement('div');
-          msg.className = `dm-bubble ${isMe ? 'me' : 'them'}`;
-          msg.id = `dm-msg-${dm.id}`;
-
-          let dmContent = isImageUrl(dm.content) 
-            ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 240px; border-radius: 8px;" loading="lazy">`
-            : parseFormattedText(dm.content);
-
-          const deleteBtnHtml = `<button class="delete-btn" onclick="promptDelete(${dm.id}, ${isMe}, 'dms')" title="Delete DM" style="margin-left: 0.4rem;">✕</button>`;
-
-          msg.innerHTML = `
-            <div style="color: #ffffff !important;">${dmContent}</div>
-            <div style="font-size: 0.6rem; color: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: flex-end; gap: 0.2rem; margin-top: 0.25rem;">
-              <span>${formatTime(dm.created_at)}</span>
-              ${deleteBtnHtml}
-            </div>
-          `;
-          canvas.appendChild(msg);
+          appendSingleDMToCanvas(dm, canvas);
         });
         canvas.scrollTop = canvas.scrollHeight;
       }
@@ -2956,18 +2969,19 @@
       playSound('send');
 
       input.value = '';
-      const { error } = await supabaseClient.from('dms').insert([{
+      const { data, error } = await supabaseClient.from('dms').insert([{
         sender_name: currentUser,
         sender_hash: currentUserHash,
         recipient_name: activeDMTarget.name,
         recipient_hash: activeDMTarget.hash,
         content: text
-      }]);
+      }]).select('*').single();
 
       if (error) {
         showAppToast("Error sending DM: " + error.message, "error");
-      } else {
-        loadInboxThreadMessages();
+      } else if (data) {
+        // Instant local insertion into canvas for seamless messaging
+        appendSingleDMToCanvas(data, document.getElementById('dm-canvas'));
         loadInboxConversations();
       }
     }
@@ -3060,16 +3074,20 @@
       }
     }
 
+    // REALTIME DM SUBSCRIPTION - Realtime Instant Delivery Fix
     function subscribeToDMs() {
       supabaseClient
         .channel('public:dms')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
-          if (payload.new.recipient_hash === currentUserHash) {
-            const senderHash = payload.new.sender_hash;
-            const senderName = payload.new.sender_name || 'Friend';
+          const newDM = payload.new;
+
+          // Check if DM is incoming to current user
+          if (newDM.recipient_hash === currentUserHash) {
+            const senderHash = newDM.sender_hash;
+            const senderName = newDM.sender_name || 'Friend';
             const isCurrentlyViewingThread = (currentView === 'inbox' && activeDMTarget && activeDMTarget.hash === senderHash);
 
-            showGlobalDMToast(senderName, senderHash, payload.new.content);
+            showGlobalDMToast(senderName, senderHash, newDM.content);
 
             if (!isCurrentlyViewingThread) {
               const currentUnread = unreadDMCounters.get(senderHash) || 0;
@@ -3077,17 +3095,20 @@
               updateTotalUnreadBadge();
             }
 
-            if (currentView === 'inbox') {
-              loadInboxConversations();
-              if (isCurrentlyViewingThread) {
-                loadInboxThreadMessages();
-              }
+            // Immediately inject DM into full Inbox active thread if open
+            if (isCurrentlyViewingThread) {
+              appendSingleDMToCanvas(newDM, document.getElementById('dm-canvas'));
             }
 
+            if (currentView === 'inbox') {
+              loadInboxConversations();
+            }
+
+            // Immediately inject DM into drawer active thread if open
             if (isDrawerOpen) {
               loadDrawerConversations();
               if (activeDMTarget && activeDMTarget.hash === senderHash) {
-                loadDrawerThreadMessages();
+                appendSingleDMToCanvas(newDM, document.getElementById('drawer-dm-canvas'));
               }
             }
           }
