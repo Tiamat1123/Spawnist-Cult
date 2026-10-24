@@ -1046,7 +1046,7 @@
   <!-- Top Header Bar -->
   <div class="chat-header">
     <div style="display: flex; align-items: center; gap: 0.6rem;">
-      <button class="icon-btn" onclick="toggleSidebar()" title="Toggle Sidebar">☰</button>
+      <button class="icon-btn" onclick="playSound('click'); toggleSidebar();" title="Toggle Sidebar">☰</button>
       <h2 id="page-title"><span class="status-dot"></span> Chatroom</h2>
     </div>
     <div class="header-actions">
@@ -1266,7 +1266,7 @@
           <tr>
             <td><strong>Spoiler Reveal</strong></td>
             <td><span class="guide-code-badge">||hidden||</span></td>
-            <td><span class="spoiler-text" onclick="this.classList.toggle('revealed')">Click to view</span></td>
+            <td><span class="spoiler-text" onclick="playSound('click'); this.classList.toggle('revealed');">Click to view</span></td>
           </tr>
           <tr>
             <td><strong>Bold / Italics</strong></td>
@@ -1516,6 +1516,87 @@
     const knownUsers = new Map();
     const userAvatars = new Map();
 
+    // WEB AUDIO API SOUND SYSTEM
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+
+        if (type === 'send') {
+          // Upward pitch send chime
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'receive') {
+          // Incoming notification pop
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'click') {
+          // Subtle interface click
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.exponentialRampToValueAtTime(160, now + 0.05);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'modal') {
+          // Open modal chime
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+          osc.start(now);
+          osc.stop(now + 0.1);
+        } else if (type === 'delete') {
+          // Soft deletion swoop
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        }
+      } catch (e) {}
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
+      playSound('click');
+      showAppToast(soundEnabled ? 'Audio notifications enabled' : 'Audio notifications muted', 'info');
+    }
+
     // CUSTOM MODERN IN-APP ALERTS & TOAST NOTIFICATIONS
     function showAppToast(text, type = 'info') {
       const container = document.getElementById('notification-toast-container');
@@ -1538,6 +1619,7 @@
     }
 
     function showAppAlert(title, message, icon = '🔔') {
+      playSound('modal');
       document.getElementById('alert-modal-title').textContent = title;
       document.getElementById('alert-modal-message').textContent = message;
       document.getElementById('alert-modal-icon').textContent = icon;
@@ -1545,6 +1627,7 @@
     }
 
     function closeAppAlert() {
+      playSound('click');
       alertModal.style.display = 'none';
     }
 
@@ -1557,6 +1640,7 @@
     let isDrawingPfp = false;
 
     function switchPfpTab(mode) {
+      playSound('click');
       currentPfpMode = mode;
       const pixelBtn = document.getElementById('pfp-tab-pixel');
       const pictureBtn = document.getElementById('pfp-tab-picture');
@@ -1621,12 +1705,14 @@
     }
 
     function paintPixel(index, el) {
+      playSound('click');
       const colorToApply = isEraserActive ? '#1e293b' : currentPfpColor;
       pfpGridData[index] = colorToApply;
       el.style.backgroundColor = colorToApply;
     }
 
     function setPfpColor(color) {
+      playSound('click');
       currentPfpColor = color;
       isEraserActive = false;
 
@@ -1640,6 +1726,7 @@
     }
 
     function toggleEraser() {
+      playSound('click');
       isEraserActive = !isEraserActive;
       const eraserBtn = document.getElementById('pfp-eraser-btn');
 
@@ -1653,6 +1740,7 @@
     }
 
     function clearPfpGrid() {
+      playSound('click');
       pfpGridData = Array(100).fill('#1e293b');
       const pixels = document.querySelectorAll('.pfp-pixel');
       pixels.forEach(p => p.style.backgroundColor = '#1e293b');
@@ -1723,10 +1811,11 @@
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
 
-    function openTextGuideModal() { textGuideModal.style.display = 'flex'; }
-    function closeTextGuideModal() { textGuideModal.style.display = 'none'; }
+    function openTextGuideModal() { playSound('modal'); textGuideModal.style.display = 'flex'; }
+    function closeTextGuideModal() { playSound('click'); textGuideModal.style.display = 'none'; }
 
     function switchView(view) {
+      playSound('click');
       currentView = view;
       closeSidebar();
 
@@ -1760,6 +1849,7 @@
     }
 
     async function saveProfileIdentity() {
+      playSound('click');
       const name = modalUsernameInput.value.trim() || 'Anon';
       const pin = modalPinInput.value.trim() || '0000';
       const pfpStr = getPfpString();
@@ -1783,6 +1873,7 @@
     }
 
     function openProfileModal() {
+      playSound('modal');
       modalUsernameInput.value = currentUser;
       modalPinInput.value = currentPin;
       const savedPfp = localStorage.getItem('chat_pfp_string');
@@ -1790,9 +1881,10 @@
       profileModal.style.display = 'flex';
     }
 
-    function closeProfileModal() { profileModal.style.display = 'none'; }
-    function openRulesModal() { rulesModal.style.display = 'flex'; }
+    function closeProfileModal() { playSound('click'); profileModal.style.display = 'none'; }
+    function openRulesModal() { playSound('modal'); rulesModal.style.display = 'flex'; }
     function closeRulesModal() {
+      playSound('click');
       rulesModal.style.display = 'none';
       localStorage.setItem('chat_has_seen_rules', 'true');
     }
@@ -1806,34 +1898,6 @@
       const hasSeen = localStorage.getItem('chat_has_seen_rules');
       if (!hasSeen) openRulesModal();
       else if (!localStorage.getItem('chat_username')) openProfileModal();
-    }
-
-    function playNotificationSound() {
-      if (!soundEnabled) return;
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
-
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.35);
-      } catch (e) {}
-    }
-
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      document.getElementById('sound-toggle-btn').textContent = soundEnabled ? '🔊' : '🔇';
-      showAppToast(soundEnabled ? 'Audio notifications enabled' : 'Audio notifications muted', 'info');
     }
 
     const userColorPalette = [
@@ -1875,6 +1939,7 @@
     }
 
     function applyPreset(name) {
+      playSound('click');
       const preset = vocaloidPresets[name];
       if (!preset) return;
       for (const [varName, colorVal] of Object.entries(preset)) {
@@ -1893,16 +1958,18 @@
     }
 
     function resetTheme() {
+      playSound('click');
       localStorage.removeItem('chat_theme_colors');
       loadSavedTheme();
       showAppToast("Theme reset to default", "info");
     }
 
-    function openSettings() { modal.style.display = 'flex'; }
-    function closeSettings() { modal.style.display = 'none'; }
-    function toggleEmojiPicker() { emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid'; }
+    function openSettings() { playSound('modal'); modal.style.display = 'flex'; }
+    function closeSettings() { playSound('click'); modal.style.display = 'none'; }
+    function toggleEmojiPicker() { playSound('click'); emojiPopover.style.display = emojiPopover.style.display === 'grid' ? 'none' : 'grid'; }
 
     function insertEmoji(emoji) {
+      playSound('click');
       messageInput.value += emoji;
       messageInput.focus();
       emojiPopover.style.display = 'none';
@@ -1953,8 +2020,8 @@
       escaped = escaped.replace(/\[glow\](.*?)\[\/glow\]/gi, '<span class="msg-glow">$1</span>');
       escaped = escaped.replace(/\[rainbow\](.*?)\[\/rainbow\]/gi, '<span class="msg-rainbow">$1</span>');
 
-      escaped = escaped.replace(/\|\|(.*?)\|\|/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
-      escaped = escaped.replace(/\[spoiler\](.*?)\[\/spoiler\]/gi, '<span class="spoiler-text" onclick="this.classList.toggle(\'revealed\')">$1</span>');
+      escaped = escaped.replace(/\|\|(.*?)\|\|/gi, '<span class="spoiler-text" onclick="playSound(\'click\'); this.classList.toggle(\'revealed\');">$1</span>');
+      escaped = escaped.replace(/\[spoiler\](.*?)\[\/spoiler\]/gi, '<span class="spoiler-text" onclick="playSound(\'click\'); this.classList.toggle(\'revealed\');">$1</span>');
 
       escaped = escaped.replace(/\[pixel\](.*?)\[\/pixel\]/gi, '<span style="font-family: \'Press Start 2P\', monospace; font-size: 0.75em;">$1</span>');
       escaped = escaped.replace(/\[script\](.*?)\[\/script\]/gi, '<span style="font-family: \'Caveat\', cursive; font-size: 1.25em;">$1</span>');
@@ -2013,10 +2080,11 @@
       if (isMe || isAtBottom) scrollToBottom();
       else toast.style.display = 'block';
 
-      if (!isMe) playNotificationSound();
+      if (!isMe) playSound('receive');
     }
 
     function promptDelete(id, isMe, table = 'messages') {
+      playSound('click');
       if (isMe) executeDelete(id, table);
       else {
         pendingDeleteTarget = { id, table };
@@ -2025,6 +2093,7 @@
     }
 
     function closeDeleteModal() {
+      playSound('click');
       pendingDeleteTarget = null;
       deleteModal.style.display = 'none';
     }
@@ -2041,6 +2110,7 @@
       if (error) {
         showAppToast("Error deleting message: " + error.message, "error");
       } else {
+        playSound('delete');
         removeMessageFromUI(id);
         showAppToast("Message deleted", "info");
       }
@@ -2085,6 +2155,8 @@
       const text = messageInput.value.trim();
       if (!text) return;
 
+      playSound('send');
+
       if (!currentUserHash) {
         currentUserHash = await generateUserHash(currentUser, currentPin);
       }
@@ -2109,6 +2181,7 @@
           const reader = new FileReader();
           reader.onload = function(event) {
             targetInput.value = event.target.result;
+            playSound('click');
             showAppToast("Image pasted into text field!", "info");
           };
           reader.readAsDataURL(file);
@@ -2238,6 +2311,7 @@
     }
 
     function selectDMThread(userName, userHash) {
+      playSound('click');
       if (userHash === currentUserHash) return showAppToast("You cannot DM yourself!", "error");
       activeDMTarget = { name: userName, hash: userHash };
 
@@ -2263,6 +2337,7 @@
     }
 
     function closeMobileThread() {
+      playSound('click');
       document.getElementById('inbox-main-pane').classList.remove('active-mobile');
     }
 
@@ -2314,6 +2389,8 @@
       const text = input.value.trim();
       if (!text || !activeDMTarget) return;
 
+      playSound('send');
+
       input.value = '';
       const { error } = await supabaseClient.from('dms').insert([{
         sender_name: currentUser,
@@ -2332,6 +2409,7 @@
     }
 
     function openComposeView() {
+      playSound('modal');
       activeDMTarget = null;
       document.getElementById('inbox-empty-state').style.display = 'none';
       document.getElementById('inbox-active-thread').style.display = 'none';
@@ -2358,6 +2436,7 @@
     }
 
     function cancelCompose() {
+      playSound('click');
       document.getElementById('inbox-compose-view').style.display = 'none';
       document.getElementById('inbox-empty-state').style.display = 'flex';
       closeMobileThread();
@@ -2374,6 +2453,8 @@
       if (!recipientHash || !text) {
         return showAppToast("Select a recipient and write a message!", "error");
       }
+
+      playSound('send');
 
       input.value = '';
       const { error } = await supabaseClient.from('dms').insert([{
@@ -2399,7 +2480,7 @@
       const toastEl = document.getElementById('global-dm-toast');
       toastEl.style.display = 'flex';
 
-      playNotificationSound();
+      playSound('receive');
 
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
