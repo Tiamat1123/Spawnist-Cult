@@ -227,7 +227,7 @@
       background-color: var(--border-color);
     }
 
-    /* Floating In-App DM / Invite Toast Banner (NO BROWSER POPUPS) */
+    /* Floating In-App DM Toast Banner */
     #global-dm-toast {
       position: fixed;
       top: 1rem;
@@ -740,172 +740,6 @@
       border-radius: 12px;
     }
 
-    /* GAME DM INVITE CARD STYLING */
-    .game-invite-card {
-      background-color: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--accent-color);
-      border-radius: 10px;
-      padding: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-top: 0.3rem;
-    }
-
-    .game-invite-card h5 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #38bdf8;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .game-invite-card p {
-      font-size: 0.8rem;
-      color: #cbd5e1;
-    }
-
-    .game-invite-btn {
-      background-color: #38bdf8;
-      color: #0f172a;
-      border: none;
-      padding: 0.45rem 0.75rem;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.8rem;
-      cursor: pointer;
-      text-align: center;
-      transition: opacity 0.2s;
-    }
-
-    .game-invite-btn:hover {
-      opacity: 0.9;
-    }
-
-    /* GAMES TAB STYLING */
-    .games-lobby {
-      flex: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-    }
-
-    .game-card {
-      background-color: var(--card-color);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-
-    .game-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--accent-color);
-    }
-
-    .game-card h4 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .game-card p {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      line-height: 1.4;
-    }
-
-    .game-arena {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      gap: 1rem;
-      overflow-y: auto;
-    }
-
-    .game-header-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 500px;
-      background-color: var(--card-color);
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-    }
-
-    /* 5x5 Dots & Boxes SVG Board */
-    .dots-boxes-board {
-      width: 320px;
-      height: 320px;
-      background-color: var(--card-color);
-      border-radius: 16px;
-      border: 1px solid var(--border-color);
-      padding: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    }
-
-    .db-line {
-      stroke: var(--border-color);
-      stroke-width: 6;
-      stroke-linecap: round;
-      cursor: pointer;
-      transition: stroke 0.2s, stroke-width 0.2s;
-    }
-
-    .db-line:hover {
-      stroke: var(--accent-color);
-      stroke-width: 8;
-    }
-
-    .db-line.taken-p1 { stroke: #38bdf8 !important; stroke-width: 7; }
-    .db-line.taken-p2 { stroke: #f43f5e !important; stroke-width: 7; }
-
-    .db-dot {
-      fill: #f8fafc;
-      r: 6;
-    }
-
-    .db-box-text {
-      font-size: 14px;
-      font-weight: bold;
-      text-anchor: middle;
-      dominant-baseline: central;
-      user-select: none;
-    }
-
-    /* SIM Canvas Graph Board */
-    .sim-board-container {
-      width: 320px;
-      height: 320px;
-      background-color: var(--card-color);
-      border-radius: 16px;
-      border: 1px solid var(--border-color);
-      position: relative;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    }
-
     /* 10x10 PIXEL ART PFP MAKER STYLING */
     .pfp-maker-container {
       display: flex;
@@ -1185,7 +1019,7 @@
     </div>
   </div>
 
-  <!-- Global In-Tab Floating DM Toast Notification (NO BROWSER POPUPS) -->
+  <!-- Global In-Tab Floating DM Toast Notification -->
   <div id="global-dm-toast" onclick="openDMFromToast()">
     <span style="font-size: 1.6rem;">📥</span>
     <div>
@@ -1204,7 +1038,6 @@
           📥 Inbox / DMs 
           <span class="badge-count" id="total-unread-badge" style="display: none;">0</span>
         </button>
-        <button class="sidebar-btn" id="nav-games-btn" onclick="switchView('games')">🎮 Games</button>
       </div>
 
       <div class="sidebar-section-title" style="margin-top: 0.5rem;">Preferences</div>
@@ -1325,84 +1158,6 @@
         </div>
       </div>
 
-      <!-- SCREEN 3: GAMES LOBBY & ARENA -->
-      <div class="view-screen" id="games-view" style="display: none;">
-        
-        <!-- Games Lobby Screen -->
-        <div id="games-lobby-screen" class="games-lobby">
-          <h3>🎮 Select a Game to Play</h3>
-          <div class="games-grid">
-            
-            <div class="game-card">
-              <h4>📦 5x5 Dots & Boxes</h4>
-              <p>Take turns connecting dots! Completing a 1x1 box earns a point and gives an extra turn. Most boxes wins!</p>
-              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('dots_and_boxes')">Challenge via DM 📥</button>
-            </div>
-
-            <div class="game-card">
-              <h4>🕸️ Game of SIM</h4>
-              <p>6 nodes, 15 lines. Take turns coloring lines. <strong>Misère Rule:</strong> The first player forced to form a triangle of their color LOSES!</p>
-              <button class="btn-primary" style="margin-top: auto;" onclick="openGameChallengeModal('sim')">Challenge via DM 📥</button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Active Game Arena Screen -->
-        <div id="games-arena-screen" class="game-arena" style="display: none;">
-          <div class="game-header-bar">
-            <div>
-              <strong id="active-game-title">Game</strong>
-              <div id="active-game-status" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 0.15rem;">Waiting for opponent to accept...</div>
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-              <button class="btn-secondary" id="rematch-btn" style="display: none;" onclick="requestRematch()">🔄 Rematch</button>
-              <button class="btn-secondary" onclick="leaveGameArena()">Quit Game</button>
-            </div>
-          </div>
-
-          <!-- Dots & Boxes Container -->
-          <div id="db-arena-container" style="display: none; flex-direction: column; align-items: center; gap: 0.75rem;">
-            <div style="display: flex; gap: 1.5rem; font-size: 0.9rem; font-weight: 600;">
-              <span style="color: #38bdf8;" id="db-p1-score">P1: 0</span>
-              <span style="color: #f43f5e;" id="db-p2-score">P2: 0</span>
-            </div>
-            <svg class="dots-boxes-board" id="db-board-svg" viewBox="0 0 200 200"></svg>
-          </div>
-
-          <!-- SIM Container -->
-          <div id="sim-arena-container" style="display: none; flex-direction: column; align-items: center; gap: 0.75rem;">
-            <div class="sim-board-container">
-              <svg id="sim-board-svg" width="320" height="320" viewBox="0 0 320 320"></svg>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Game Challenge Select Modal -->
-  <div class="modal-overlay" id="game-challenge-modal">
-    <div class="modal-card" style="max-width: 400px;">
-      <div class="modal-header">
-        <h3 id="game-challenge-title">Send DM Challenge</h3>
-        <button class="close-btn" onclick="closeGameChallengeModal()">✕</button>
-      </div>
-
-      <div>
-        <label style="font-size: 0.8rem; font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.4rem;">Select Opponent</label>
-        <select id="game-opponent-select" style="width: 100%;">
-          <option value="">-- Select Active Room User --</option>
-        </select>
-      </div>
-
-      <div class="modal-actions" style="justify-content: flex-end;">
-        <button class="btn-secondary" onclick="closeGameChallengeModal()">Cancel</button>
-        <button class="btn-primary" onclick="sendGameChallenge()">Send DM Invite 📥</button>
-      </div>
     </div>
   </div>
 
@@ -1536,7 +1291,7 @@
     </div>
   </div>
 
-  <!-- Profile Setup Modal + PIXEL ART MAKER & PICTURE PFP SUPPORT -->
+  <!-- Profile Setup Modal -->
   <div class="modal-overlay" id="profile-modal">
     <div class="modal-card" style="max-width: 440px;">
       <div class="modal-header">
@@ -1698,7 +1453,7 @@
     const modalUsernameInput = document.getElementById('modal-username');
     const modalPinInput = document.getElementById('modal-pin');
 
-    let pendingDeleteTarget = null; // { id, table: 'messages' | 'dms' }
+    let pendingDeleteTarget = null;
     let soundEnabled = true;
     let currentUser = 'Anon';
     let currentPin = '0000';
@@ -1896,25 +1651,17 @@
 
       document.getElementById('nav-public-btn').classList.toggle('active', view === 'public');
       document.getElementById('nav-inbox-btn').classList.toggle('active', view === 'inbox');
-      document.getElementById('nav-games-btn').classList.toggle('active', view === 'games');
 
       const pageTitle = document.getElementById('page-title');
       if (view === 'public') {
         document.getElementById('public-view').style.display = 'flex';
         document.getElementById('inbox-view').style.display = 'none';
-        document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
       } else if (view === 'inbox') {
         document.getElementById('public-view').style.display = 'none';
         document.getElementById('inbox-view').style.display = 'flex';
-        document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `📥 Direct Messages`;
         loadInboxConversations();
-      } else if (view === 'games') {
-        document.getElementById('public-view').style.display = 'none';
-        document.getElementById('inbox-view').style.display = 'none';
-        document.getElementById('games-view').style.display = 'flex';
-        pageTitle.innerHTML = `🎮 Games Arcade`;
       }
     }
 
@@ -1979,7 +1726,7 @@
       else if (!localStorage.getItem('chat_username')) openProfileModal();
     }
 
-    function playNotificationSound(isInvite = false) {
+    function playNotificationSound() {
       if (!soundEnabled) return;
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1987,13 +1734,8 @@
         const gain = audioCtx.createGain();
 
         osc.type = 'sine';
-        
-        // Distinct higher-pitched double chime for Game Invites
-        const startFreq = isInvite ? 880 : 587.33;
-        const endFreq = isInvite ? 1318.51 : 880;
-
-        osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(endFreq, audioCtx.currentTime + 0.15);
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
 
         gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
@@ -2109,25 +1851,9 @@
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
-    // ADVANCED PARSER FOR FONTS, COLOR, GLOW, RAINBOW, SPOILERS & GAME INVITE CARDS
+    // ADVANCED PARSER FOR FONTS, COLOR, GLOW, RAINBOW & SPOILERS
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
-
-      if (text.startsWith('[GAME_INVITE]:')) {
-        try {
-          const rawJson = text.replace('[GAME_INVITE]:', '');
-          const data = JSON.parse(rawJson);
-          const gameName = data.gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
-          
-          return `
-            <div class="game-invite-card">
-              <h5>🎮 Game Challenge!</h5>
-              <p>Challenged you to a game of <strong>${gameName}</strong>!</p>
-              <button class="game-invite-btn" onclick="acceptDMGameInvite('${data.gameType}', '${data.sessionId}', '${data.hostHash}')">🎮 Accept Challenge & Play</button>
-            </div>
-          `;
-        } catch(e) {}
-      }
 
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
       escaped = escaped.replace(urlRegex, function(url) {
@@ -2202,7 +1928,7 @@
       if (isMe || isAtBottom) scrollToBottom();
       else toast.style.display = 'block';
 
-      if (!isMe) playNotificationSound(false);
+      if (!isMe) playNotificationSound();
     }
 
     function promptDelete(id, isMe, table = 'messages') {
@@ -2365,7 +2091,7 @@
       }
     }
 
-    // FULL-SCREEN INBOX, UNREAD DM COUNTERS & DELETABLE DMS
+    // FULL-SCREEN INBOX & DELETABLE DMS
     async function loadInboxConversations() {
       if (!currentUserHash) return;
 
@@ -2399,13 +2125,8 @@
           knownUsers.set(partnerHash, partnerName);
         }
 
-        let snippetText = dm.content;
-        if (snippetText.startsWith('[GAME_INVITE]:')) {
-          snippetText = '🎮 Game Challenge Invite';
-        }
-
         if (!partners.has(partnerHash)) {
-          partners.set(partnerHash, { name: partnerName, lastMsg: snippetText, time: dm.created_at });
+          partners.set(partnerHash, { name: partnerName, lastMsg: dm.content, time: dm.created_at });
         }
       });
 
@@ -2586,15 +2307,12 @@
     function showGlobalDMToast(senderName, senderHash, snippetText) {
       toastDMTarget = { name: senderName, hash: senderHash };
       document.getElementById('toast-sender').textContent = `@${senderName}`;
-      
-      const isInvite = snippetText.startsWith('[GAME_INVITE]:');
-      document.getElementById('toast-text').textContent = isInvite ? '🎮 Sent you a Game Challenge Invite!' : snippetText;
+      document.getElementById('toast-text').textContent = snippetText;
 
       const toastEl = document.getElementById('global-dm-toast');
       toastEl.style.display = 'flex';
 
-      // Play "bing" sound (high pitch for game challenge invite)
-      playNotificationSound(isInvite);
+      playNotificationSound();
 
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
@@ -2619,7 +2337,6 @@
             const senderName = payload.new.sender_name || 'Friend';
             const isCurrentlyViewingThread = (currentView === 'inbox' && activeDMTarget && activeDMTarget.hash === senderHash);
 
-            // Pop Floating In-App Banner with Bing Sound!
             showGlobalDMToast(senderName, senderHash, payload.new.content);
 
             if (!isCurrentlyViewingThread) {
@@ -2640,463 +2357,6 @@
           removeMessageFromUI(payload.old.id);
         })
         .subscribe();
-    }
-
-    // MULTIPLAYER GAMES ENGINE WITH SESSION HANDSHAKE
-    let selectedGameType = null;
-    let activeSessionId = null;
-    let activeGameChannel = null;
-    let gameRole = null; // 'p1' or 'p2'
-    let currentTurnRole = 'p1';
-    let activeOpponentName = 'Opponent';
-
-    // Dots & Boxes State
-    let dbHLines = Array(5).fill().map(() => Array(4).fill(null));
-    let dbVLines = Array(4).fill().map(() => Array(5).fill(null));
-    let dbBoxes = Array(4).fill().map(() => Array(4).fill(null));
-    let dbP1Score = 0;
-    let dbP2Score = 0;
-
-    // SIM State
-    let simEdges = {};
-    let simVerticesPos = [];
-
-    function openGameChallengeModal(gameType) {
-      selectedGameType = gameType;
-      const modal = document.getElementById('game-challenge-modal');
-      const title = document.getElementById('game-challenge-title');
-      title.textContent = gameType === 'dots_and_boxes' ? 'Challenge 5x5 Dots & Boxes' : 'Challenge Game of SIM';
-
-      const select = document.getElementById('game-opponent-select');
-      select.innerHTML = '<option value="">-- Select Active Room User --</option>';
-
-      knownUsers.forEach((name, hash) => {
-        if (hash !== currentUserHash) {
-          const opt = document.createElement('option');
-          opt.value = hash;
-          opt.textContent = `@${name}`;
-          select.appendChild(opt);
-        }
-      });
-
-      modal.style.display = 'flex';
-    }
-
-    function closeGameChallengeModal() {
-      document.getElementById('game-challenge-modal').style.display = 'none';
-    }
-
-    async function sendGameChallenge() {
-      const recipientHash = document.getElementById('game-opponent-select').value;
-      const recipientName = knownUsers.get(recipientHash);
-      if (!recipientHash) return alert("Please select an opponent!");
-
-      const sessionId = `game_${Date.now()}_${Math.floor(Math.random()*1000)}`;
-      activeOpponentName = recipientName;
-      
-      const payloadObj = {
-        gameType: selectedGameType,
-        sessionId: sessionId,
-        hostHash: currentUserHash
-      };
-
-      const inviteMsgContent = `[GAME_INVITE]:${JSON.stringify(payloadObj)}`;
-
-      // Post Game Invite directly into DM table
-      const { error } = await supabaseClient.from('dms').insert([{
-        sender_name: currentUser,
-        sender_hash: currentUserHash,
-        recipient_name: recipientName,
-        recipient_hash: recipientHash,
-        content: inviteMsgContent
-      }]);
-
-      closeGameChallengeModal();
-
-      if (error) {
-        alert("Error sending game invite DM: " + error.message);
-      } else {
-        switchView('games');
-        startActiveGame(selectedGameType, sessionId, 'p1', recipientName);
-      }
-    }
-
-    async function acceptDMGameInvite(gameType, sessionId, hostHash) {
-      activeOpponentName = knownUsers.get(hostHash) || 'Player 1';
-      switchView('games');
-      startActiveGame(gameType, sessionId, 'p2', activeOpponentName);
-    }
-
-    function startActiveGame(gameType, sessionId, role, opponentName) {
-      selectedGameType = gameType;
-      activeSessionId = sessionId;
-      gameRole = role;
-      currentTurnRole = 'p1';
-      activeOpponentName = opponentName || 'Opponent';
-
-      document.getElementById('rematch-btn').style.display = 'none';
-      document.getElementById('games-lobby-screen').style.display = 'none';
-      document.getElementById('games-arena-screen').style.display = 'flex';
-
-      const titleEl = document.getElementById('active-game-title');
-      const statusEl = document.getElementById('active-game-status');
-      titleEl.textContent = gameType === 'dots_and_boxes' ? '5x5 Dots & Boxes' : 'Game of SIM';
-
-      if (gameType === 'dots_and_boxes') {
-        document.getElementById('db-arena-container').style.display = 'flex';
-        document.getElementById('sim-arena-container').style.display = 'none';
-        initDotsAndBoxes();
-      } else {
-        document.getElementById('db-arena-container').style.display = 'none';
-        document.getElementById('sim-arena-container').style.display = 'flex';
-        initSIM();
-      }
-
-      if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
-      activeGameChannel = supabaseClient.channel(`game_session_${sessionId}`);
-
-      // Broadcast Listener for Live Moves and Join Sync
-      activeGameChannel
-        .on('broadcast', { event: 'player_joined' }, payload => {
-          if (role === 'p1') {
-            statusEl.textContent = `🟢 @${payload.joinerName} joined! Your Turn! (Player 1 - Blue)`;
-            playNotificationSound(true);
-          }
-        })
-        .on('broadcast', { event: 'move' }, payload => {
-          if (selectedGameType === 'dots_and_boxes') {
-            handleDotsAndBoxesRemoteMove(payload);
-          } else {
-            handleSIMRemoteMove(payload);
-          }
-        })
-        .on('broadcast', { event: 'rematch' }, () => {
-          if (selectedGameType === 'dots_and_boxes') initDotsAndBoxes();
-          else initSIM();
-          currentTurnRole = 'p1';
-          updateGameTurnDisplay('p1');
-          document.getElementById('rematch-btn').style.display = 'none';
-        })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            if (role === 'p2') {
-              // Notify Player 1 that Player 2 joined the active channel!
-              activeGameChannel.send({
-                type: 'broadcast',
-                event: 'player_joined',
-                payload: { joinerName: currentUser }
-              });
-              statusEl.textContent = `Opponent's Turn (@${activeOpponentName} - Blue)`;
-            } else {
-              statusEl.textContent = `Waiting for @${activeOpponentName} to click Accept in DMs...`;
-            }
-          }
-        });
-    }
-
-    function updateGameTurnDisplay(turnRole) {
-      currentTurnRole = turnRole;
-      const statusEl = document.getElementById('active-game-status');
-      const isMyTurn = (turnRole === gameRole);
-      const roleColor = turnRole === 'p1' ? 'Blue' : 'Red';
-      statusEl.textContent = isMyTurn ? `Your Turn! (${roleColor})` : `@${activeOpponentName}'s Turn (${roleColor})`;
-    }
-
-    function leaveGameArena() {
-      if (activeGameChannel) supabaseClient.removeChannel(activeGameChannel);
-      document.getElementById('games-arena-screen').style.display = 'none';
-      document.getElementById('games-lobby-screen').style.display = 'flex';
-    }
-
-    function requestRematch() {
-      if (selectedGameType === 'dots_and_boxes') initDotsAndBoxes();
-      else initSIM();
-
-      currentTurnRole = 'p1';
-      updateGameTurnDisplay('p1');
-      document.getElementById('rematch-btn').style.display = 'none';
-
-      if (activeGameChannel) {
-        activeGameChannel.send({
-          type: 'broadcast',
-          event: 'rematch',
-          payload: {}
-        });
-      }
-    }
-
-    /* --- 1. DOTS & BOXES ENGINE --- */
-    function initDotsAndBoxes() {
-      dbHLines = Array(5).fill().map(() => Array(4).fill(null));
-      dbVLines = Array(4).fill().map(() => Array(5).fill(null));
-      dbBoxes = Array(4).fill().map(() => Array(4).fill(null));
-      dbP1Score = 0;
-      dbP2Score = 0;
-      updateDBScoreDisplay();
-      renderDBBoard();
-    }
-
-    function updateDBScoreDisplay() {
-      document.getElementById('db-p1-score').textContent = `P1 (Blue): ${dbP1Score}`;
-      document.getElementById('db-p2-score').textContent = `P2 (Red): ${dbP2Score}`;
-    }
-
-    function renderDBBoard() {
-      const svg = document.getElementById('db-board-svg');
-      svg.innerHTML = '';
-      const step = 40;
-      const offset = 20;
-
-      // Render Boxes
-      for (let r = 0; r < 4; r++) {
-        for (let c = 0; c < 4; c++) {
-          if (dbBoxes[r][c]) {
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            text.setAttribute('x', offset + c * step + step / 2);
-            text.setAttribute('y', offset + r * step + step / 2);
-            text.setAttribute('class', 'db-box-text');
-            text.setAttribute('fill', dbBoxes[r][c] === 'p1' ? '#38bdf8' : '#f43f5e');
-            text.textContent = dbBoxes[r][c] === 'p1' ? 'P1' : 'P2';
-            svg.appendChild(text);
-          }
-        }
-      }
-
-      // Horizontal Lines
-      for (let r = 0; r < 5; r++) {
-        for (let c = 0; c < 4; c++) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', offset + c * step);
-          line.setAttribute('y1', offset + r * step);
-          line.setAttribute('x2', offset + (c + 1) * step);
-          line.setAttribute('y2', offset + r * step);
-          let cls = 'db-line';
-          if (dbHLines[r][c] === 'p1') cls += ' taken-p1';
-          if (dbHLines[r][c] === 'p2') cls += ' taken-p2';
-          line.setAttribute('class', cls);
-          line.onclick = () => handleDBLineClick('h', r, c);
-          svg.appendChild(line);
-        }
-      }
-
-      // Vertical Lines
-      for (let r = 0; r < 4; r++) {
-        for (let c = 0; c < 5; c++) {
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', offset + c * step);
-          line.setAttribute('y1', offset + r * step);
-          line.setAttribute('x2', offset + c * step);
-          line.setAttribute('y2', offset + (r + 1) * step);
-          let cls = 'db-line';
-          if (dbVLines[r][c] === 'p1') cls += ' taken-p1';
-          if (dbVLines[r][c] === 'p2') cls += ' taken-p2';
-          line.setAttribute('class', cls);
-          line.onclick = () => handleDBLineClick('v', r, c);
-          svg.appendChild(line);
-        }
-      }
-
-      // Dots
-      for (let r = 0; r < 5; r++) {
-        for (let c = 0; c < 5; c++) {
-          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          dot.setAttribute('cx', offset + c * step);
-          dot.setAttribute('cy', offset + r * step);
-          dot.setAttribute('class', 'db-dot');
-          svg.appendChild(dot);
-        }
-      }
-    }
-
-    function handleDBLineClick(dir, r, c) {
-      if (currentTurnRole !== gameRole) return;
-      if (dir === 'h' && dbHLines[r][c]) return;
-      if (dir === 'v' && dbVLines[r][c]) return;
-
-      applyDBMove(dir, r, c, gameRole);
-
-      if (activeGameChannel) {
-        activeGameChannel.send({
-          type: 'broadcast',
-          event: 'move',
-          payload: { dir, r, c, role: gameRole }
-        });
-      }
-    }
-
-    function handleDotsAndBoxesRemoteMove(payload) {
-      applyDBMove(payload.dir, payload.r, payload.c, payload.role);
-    }
-
-    function applyDBMove(dir, r, c, role) {
-      let madeBox = false;
-
-      if (dir === 'h') {
-        dbHLines[r][c] = role;
-        if (r > 0 && checkDBBox(r - 1, c, role)) madeBox = true;
-        if (r < 4 && checkDBBox(r, c, role)) madeBox = true;
-      } else {
-        dbVLines[r][c] = role;
-        if (c > 0 && checkDBBox(r, c - 1, role)) madeBox = true;
-        if (c < 4 && checkDBBox(r, c, role)) madeBox = true;
-      }
-
-      renderDBBoard();
-      updateDBScoreDisplay();
-
-      if (!madeBox) {
-        currentTurnRole = role === 'p1' ? 'p2' : 'p1';
-      }
-
-      updateGameTurnDisplay(currentTurnRole);
-      checkDBGameOver();
-    }
-
-    function checkDBBox(r, c, role) {
-      if (r < 0 || r >= 4 || c < 0 || c >= 4) return false;
-      if (dbBoxes[r][c]) return false;
-
-      if (dbHLines[r][c] && dbHLines[r + 1][c] && dbVLines[r][c] && dbVLines[r][c + 1]) {
-        dbBoxes[r][c] = role;
-        if (role === 'p1') dbP1Score++;
-        else dbP2Score++;
-        return true;
-      }
-      return false;
-    }
-
-    function checkDBGameOver() {
-      if (dbP1Score + dbP2Score === 16) {
-        let winnerMsg = "It's a Tie!";
-        if (dbP1Score > dbP2Score) winnerMsg = "Player 1 (Blue) Wins! 🎉";
-        if (dbP2Score > dbP1Score) winnerMsg = "Player 2 (Red) Wins! 🎉";
-        document.getElementById('active-game-status').textContent = `Game Over! ${winnerMsg}`;
-        document.getElementById('rematch-btn').style.display = 'inline-block';
-      }
-    }
-
-    /* --- 2. GAME OF SIM ENGINE --- */
-    function initSIM() {
-      simEdges = {};
-      const cx = 160, cy = 160, radius = 110;
-      simVerticesPos = [];
-
-      for (let i = 0; i < 6; i++) {
-        const angle = (i * 60 - 90) * (Math.PI / 180);
-        simVerticesPos.push({
-          x: cx + radius * Math.cos(angle),
-          y: cy + radius * Math.sin(angle)
-        });
-      }
-      renderSIMBoard();
-    }
-
-    function renderSIMBoard() {
-      const svg = document.getElementById('sim-board-svg');
-      svg.innerHTML = '';
-
-      // Draw Edges
-      for (let i = 0; i < 6; i++) {
-        for (let j = i + 1; j < 6; j++) {
-          const key = `${i}-${j}`;
-          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-          line.setAttribute('x1', simVerticesPos[i].x);
-          line.setAttribute('y1', simVerticesPos[i].y);
-          line.setAttribute('x2', simVerticesPos[j].x);
-          line.setAttribute('y2', simVerticesPos[j].y);
-
-          const owner = simEdges[key];
-          let stroke = '#334155';
-          let width = 3;
-
-          if (owner === 'p1') { stroke = '#38bdf8'; width = 5; }
-          if (owner === 'p2') { stroke = '#f43f5e'; width = 5; }
-
-          line.setAttribute('stroke', stroke);
-          line.setAttribute('stroke-width', width);
-          line.setAttribute('stroke-linecap', 'round');
-          line.style.cursor = owner ? 'default' : 'pointer';
-
-          line.onclick = () => handleSIMEdgeClick(i, j);
-          svg.appendChild(line);
-        }
-      }
-
-      // Draw Nodes
-      simVerticesPos.forEach((v, idx) => {
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', v.x);
-        circle.setAttribute('cy', v.y);
-        circle.setAttribute('r', 12);
-        circle.setAttribute('fill', '#f8fafc');
-        circle.setAttribute('stroke', '#38bdf8');
-        circle.setAttribute('stroke-width', 3);
-        svg.appendChild(circle);
-
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', v.x);
-        text.setAttribute('y', v.y);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('dominant-baseline', 'central');
-        text.setAttribute('fill', '#0f172a');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('font-size', '12px');
-        text.textContent = idx + 1;
-        svg.appendChild(text);
-      });
-    }
-
-    function handleSIMEdgeClick(u, v) {
-      if (currentTurnRole !== gameRole) return;
-      const key = `${Math.min(u,v)}-${Math.max(u,v)}`;
-      if (simEdges[key]) return;
-
-      applySIMMove(u, v, gameRole);
-
-      if (activeGameChannel) {
-        activeGameChannel.send({
-          type: 'broadcast',
-          event: 'move',
-          payload: { u, v, role: gameRole }
-        });
-      }
-    }
-
-    function handleSIMRemoteMove(payload) {
-      applySIMMove(payload.u, payload.v, payload.role);
-    }
-
-    function applySIMMove(u, v, role) {
-      const key = `${Math.min(u,v)}-${Math.max(u,v)}`;
-      simEdges[key] = role;
-      renderSIMBoard();
-
-      if (checkSIMTriangle(role)) {
-        const loserName = role === 'p1' ? 'Player 1 (Blue)' : 'Player 2 (Red)';
-        const winnerName = role === 'p1' ? 'Player 2 (Red)' : 'Player 1 (Blue)';
-        document.getElementById('active-game-status').textContent = `Game Over! ${loserName} formed a triangle and lost! ${winnerName} Wins! 🎉`;
-        document.getElementById('rematch-btn').style.display = 'inline-block';
-        return;
-      }
-
-      currentTurnRole = role === 'p1' ? 'p2' : 'p1';
-      updateGameTurnDisplay(currentTurnRole);
-    }
-
-    function checkSIMTriangle(role) {
-      for (let i = 0; i < 6; i++) {
-        for (let j = i + 1; j < 6; j++) {
-          for (let k = j + 1; k < 6; k++) {
-            const e1 = simEdges[`${i}-${j}`];
-            const e2 = simEdges[`${j}-${k}`];
-            const e3 = simEdges[`${i}-${k}`];
-            if (e1 === role && e2 === role && e3 === role) {
-              return true;
-            }
-          }
-        }
-      }
-      return false;
     }
 
     // Realtime Presence Setup
