@@ -975,11 +975,32 @@
       border-color: var(--accent-color);
     }
 
+    .game-card-img-wrapper {
+      width: 100%;
+      height: 150px;
+      background-color: #0f172a;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .game-card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .game-card:hover .game-card-img-wrapper img {
+      transform: scale(1.05);
+    }
+
     .game-card-content {
       padding: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
+      flex: 1;
     }
 
     .game-card-title {
@@ -992,6 +1013,7 @@
       font-size: 0.85rem;
       color: #94a3b8;
       line-height: 1.4;
+      flex: 1;
     }
 
     .compose-card {
@@ -1472,19 +1494,53 @@
       <div class="view-screen" id="games-view" style="display: none;">
         <div class="games-grid">
           
-          <!-- Kultisti's Games Card -->
+          <!-- Dungeons & Degenerate Gamblers Card -->
           <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzE2MDgwNzMzLnBuZw==/315x250%23c/4zK61V.png" alt="Dungeons & Degenerate Gamblers Preview" loading="lazy">
+            </div>
             <div class="game-card-content">
-              <div class="game-card-title">🕹️ Kultisti Games</div>
-              <div class="game-card-desc">Explore a wide collection of unique indie browser games created by Kultisti on itch.io.</div>
-              <a href="https://kultisti.itch.io/" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
-                🚀 Play Kultisti Games in New Tab
+              <div class="game-card-title">🃏 Dungeons & Degenerate Gamblers</div>
+              <div class="game-card-desc">A Blackjack-style roguelike deckbuilder where you fight your way through a sketchy tavern using suits, unique abilities, and strategy.</div>
+              <a href="https://purplemosscollectors.itch.io/dndg" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play DnDG in New Tab
+              </a>
+            </div>
+          </div>
+
+          <!-- Cobb Can Move Card -->
+          <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzE2NjkwOTkyLnBuZw==/315x250%23c/341HqP.png" alt="Cobb Can Move Preview" loading="lazy">
+            </div>
+            <div class="game-card-content">
+              <div class="game-card-title">🌽 Cobb Can Move</div>
+              <div class="game-card-desc">Help Cobb navigate levels using smooth momentum and physical movement in this fun indie browser platformer.</div>
+              <a href="https://abho.itch.io/cobb-can-move" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play Cobb Can Move in New Tab
+              </a>
+            </div>
+          </div>
+
+          <!-- Tanuki Sunset Card -->
+          <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzI2NjU3MjAucG5n/315x250%23c/eH2sTL.png" alt="Tanuki Sunset Preview" loading="lazy">
+            </div>
+            <div class="game-card-content">
+              <div class="game-card-title">🦝 Tanuki Sunset</div>
+              <div class="game-card-desc">A synthwave-styled longboard skateboarding game starring a raccoon. Drift down winding seaside roads and perform tricks!</div>
+              <a href="https://rewindgames.itch.io/tanuki-sunset" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play Tanuki Sunset in New Tab
               </a>
             </div>
           </div>
 
           <!-- PolyTrack Game Card -->
           <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzE1NTU4NTAwLnBuZw==/315x250%23c/M3S9iT.png" alt="PolyTrack Preview" loading="lazy">
+            </div>
             <div class="game-card-content">
               <div class="game-card-title">🏎️ PolyTrack</div>
               <div class="game-card-desc">High-speed low-poly racing game inspired by TrackMania. Build custom tracks and race against the clock!</div>
@@ -1496,6 +1552,9 @@
 
           <!-- ev.io Game Card -->
           <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://ev.io/sites/default/files/ev-io-logo.jpg" alt="ev.io Preview" loading="lazy">
+            </div>
             <div class="game-card-content">
               <div class="game-card-title">🎯 ev.io</div>
               <div class="game-card-desc">A futuristic halo-inspired browser-based multiplayer 3D first-person shooter game.</div>
@@ -1505,19 +1564,11 @@
             </div>
           </div>
 
-          <!-- Lockpicks Game Card -->
-          <div class="game-card">
-            <div class="game-card-content">
-              <div class="game-card-title">🔑 Lockpicks</div>
-              <div class="game-card-desc">An engaging indie puzzle game centered around mechanical mechanics and strategy by digitarium.</div>
-              <a href="https://digitarium.itch.io/lockpicks-11" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
-                🚀 Play Lockpicks in New Tab
-              </a>
-            </div>
-          </div>
-
           <!-- Neal.fun Game Card -->
           <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://neal.fun/share-image.png" alt="Neal.fun Preview" loading="lazy">
+            </div>
             <div class="game-card-content">
               <div class="game-card-title">🌐 Neal.fun</div>
               <div class="game-card-desc">A collection of creative, interactive, and funny web games and experiments by Neal Agarwal.</div>
@@ -1527,13 +1578,44 @@
             </div>
           </div>
 
+          <!-- Lockpicks Game Card -->
+          <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzE2NTg1NTkyLnBuZw==/315x250%23c/aYg0mY.png" alt="Lockpicks Preview" loading="lazy">
+            </div>
+            <div class="game-card-content">
+              <div class="game-card-title">🔑 Lockpicks</div>
+              <div class="game-card-desc">An engaging indie puzzle game centered around mechanical mechanics and strategy by digitarium.</div>
+              <a href="https://digitarium.itch.io/lockpicks-11" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play Lockpicks in New Tab
+              </a>
+            </div>
+          </div>
+
           <!-- Klifur Game Card -->
           <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzE2NjkwOTE1LnBuZw==/315x250%23c/dJ0IqX.png" alt="Klifur Preview" loading="lazy">
+            </div>
             <div class="game-card-content">
               <div class="game-card-title">🧗 Klifur</div>
               <div class="game-card-desc">A physics-based climbing browser game featuring physics and grip mechanics by Torfi.</div>
               <a href="https://torfi.itch.io/klifur" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
                 🚀 Play Klifur in New Tab
+              </a>
+            </div>
+          </div>
+
+          <!-- Kultisti's Games Card -->
+          <div class="game-card">
+            <div class="game-card-img-wrapper">
+              <img src="https://img.itch.zone/aW1nLzEyOTY2NDM1LnBuZw==/315x250%23c/E8t7Jp.png" alt="Kultisti Games Preview" loading="lazy">
+            </div>
+            <div class="game-card-content">
+              <div class="game-card-title">🕹️ Kultisti Games</div>
+              <div class="game-card-desc">Explore a wide collection of unique indie browser games created by Kultisti on itch.io.</div>
+              <a href="https://kultisti.itch.io/" target="_blank" rel="noopener noreferrer" class="btn-primary" style="width: 100%; margin-top: 0.6rem;">
+                🚀 Play Kultisti Games in New Tab
               </a>
             </div>
           </div>
