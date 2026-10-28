@@ -74,6 +74,11 @@
       flex-shrink: 0;
     }
 
+    .status-dot.closed {
+      background-color: #ef4444;
+      box-shadow: 0 0 8px #ef4444;
+    }
+
     .header-actions {
       display: flex;
       align-items: center;
@@ -96,6 +101,19 @@
 
     .icon-btn:hover {
       background-color: var(--border-color);
+    }
+
+    /* Night Curfew Banner */
+    #curfew-banner {
+      background-color: #7f1d1d;
+      color: #fecaca;
+      border-bottom: 1px solid #991b1b;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+      z-index: 25;
     }
 
     .app-layout {
@@ -285,7 +303,7 @@
       max-width: 340px;
     }
 
-    /* FLOATING DM DOCK BUTTON - Positioned to clear send buttons */
+    /* FLOATING DM DOCK BUTTON */
     #floating-dm-dock-btn {
       position: fixed;
       bottom: 5rem;
@@ -504,105 +522,6 @@
     .msg.user-me .msg-content a {
       color: #ffffff;
     }
-
-    /* YOUTUBE THUMBNAIL PREVIEW CARDS */
-    .yt-preview-card {
-      position: relative;
-      width: 100%;
-      max-width: 320px;
-      aspect-ratio: 16 / 9;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 0.4rem;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .yt-preview-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-    }
-
-    .yt-preview-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .yt-play-icon {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 48px;
-      height: 34px;
-      background: rgba(239, 68, 68, 0.9);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: background 0.2s;
-    }
-
-    .yt-preview-card:hover .yt-play-icon {
-      background: #ef4444;
-    }
-
-    /* YOUTUBE EMBED OVERLAY MODAL */
-    .yt-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100dvh;
-      background-color: rgba(0, 0, 0, 0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 500;
-      backdrop-filter: blur(6px);
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    .yt-modal-container {
-      position: relative;
-      width: 90%;
-      max-width: 860px;
-      aspect-ratio: 16 / 9;
-      background-color: #000000;
-      border-radius: 14px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .yt-modal-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      pointer-events: auto;
-    }
-
-    .yt-modal-close-btn {
-      position: absolute;
-      top: -2.8rem;
-      right: 0;
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 1.6rem;
-      cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s;
-    }
-
-    .yt-modal-close-btn:hover { opacity: 1; }
 
     /* Custom Text Formatting Styles */
     .msg-code {
@@ -1303,12 +1222,17 @@
   <div class="chat-header">
     <div style="display: flex; align-items: center; gap: 0.6rem;">
       <button class="icon-btn" onclick="playSound('click'); toggleSidebar();" title="Toggle Sidebar">☰</button>
-      <h2 id="page-title"><span class="status-dot"></span> Chatroom</h2>
+      <h2 id="page-title"><span class="status-dot" id="header-status-dot"></span> Chatroom</h2>
     </div>
     <div class="header-actions">
       <button class="icon-btn" onclick="openTextGuideModal()" title="Formatting & Fonts Guide">✨ Formatting</button>
       <button class="icon-btn" id="sound-toggle-btn" onclick="toggleSound()" title="Toggle Sound">🔊</button>
     </div>
+  </div>
+
+  <!-- Curfew Lock Notification Banner -->
+  <div id="curfew-banner">
+    🌙 Chatroom is closed for the night (10 PM – 6 AM). Messages are paused until morning!
   </div>
 
   <!-- Global In-Tab Floating DM Toast Notification -->
@@ -1317,14 +1241,6 @@
     <div>
       <div id="toast-sender" style="font-weight: 700; font-size: 0.85rem; color: #38bdf8;">@Sender</div>
       <div id="toast-text" style="font-size: 0.8rem; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;">New message...</div>
-    </div>
-  </div>
-
-  <!-- YOUTUBE VIDEO EMBED POPUP MODAL -->
-  <div id="yt-modal-overlay" class="yt-modal-overlay" onclick="closeYouTubeOverlay()">
-    <div class="yt-modal-container" onclick="event.stopPropagation()">
-      <button class="yt-modal-close-btn" onclick="closeYouTubeOverlay()">✕</button>
-      <iframe id="yt-modal-iframe" allow="autoplay; encrypted-media; picture-in-picture; accelerometer; gyroscope" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -1388,7 +1304,7 @@
                 <div class="inbox-composer" style="padding: 0.6rem;">
                   <div class="inbox-composer-row">
                     <input type="text" id="drawer-dm-input" placeholder="Type DM..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendDrawerDM()">
-                    <button class="btn-primary" onclick="sendDrawerDM()" style="padding: 0.5rem 0.85rem;">Send</button>
+                    <button class="btn-primary" id="drawer-send-btn" onclick="sendDrawerDM()" style="padding: 0.5rem 0.85rem;">Send</button>
                   </div>
                 </div>
               </div>
@@ -1423,7 +1339,7 @@
           <div class="input-container">
             <input type="text" id="message" placeholder="Type message or @username to DM..." oninput="handlePublicTyping()" onkeydown="if(event.key === 'Enter') sendMessage()">
             <button class="emoji-picker-btn" onclick="toggleEmojiPicker()" title="Insert emoji">😀</button>
-            <button class="btn-primary" onclick="sendMessage()">Send</button>
+            <button class="btn-primary" id="public-send-btn" onclick="sendMessage()">Send</button>
           </div>
         </div>
       </div>
@@ -1458,7 +1374,7 @@
                 <div class="typing-indicator" id="dm-typing-indicator"></div>
                 <div class="inbox-composer-row">
                   <input type="text" id="dm-canvas-input" placeholder="Type a private message..." style="flex: 1;" oninput="handleDMTyping()" onkeydown="if(event.key==='Enter') sendCanvasDM()">
-                  <button class="btn-primary" onclick="sendCanvasDM()">Send</button>
+                  <button class="btn-primary" id="canvas-send-btn" onclick="sendCanvasDM()">Send</button>
                 </div>
               </div>
             </div>
@@ -1481,7 +1397,7 @@
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
                   <button class="btn-secondary" onclick="cancelCompose()">Cancel</button>
-                  <button class="btn-primary" onclick="submitComposeDM()">Send DM →</button>
+                  <button class="btn-primary" id="compose-send-btn" onclick="submitComposeDM()">Send DM →</button>
                 </div>
               </div>
             </div>
@@ -1942,12 +1858,63 @@
     let toastDMTarget = null;
     let toastTimeout = null;
     let isDrawerOpen = false;
+    let isCurfewActive = false;
+    let isModerator = false;
     
     const unreadDMCounters = new Map();
     const knownUsers = new Map();
     const userAvatars = new Map();
 
-    // SOFT WEB AUDIO API SOUND SYSTEM
+    // Night Curfew Verification (10 PM to 6 AM)
+    function checkNightCurfew() {
+      const currentHour = new Date().getHours();
+      isCurfewActive = (currentHour >= 22 || currentHour < 6);
+
+      const curfewBanner = document.getElementById('curfew-banner');
+      const statusDot = document.getElementById('header-status-dot');
+      
+      const publicInput = document.getElementById('message');
+      const publicBtn = document.getElementById('public-send-btn');
+      const drawerInput = document.getElementById('drawer-dm-input');
+      const drawerBtn = document.getElementById('drawer-send-btn');
+      const canvasInput = document.getElementById('dm-canvas-input');
+      const canvasBtn = document.getElementById('canvas-send-btn');
+      const composeBtn = document.getElementById('compose-send-btn');
+
+      if (isCurfewActive) {
+        curfewBanner.style.display = 'block';
+        statusDot.classList.add('closed');
+        
+        publicInput.disabled = true;
+        publicInput.placeholder = "Chat closed for the night (10 PM - 6 AM)...";
+        if (publicBtn) publicBtn.disabled = true;
+
+        if (drawerInput) drawerInput.disabled = true;
+        if (drawerBtn) drawerBtn.disabled = true;
+        
+        if (canvasInput) canvasInput.disabled = true;
+        if (canvasBtn) canvasBtn.disabled = true;
+
+        if (composeBtn) composeBtn.disabled = true;
+      } else {
+        curfewBanner.style.display = 'none';
+        statusDot.classList.remove('closed');
+        
+        publicInput.disabled = false;
+        publicInput.placeholder = "Type message or @username to DM...";
+        if (publicBtn) publicBtn.disabled = false;
+
+        if (drawerInput) drawerInput.disabled = false;
+        if (drawerBtn) drawerBtn.disabled = false;
+
+        if (canvasInput) canvasInput.disabled = false;
+        if (canvasBtn) canvasBtn.disabled = false;
+
+        if (composeBtn) composeBtn.disabled = false;
+      }
+    }
+
+    // Modern Audio API
     let audioCtx = null;
 
     function getAudioContext() {
@@ -2023,7 +1990,6 @@
       showAppToast(soundEnabled ? 'Audio notifications enabled' : 'Audio notifications muted', 'info');
     }
 
-    // CUSTOM MODERN IN-APP ALERTS & TOAST NOTIFICATIONS
     function showAppToast(text, type = 'info') {
       const container = document.getElementById('notification-toast-container');
       const toastEl = document.createElement('div');
@@ -2057,7 +2023,7 @@
       alertModal.style.display = 'none';
     }
 
-    // 10x10 PFP Grid + Eraser Logic + Picture PFP Logic
+    // 10x10 PFP Grid
     let currentPfpMode = 'pixel';
     let picturePfpData = '';
     let currentPfpColor = '#38bdf8';
@@ -2218,7 +2184,7 @@
       return `<svg class="pfp-avatar-img" viewBox="0 0 10 10">${rects}</svg>`;
     }
 
-    // Typing Indicators state
+    // Typing Indicators
     let publicTypingTimeout = null;
     let dmTypingTimeout = null;
     let lastPublicTypingBroadcast = 0;
@@ -2256,14 +2222,14 @@
         document.getElementById('public-view').style.display = 'flex';
         document.getElementById('inbox-view').style.display = 'none';
         document.getElementById('games-view').style.display = 'none';
-        pageTitle.innerHTML = `<span class="status-dot"></span> Chatroom`;
+        pageTitle.innerHTML = `<span class="status-dot ${isCurfewActive ? 'closed' : ''}" id="header-status-dot"></span> Chatroom`;
         dockBtn.style.display = 'flex';
       } else if (view === 'inbox') {
         document.getElementById('public-view').style.display = 'none';
         document.getElementById('inbox-view').style.display = 'flex';
         document.getElementById('games-view').style.display = 'none';
         pageTitle.innerHTML = `📥 Direct Messages`;
-        dockBtn.style.display = 'none'; // Auto-hide dock button in Inbox mode
+        dockBtn.style.display = 'none';
         loadInboxConversations();
       } else if (view === 'games') {
         document.getElementById('public-view').style.display = 'none';
@@ -2292,7 +2258,7 @@
       }
     }
 
-    // TOGGLE SPLIT DM DRAWER NEXT TO CHAT
+    // Split DM Drawer
     function toggleDMSplitDrawer() {
       playSound('click');
       const drawer = document.getElementById('dm-split-drawer');
@@ -2386,7 +2352,6 @@
       }
     }
 
-    // Helper to instantly append a DM element to an active canvas
     function appendSingleDMToCanvas(dm, container) {
       if (!container || document.getElementById(`dm-msg-${dm.id}`)) return;
 
@@ -2399,7 +2364,7 @@
         ? `<img src="${dm.content}" alt="Shared image" style="max-width: 100%; max-height: 240px; border-radius: 8px;" loading="lazy">`
         : parseFormattedText(dm.content);
 
-      const deleteBtnHtml = `<button class="delete-btn" onclick="promptDelete(${dm.id}, ${isMe}, 'dms')" title="Delete DM" style="margin-left: 0.4rem;">✕</button>`;
+      const deleteBtnHtml = (isMe || isModerator) ? `<button class="delete-btn" onclick="promptDelete(${dm.id}, true, 'dms')" title="Delete DM" style="margin-left: 0.4rem;">✕</button>` : '';
 
       msg.innerHTML = `
         <div style="color: #ffffff !important;">${dmContent}</div>
@@ -2414,6 +2379,10 @@
     }
 
     async function sendDrawerDM() {
+      if (isCurfewActive) {
+        showAppToast("Chatroom is closed for the night!", "error");
+        return;
+      }
       const input = document.getElementById('drawer-dm-input');
       const text = input.value.trim();
       if (!text || !activeDMTarget) return;
@@ -2432,7 +2401,6 @@
       if (error) {
         showAppToast("Error: " + error.message, "error");
       } else if (data) {
-        // Instant local insertion for zero lag
         appendSingleDMToCanvas(data, document.getElementById('drawer-dm-canvas'));
       }
     }
@@ -2445,6 +2413,9 @@
 
       currentUser = name;
       currentPin = pin;
+
+      // Discreet moderator check for Alistair + PIN 1123
+      isModerator = (currentUser.trim().toLowerCase() === 'alistair' && currentPin.trim() === '1123');
 
       localStorage.setItem('chat_username', currentUser);
       localStorage.setItem('chat_pin', currentPin);
@@ -2592,53 +2563,14 @@
       return imageHosts.some(host => cleanUrl.includes(host));
     }
 
-    // YOUTUBE VIDEO HELPER FUNCTIONS
-    function extractYouTubeId(url) {
-      if (!url) return null;
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      const match = url.match(regExp);
-      return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    function openYouTubeOverlay(videoId) {
-      playSound('modal');
-      const overlay = document.getElementById('yt-modal-overlay');
-      const iframe = document.getElementById('yt-modal-iframe');
-      
-      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-      overlay.style.display = 'flex';
-    }
-
-    function closeYouTubeOverlay() {
-      playSound('click');
-      const overlay = document.getElementById('yt-modal-overlay');
-      const iframe = document.getElementById('yt-modal-iframe');
-      
-      iframe.src = '';
-      overlay.style.display = 'none';
-    }
-
     function mentionUserInInput(userName) {
       playSound('click');
       messageInput.value = `@${userName} `;
       messageInput.focus();
     }
 
-    // ADVANCED PARSER FOR FONTS, COLOR, GLOW, RAINBOW, SPOILERS & YOUTUBE PREVIEWS
     function parseFormattedText(text) {
       let escaped = escapeHtml(text);
-
-      const ytId = extractYouTubeId(text);
-      if (ytId) {
-        const thumbUrl = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
-        const cardHtml = `
-          <div class="yt-preview-card" onclick="openYouTubeOverlay('${ytId}')">
-            <img src="${thumbUrl}" alt="YouTube Video Preview" loading="lazy">
-            <div class="yt-play-icon">▶</div>
-          </div>
-        `;
-        return cardHtml;
-      }
 
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
       escaped = escaped.replace(urlRegex, function(url) {
@@ -2689,7 +2621,8 @@
         ? `<div class="msg-content"><img src="${text}" alt="Shared image" loading="lazy"></div>` 
         : `<div class="msg-content">${parseFormattedText(text)}</div>`;
 
-      const deleteBtnHtml = id ? `<button class="delete-btn" onclick="promptDelete(${id}, ${isMe}, 'messages')" title="Delete message">✕</button>` : '';
+      // Show delete button for owned messages or silent moderator privileges
+      const deleteBtnHtml = (id && (isMe || isModerator)) ? `<button class="delete-btn" onclick="promptDelete(${id}, true, 'messages')" title="Delete message">✕</button>` : '';
 
       const pfpSvg = renderPfpSvg(userAvatars.get(userHash));
 
@@ -2718,7 +2651,7 @@
 
     function promptDelete(id, isMe, table = 'messages') {
       playSound('click');
-      if (isMe) executeDelete(id, table);
+      if (isMe || isModerator) executeDelete(id, table);
       else {
         pendingDeleteTarget = { id, table };
         deleteModal.style.display = 'flex';
@@ -2784,8 +2717,12 @@
       }
     }
 
-    // INLINE @MENTION DM SENDER OR PUBLIC MSG SENDER
     async function sendMessage() {
+      if (isCurfewActive) {
+        showAppToast("Chatroom is closed for the night!", "error");
+        return;
+      }
+
       const text = messageInput.value.trim();
       if (!text) return;
 
@@ -2849,7 +2786,6 @@
       if (error) showAppToast("Error sending message: " + error.message, "error");
     }
 
-    // CLIPBOARD IMAGE PASTE HANDLER
     function handlePasteImage(e, targetInput) {
       const items = (e.clipboardData || e.originalEvent.clipboardData).items;
       for (let item of items) {
@@ -2871,7 +2807,7 @@
     messageInput.addEventListener('paste', (e) => handlePasteImage(e, messageInput));
     document.getElementById('dm-canvas-input').addEventListener('paste', (e) => handlePasteImage(e, document.getElementById('dm-canvas-input')));
 
-    // TYPING INDICATORS
+    // Typing Indicators
     const publicTypingChannel = supabaseClient.channel('public_chat_typing');
     
     publicTypingChannel.on('broadcast', { event: 'typing' }, payload => {
@@ -2887,6 +2823,7 @@
     }).subscribe();
 
     function handlePublicTyping() {
+      if (isCurfewActive) return;
       const now = Date.now();
       if (now - lastPublicTypingBroadcast > 2000) {
         lastPublicTypingBroadcast = now;
@@ -2913,7 +2850,7 @@
     }).subscribe();
 
     function handleDMTyping() {
-      if (!activeDMTarget) return;
+      if (isCurfewActive || !activeDMTarget) return;
       const now = Date.now();
       if (now - lastDMTypingBroadcast > 2000) {
         lastDMTypingBroadcast = now;
@@ -2929,7 +2866,6 @@
       }
     }
 
-    // FULL-SCREEN INBOX & DELETABLE DMS
     async function loadInboxConversations() {
       if (!currentUserHash) return;
 
@@ -3045,6 +2981,11 @@
     }
 
     async function sendCanvasDM() {
+      if (isCurfewActive) {
+        showAppToast("Chatroom is closed for the night!", "error");
+        return;
+      }
+
       const input = document.getElementById('dm-canvas-input');
       const text = input.value.trim();
       if (!text || !activeDMTarget) return;
@@ -3063,7 +3004,6 @@
       if (error) {
         showAppToast("Error sending DM: " + error.message, "error");
       } else if (data) {
-        // Instant local insertion into canvas for seamless messaging
         appendSingleDMToCanvas(data, document.getElementById('dm-canvas'));
         loadInboxConversations();
       }
@@ -3104,6 +3044,11 @@
     }
 
     async function submitComposeDM() {
+      if (isCurfewActive) {
+        showAppToast("Chatroom is closed for the night!", "error");
+        return;
+      }
+
       const select = document.getElementById('compose-recipient-select');
       const input = document.getElementById('compose-message-input');
 
@@ -3157,14 +3102,13 @@
       }
     }
 
-    // REALTIME DM SUBSCRIPTION - Realtime Instant Delivery Fix
+    // Realtime DM Subscription
     function subscribeToDMs() {
       supabaseClient
         .channel('public:dms')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'dms' }, payload => {
           const newDM = payload.new;
 
-          // Check if DM is incoming to current user
           if (newDM.recipient_hash === currentUserHash) {
             const senderHash = newDM.sender_hash;
             const senderName = newDM.sender_name || 'Friend';
@@ -3178,7 +3122,6 @@
               updateTotalUnreadBadge();
             }
 
-            // Immediately inject DM into full Inbox active thread if open
             if (isCurrentlyViewingThread) {
               appendSingleDMToCanvas(newDM, document.getElementById('dm-canvas'));
             }
@@ -3187,7 +3130,6 @@
               loadInboxConversations();
             }
 
-            // Immediately inject DM into drawer active thread if open
             if (isDrawerOpen) {
               loadDrawerConversations();
               if (activeDMTarget && activeDMTarget.hash === senderHash) {
@@ -3264,12 +3206,18 @@
       .subscribe();
 
     async function init() {
+      checkNightCurfew();
+      setInterval(checkNightCurfew, 30000); // Re-evaluate every 30 seconds
+
       loadSavedTheme();
       initPfpGrid();
       
       currentUser = localStorage.getItem('chat_username') || 'Anon';
       currentPin = localStorage.getItem('chat_pin') || '0000';
       const savedPfp = localStorage.getItem('chat_pfp_string');
+
+      // Discrete moderator check
+      isModerator = (currentUser.trim().toLowerCase() === 'alistair' && currentPin.trim() === '1123');
 
       currentUserHash = await generateUserHash(currentUser, currentPin);
       knownUsers.set(currentUserHash, currentUser);
@@ -3284,7 +3232,6 @@
 
       isInitialLoading = false;
 
-      // Silent background refresh on tab exit/switch
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
           window.location.reload();
